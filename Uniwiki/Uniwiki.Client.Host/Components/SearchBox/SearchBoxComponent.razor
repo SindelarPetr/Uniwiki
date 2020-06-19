@@ -1,0 +1,338 @@
+﻿@using global::Shared.Extensions
+@using Uniwiki.Shared.RequestResponse
+@inherits UniwikiComponentBase
+
+<div class="rounded shadow-lg bg-white border-light" style="border: 3px solid">
+	<div class="d-flex mx-2">
+		<div class="my-auto text-center" style="width: 3rem">
+			@if (_searching)
+			{
+				<div class="spinner-border text-primary" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			}
+			else
+			{
+				<div>
+					<i class="fas fa-search fa-2x" style="color: #aaa"></i>
+				</div>
+			}
+		</div>
+		<form autocomplete="off" class="w-100" onsubmit="event.preventDefault(); false">
+			<input class="border-0 px-3  py-4 no-outline w-100" style="font-size: 1.5rem; height: 4rem" type="text" placeholder="@TextService.SearchBox_SearchCourse"
+				   value="@SearchText" @oninput="HandleSearchPosts" @ref="_searchTextInput" autofocus autocomplete="off" name="search" id="search" />
+		</form>
+	</div>
+
+	@* Filters *@
+	<div class="mx-3 mb-2 d-flex flex-wrap">
+
+		<button class="btn btn-secondary" type="button" @onclick="HandleFilterClicked"><i class="fas fa-filter mr-2"></i>@(StaticStateService.SelectedStudyGroup != null ? StaticStateService.SelectedStudyGroup.University.ShortName + "-" + StaticStateService.SelectedStudyGroup.ShortName : TextService.SearchBox_SelectGroup)</button>
+
+		@if (StaticStateService.SelectedStudyGroup != null)
+		{
+			<button class="btn btn-secondary ml-2 mr-2" type="button" @onclick="@(() => RemoveSelectedStudyGroup())">
+				<i class="fas fa-times"></i>
+			</button>
+		}
+
+		<button class="btn btn-secondary ml-auto" type="button" @onclick="HandleAddCourse">
+			<i class="fas fa-plus mr-2"></i>@TextService.AddCourse
+		</button>
+
+		<!--<div class="dropleft ml-auto">
+			<button class="btn btn-secondary" type="button" id="dropdownCreate" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<i class="fas fa-plus mr-2"></i>@TextService.Add
+			</button>
+			<div class="dropdown-menu" aria-labelledby="dropdownCreate">
+				<button class="dropdown-item" @onclick="HandleAddStudyGroup">@TextService.StudyGroup</button>-->
+		@*Show modal*@
+		<!--<button class="dropdown-item" @onclick="HandleAddCourse">@TextService.Course</button>
+			</div>
+		</div>-->
+	</div>
+	@* /Filters *@
+
+	<hr class="my-0" />
+
+	<div class="p-3">
+		@* Recent courses *@
+		@if (_recentCourses.Length > 0)
+		{
+			<div class="search-header mb-3">
+				<i class="fas fa-history mr-2"></i>@TextService.SearchBox_RecentCourses
+			</div>
+			@foreach (var course in _recentCourses.Reverse())
+			{
+				<CourseItemComponent Course="course" />
+			}
+		}
+		@* /Recent courses *@
+
+		@* No results placeholder *@
+		@if (!HasFoundCourses && !_searching && !string.IsNullOrWhiteSpace(_searchTextNeutralized))
+		{
+			<div class="d-flex flex-column align-items-center text-muted pb-5">
+				<i class="far fa-hand-peace fa-4x mb-4 mt-5 text-secondary"></i>
+				<h5 class="text-secondary">@TextService.SearchBox_NoResults()</h5>
+			</div>
+		}
+		@* /No results placeholder *@
+
+		@* No courses in group placeholder *@
+		@if (StaticStateService.SelectedStudyGroup != null && !HasFoundCourses && !_searching && string.IsNullOrWhiteSpace(_searchTextNeutralized))
+		{
+			<div class="text-center text-muted">
+				<i class="far fa-hand-peace fa-3x mb-3"></i>
+				<h5>@TextService.SearchBox_NoCoursesInGroup</h5>
+				<a class="btn btn-primary mt-3" href="@PageRoutes.AddCoursePage.BuildRoute()">@TextService.SearchBox_AddCourse</a>
+			</div>
+		}
+		@* /No courses in group placeholder *@
+
+		@* Default state placeholder *@
+		@if (!_searching && StaticStateService.SelectedStudyGroup == null && !HasFoundCourses && !_recentCourses.Any() && string.IsNullOrWhiteSpace(_searchTextNeutralized))
+		{
+			<div class="text-center text-muted">
+				<h5 class="mt-3">@TextService.SearchBox_DefaultPlaceholderText</h5>
+				<button class="btn btn-primary mt-3" type="button" @onclick="HandleFilterClicked">@TextService.SearchBox_ChooseStudyGroup</button>
+			</div>
+		}
+
+		@* Found courses *@
+		@if (HasFoundCourses)
+		{
+			<div class="search-header mb-3 @(_recentCourses.Any() ? "pt-2" : String.Empty)">
+				<i class="fas fa-folder mr-2"></i>@TextService.SearchBox_Courses
+			</div>
+
+			@foreach (var course in _foundCourses)
+			{
+				<CourseItemComponent Course="course" />
+			}
+		}
+		@* /Found courses *@
+	</div>
+</div>
+
+@code {
+	private CourseDto[] _foundCourses = new CourseDto[0];
+	private CourseDto[] _recentCourses = new CourseDto[0];
+	private CourseDto[] _recentCoursesFromStorage = new CourseDto[0];
+
+	private bool HasFoundCourses => _foundCourses.Length > 0;
+
+	[Inject] public IRequestSender RequestSender { get; set; }
+	[Inject] public IJsInteropService JsInteropService { get; set; }
+	[Inject] public IToastService ToastService { get; set; }
+	[Inject] public INavigationService NavigationService { get; set; }
+	[Inject] public ILoginService LoginService { get; set; }
+	[Inject] public IModalService ModalService { get; set; }
+	[Inject] public IStaticStateService StaticStateService { get; set; }
+	[Inject] public ILocalStorageManagerService LocalStorageManagerService { get; set; }
+
+	private ElementReference? _searchTextInput;
+
+	private string _searchTextNeutralized = string.Empty;
+	private string SearchText { get; set; } = String.Empty;
+
+	private int _searchOrder = 0;
+	private bool _searching;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		// For unauthenticated user get recent courses for the local storage
+		if (!LoginService.IsAuthenticated)
+		{
+			_recentCoursesFromStorage = (await LocalStorageManagerService.GetRecentCourses()).ToArray();
+
+
+			Console.WriteLine("Found recents:!!!!!!");
+			Console.WriteLine(_recentCoursesFromStorage.Length);
+		}
+
+		// Loads recent courses and courses from selected group
+		await UpdateSearchResults();
+
+
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+
+		if (firstRender)
+		{
+			await FocusSearchInput();
+		}
+	}
+
+	public async Task FocusSearchInput()
+	{
+		if (_searchTextInput != null)
+			await JsInteropService.FocusElementAsync(_searchTextInput.Value);
+	}
+
+	public async Task HandleSearchPosts(ChangeEventArgs e)
+	{
+		var newSearchTextNeutralized = e.Value.ToString().Neutralize();
+		if (_searchTextNeutralized == newSearchTextNeutralized)
+		{
+			return;
+		}
+
+		SearchText = e.Value.ToString();
+		_searchTextNeutralized = newSearchTextNeutralized;
+		StateHasChanged();
+
+		await UpdateSearchResults(true);
+	}
+
+	public async Task HandleCourseClicked(CourseDto course)
+	{
+		//await OnUniversitySelected(course.University, false);
+		await OnStudyGroupSelected(course.StudyGroup, false);
+	}
+
+	public async Task OnStudyGroupSelected(StudyGroupDto studyGroup, bool updateResults = true)
+	{
+		if (studyGroup.Id == StaticStateService.SelectedStudyGroup?.Id)
+			return;
+
+		StaticStateService.SetSelectedStudyGroup(studyGroup);
+
+		if (updateResults)
+		{
+			await UpdateSearchResults();
+		}
+
+		await FocusSearchInput();
+	}
+
+	public async Task RemoveSelectedStudyGroup()
+	{
+		StaticStateService.SetSelectedStudyGroup(null);
+		await UpdateSearchResults();
+		await FocusSearchInput();
+	}
+
+	public async Task UpdateSearchResults(bool wait = false)
+	{
+		_searching = true;
+		StateHasChanged();
+
+		// Get your order number
+		var order = ++_searchOrder;
+
+		// Wait if there will come someone right after
+		if (wait)
+			await Task.Delay(600);
+
+		// Do not do anything if the method is invoked multiple times
+		if (order != _searchOrder)
+			return;
+
+		var request = new GetSearchResultsRequestDto(SearchText, StaticStateService.SelectedStudyGroup?.University.Id, StaticStateService.SelectedStudyGroup?.Id);
+		var response = await RequestSender.SendRequestAsync(request, () =>
+		{
+			if (order != _searchOrder)
+				return;
+
+			_searching = false;
+			StateHasChanged();
+		});
+
+		// Do not do anything if the method is invoked multiple times
+		if (order != _searchOrder)
+			return;
+
+		// Show recent courses only when not searchnig
+		if (string.IsNullOrWhiteSpace(SearchText))
+		{
+			// Show recent courses
+			// if he is authenticated, then show the recieved recent courses
+			if (LoginService.IsAuthenticated)
+			{
+				_recentCourses = response.RecentCourses ?? new CourseDto[0];
+
+				// Save the recent courses to the local storage
+				if (response.RecentCourses != null && response.RecentCourses.Any())
+				{
+					await LocalStorageManagerService.SetRecentCourses(response.RecentCourses);
+					_recentCoursesFromStorage = response.RecentCourses;
+				}
+			}
+			else
+			{
+				// Show recent courses from the storage
+				_recentCourses = _recentCoursesFromStorage;
+			}
+		}
+		else
+		{
+			// Dont show any recent courses
+			_recentCourses = new CourseDto[0];
+		}
+
+		_foundCourses = response.Courses ?? new CourseDto[0];
+
+		_searching = false;
+
+		await FocusSearchInput();
+	}
+
+	public async Task HandleFilterClicked()
+	{
+		// Show modal window
+		var modal = ModalService.Show<SelectStudyGroupModal>(TextService.SelectStudyGroupModal_Title);
+		var result = await modal.Result;
+
+		// Check if the modal is canceled
+		if (result.Cancelled)
+		{
+			return;
+		}
+
+		// Get selected study group
+		var studyGroup = (StudyGroupDto)result.Data;
+		Console.WriteLine(studyGroup.LongName);
+
+		// Set the study group as selected
+		await OnStudyGroupSelected(studyGroup);
+	}
+
+	public async Task HandleAddStudyGroup()
+	{
+		// Check if user is logged in
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowLoginRequired(TextService);
+			return;
+		}
+
+		var modal = ModalService.Show<AddStudyGroupModal>(TextService.AddStudyGroupModal_Title);
+		var result = await modal.Result;
+
+		if (!result.Cancelled)
+		{
+			var studyGroup = (StudyGroupDto)result.Data;
+
+			await OnStudyGroupSelected(studyGroup);
+			await FocusSearchInput();
+		}
+	}
+
+	public void HandleAddCourse()
+	{
+		// Check if user is logged in
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowLoginRequired(TextService);
+			return;
+		}
+
+		NavigationService.NavigateTo(PageRoutes.AddCoursePage.BuildRoute());
+	}
+}

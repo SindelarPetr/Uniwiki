@@ -1,0 +1,33 @@
+Exercise 3.4
+
+1. Subtask
+Memoizer1: 12494458870.0 ns +/- 465411811.80, #2
+In seconds it is 12.49445887 s +/- 0.4654118118, which is deviation of 3.7%
+
+2. Subtask
+Memoizer2: 12563298840.0 ns +/- 583143812.58, #2
+In seconds it is 12.56329884 s +/- 0.58314381258, which is deviation of 4.6%
+
+3. Subtask
+Memoizer3: 9078462080.0 ns +/- 141500539.39, #2
+In seconds it is 9,07846208 s +/- 0.14150053939, which is deviation of 1.6%
+
+4. Subtask
+Memoizer4: 9199082855.0 ns +/- 56303581.67, #2
+In seconds it is 9.199082855 s +/- 0.05630358167, which is deviation of 0.6%
+
+5. Subtask
+Memoizer5: 9260953800.0 ns +/- 171251102.69, #2
+In seconds it is 9.2609538 s +/- 0.17125110269, which is deviation of 1.8%
+
+6. Subtask
+Memoizer0: 10139226640.0 ns +/- 385644545.76, 2#
+In seconds it is 10.13922664 s +/- 0.38564454576, which is deviation of 3.8%
+
+7. Subtask
+In this particular scenario the Memorizer3 performs the best. 
+
+The result somewhat agrees with Goetz's development. Memoizer1 has the problem that the entire compute method is synchronized, which is very conservative approach. Such synchronization harms scalability since just one computation can be made at a time. Memoizer2 solves the problem of Memoizer1 by using ConcurrentHashMap, but allows multiple computations to be made at a time, which in this case resulted in even worse performance than Memoizer1. Memoizer3 stores future task to save the progress of computation. This approach then results in the best performance. However, it has one defect and that is a small window perform multiple computations for the same value. This is solved in Memoizer4, which in this test is not faster, which means occurrences of computation of the same value did not frequently occur (but that can mean that we just had luck). Memoizer5 should be equal to Memoizer4, just rewritten to use Java 8 feature, so the time difference between Memoizer4 and Memoizer5 is minimal.
+
+8. Subtask
+To test the scalability we would need to measure the program while using different amounts of threads. That way we could plot a curve of performance of each Memoizer according to the number of threads used and see the best one. While working with threads we must be aware of the hardware limits the program is running on. For example if my PC has 4 cores, then using more than 4 threads a time will not have much effect, and in higher numbers of threads it can slow the program down. So for such a scalability experiment, it is necessary to have the right hardware as well. In terms of numbers, for which the scalability test should be made, it would be beneficial to use higher ranges and not just 2000.

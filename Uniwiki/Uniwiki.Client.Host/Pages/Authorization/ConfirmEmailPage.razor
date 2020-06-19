@@ -1,0 +1,91 @@
+﻿@page "/ConfirmEmail/{Email}"
+@inherits UniwikiComponentBase
+@implements IDisposable
+@using Uniwiki.Shared.RequestResponse.Authentication
+
+<div class="container my-5">
+	<div class="mx-auto card text-center shadow-lg" style="max-width: 25rem;">
+		<div class="card-header h2 py-4">
+			@TextService.ConfirmEmailPage_Title
+		</div>
+		<div class="card-body text-center p-3 d-flex flex-column">
+			<p>@TextService.ConfirmEmailPage_EmailSentMessage <strong>@Email</strong>.</p>
+			<p>@TextService.ConfirmEmailPage_EmailNotReceivedMessage</p>
+
+			<a class="btn btn-primary" href="@PageRoutes.LoginPage.BuildRoute()">@TextService.Button_LogIn</a>
+		</div>
+		<div class="card-footer">
+			@if (_isBusy)
+			{
+				<span class="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true"></span>
+			}
+			else
+			{
+				<div class="mt-2"><button class="btn btn-link @(PeriodicalTimer.PeriodsLeft > 0 ? "disabled" : "")" type="button" @onclick="ResendEmail">@TextService.ConfirmEmailPage_SendEmailAgain @(PeriodicalTimer.PeriodsLeft > 0 ? 
+						TextService.ConfirmEmailPage_InXSeconds(PeriodicalTimer.PeriodsLeft) : "")</button></div>
+			}
+			<div class="mt-3"><a href="@PageRoutes.RegisterPage.BuildRoute()">@TextService.ConfirmEmailPage_SelectAnotherEmail</a></div>
+			<div class="mt-3"><a href="@Constants.FacebookLink">@TextService.ConfirmEmailPage_ReportProblem</a></div>
+		</div>
+	</div>
+</div>
+
+@code
+{
+
+	[Inject] public IRequestSender RequestSender { get; set; }
+	[Inject] public ILoginService LoginService { get; set; }
+	[Inject] public IToastService ToastService { get; set; }
+	[Inject] public IPeriodicalTimer PeriodicalTimer { get; set; }
+	[Inject] public INavigationService NavigationService { get; set; }
+
+	[Parameter] public string Email { get; set; }
+
+	private bool _isBusy;
+
+	protected override void OnInitialized()
+	{
+		StartTimer();
+
+		base.OnInitialized();
+
+		if (LoginService.IsAuthenticated)
+			NavigationService.NavigateTo(PageRoutes.HomePage.BuildRoute());
+	}
+
+	public async Task ResendEmail()
+	{
+		if (_isBusy || PeriodicalTimer.PeriodsLeft > 0)
+			return;
+
+		_isBusy = true;
+
+		// Create request
+		var request = new ResendConfirmationEmailRequestDto(Email);
+
+		// Send the request
+		await RequestSender.SendRequestAsync(request, () =>
+		{
+			_isBusy = false;
+			StateHasChanged();
+		});
+
+		ToastService.ShowSuccess("Potvrzovací email byl znovu odeslán", "Úspěšné odeslání");
+
+		StartTimer();
+	}
+
+	private void StartTimer()
+	{
+		PeriodicalTimer.Start(TimeSpan.FromSeconds(1), (int)Constants.ResendRegistrationEmailMinTime.TotalSeconds, () =>
+		{
+			StateHasChanged();
+		});
+	}
+
+	public void Dispose()
+	{
+		PeriodicalTimer.Stop();
+	}
+
+}

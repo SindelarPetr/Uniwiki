@@ -1,0 +1,587 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Blazored.LocalStorage;
+using Blazored.Toast.Services;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using Server.Appliaction.ServerActions;
+using Shared.Dtos;
+using Shared.Exceptions;
+using Shared.RequestResponse;
+using Uniwiki.Client.Host;
+using Uniwiki.Client.Host.Pages;
+using Uniwiki.Client.Host.Pages.Authorization;
+using Uniwiki.Client.Host.Services;
+using Uniwiki.Client.Host.Services.Abstractions;
+using Uniwiki.Server.Application.Services.Abstractions;
+using Uniwiki.Server.Host;
+using Uniwiki.Server.Host.Mvc;
+using Uniwiki.Server.Host.Services.Abstractions;
+using Uniwiki.Shared;
+using Uniwiki.Shared.RequestResponse.Authentication;
+using Uniwiki.Shared.Services.Abstractions;
+using Uniwiki.Tests.Extensions;
+using Program = Uniwiki.Client.Host.Program;
+using TextService = Uniwiki.Client.Host.Services.TextService;
+
+namespace Uniwiki.Tests
+{
+    [TestClass]
+    public class ComplexTests
+    {
+        private FakeEmailService _emailService;
+        private FakeTimeService _timeService;
+        private IRequestSender _requestSender;
+        private FakeNavigationService _navigationService;
+        private ILoginService _loginService;
+        private TextService _textService;
+
+        static ComplexTests()
+        {
+           Program.IsTest = true;
+        }
+
+        private ServiceProvider SetupDefaultDependencies()
+        {
+            ServiceCollection services = new ServiceCollection();
+            services.AddUniwikiClientHostServices();
+            services.AddHostServices();
+
+            services.AddScoped<IEmailService, FakeEmailService>();
+            services.AddSingleton<ITimeService, FakeTimeService>();
+            
+            // _timeService = new FakeTimeService(new LikeTime(2020, 2, 27));
+
+            // Arrange client
+            services.AddScoped<IHttpService, FakeHttpService>();
+            services.AddSingleton<IToastService, FakeToastService>();
+            services.AddSingleton<INavigationService, FakeNavigationService>();
+            services.AddSingleton<ILocalStorageService, FakeLocalStorageService>();
+            services.AddSingleton<IJsInteropService, FakeJsInteropService>();
+
+            var provider = services.BuildServiceProvider();
+
+            _emailService = (FakeEmailService)provider.GetService<IEmailService>();
+            _timeService = (FakeTimeService) provider.GetService<ITimeService>();
+            _timeService.SetNow(new DateTime(2020, 4, 12, 4, 13, 44));
+
+            _requestSender = provider.GetService<IRequestSender>();
+            _navigationService = (FakeNavigationService)provider.GetService<INavigationService>();
+            _loginService = provider.GetService<ILoginService>();
+            _textService = provider.GetService<TextService>();
+
+            return provider;
+        }
+
+        [TestMethod]
+        public async Task Register_Login_ChangePassword_Logout_ForgottenPassword_Login_ShouldBeSuccessful()
+        {
+            // --- Arrange ---
+            var provider = SetupDefaultDependencies();
+            
+            // Arrange data for testing
+            var email = "petr.svetr@gmail.com";
+            var password = "password123";
+            var newPassword = "dogs987";
+            var newNewPassword = "cats987";
+            var name = "petr";
+            var surename = "sindelar";
+
+            // --- Act ---
+            var registerRequestDto = new RegisterRequestDto(email, name, surename, password, password);
+            var registerPage = CreateRegisterPage(registerRequestDto);
+            await registerPage.Register();
+            var registerSecret = _emailService.RegisterSecrets[0];
+
+            var confirmEmailPage = CreateEmailConfirmedPage(registerSecret.ToString(), email);
+            await confirmEmailPage.ConfirmEmail();
+
+            var loginRequestDto = new LoginRequestDto(email, password); // REAL
+            var loginPage = CreateLoginPage(loginRequestDto); // REAL
+            await loginPage.Login();
+
+            var passwordRequestDto = new ChangePasswordRequestDto(password, newPassword, newPassword);
+            var changePasswordPage = CreateChangePasswordPage(passwordRequestDto);
+            await changePasswordPage.ChangePassword();
+
+            var loginService = provider.GetService<ILoginService>();
+            var profilePage = CreateProfilePage(loginService.User.NameIdentifier);
+            await profilePage.Logout();
+
+            var restorePasswordPageForm = new RestorePasswordRequestDto(email);
+            var restorePasswordPage = CreateRestorePasswordPage(restorePasswordPageForm);
+            await restorePasswordPage.RestorePassword();
+            var restorePasswordSecret = _emailService.RestorePasswordSecrets[0];
+
+            var newPasswordRequestDto = new CreateNewPasswordRequestDto(newNewPassword, restorePasswordSecret, newNewPassword);
+            var createNewPasswordPage = CreateCreateNewPasswordPage(newPasswordRequestDto, restorePasswordSecret.ToString());
+            await createNewPasswordPage.CreateNewPassword();
+            
+            loginRequestDto.Password = newNewPassword;
+            await loginPage.Login();
+
+            // --- Assert ---
+            // There should be no exception thrown
+        }
+
+        [TestMethod]
+        public async Task TestNegativeScenarios()
+        {
+            // --- Arrange ---
+            var provider = SetupDefaultDependencies();
+
+            // Arrange data for testing
+            var email1 = "petr.svetr@gmail.com";
+            var password1 = "password123";
+            var newPassword1 = "dogs987";
+            var newNewPassword1 = "cats987";
+            var name1 = "petr";
+            var surename1 = "sindelar";
+
+            var email2 = "marek.koko@gmail.com";
+            var password2 = "porjjjjd123";
+            var newPassword2 = "dogskoko987";
+            var newNewPassword2 = "catkokos987";
+            var name2 = "marek";
+            var surename2 = "koko";
+
+            var email3 = "zirafa@gmail.com";
+            var password3 = "obecnazirafa";
+            var newPassword3 = "slonak987";
+            var newNewPassword3 = "zirafafa987";
+            var name3 = "zirafa";
+            var surename3 = "obecna";
+
+            var someSecret = Guid.Parse("b6be6d12-4d7d-4cb0-a59c-fc5c0c2179e4");
+
+            // --- Act ---
+            // Try login without registration
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateLoginPage(new LoginRequestDto(email1, password1)).Login());
+            // Try to validate email without registration
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateEmailConfirmedPage(someSecret.ToString(), email1).ConfirmEmail());
+            // Try to change password without login
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateChangePasswordPage(new ChangePasswordRequestDto(password1, "sss", "sss")).ChangePassword());
+            // Try to restore password of non registered user
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRestorePasswordPage(new RestorePasswordRequestDto(email1)).RestorePassword());
+            // Create new password of non registered user
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(new CreateNewPasswordRequestDto("www", Guid.Empty, "wwww"),someSecret.ToString()).CreateNewPassword());
+
+            // Register user 1
+            await CreateRegisterPage(new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register();
+            var registerSecret1 = _emailService.RegisterSecrets.Last();
+
+            // Try login without confirming the email
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateLoginPage(new LoginRequestDto(email1, password1)).Login());
+            // Try login without registration
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateLoginPage(new LoginRequestDto(email2, password2)).Login());
+            // Try to validate email with wrong secret
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateEmailConfirmedPage(someSecret.ToString(), email2).ConfirmEmail());
+            // Try to change password without login
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateChangePasswordPage(new ChangePasswordRequestDto(password1, "sss", "sss")).ChangePassword());
+            // Try to restore password of non registered user
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRestorePasswordPage(new RestorePasswordRequestDto(email2)).RestorePassword());
+            // Create new password of non registered user
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(new CreateNewPasswordRequestDto("www", Guid.NewGuid(), "wwww"), someSecret.ToString()).CreateNewPassword());
+
+            // Register user 1 once more (before he confirms the email, before its time for resending the email)
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register());
+
+            // Move time
+            _timeService.SetNow(_timeService.Now.Add(Constants.ResendRegistrationEmailMinTime.Add(TimeSpan.FromSeconds(5))));
+
+            // Try to register again
+            await CreateRegisterPage(new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register();
+            var registerSecret1b = _emailService.RegisterSecrets.Last();
+
+            // Try to confirm the email of user 1 with his old confirmation email
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateEmailConfirmedPage(registerSecret1.ToString(), email1).ConfirmEmail());
+            
+             // Confirm the email of user 1 with the new confirmation email
+            await CreateEmailConfirmedPage(registerSecret1b.ToString(), email1).ConfirmEmail();
+
+            // Try to register the user
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register());
+
+            // Login the user 1
+            await CreateLoginPage(new LoginRequestDto(email1, password1)).Login();
+
+            // Change the password of user 1
+            await CreateChangePasswordPage(new ChangePasswordRequestDto(password1, newPassword1, newPassword1)).ChangePassword();
+
+            var loginService = provider.GetService<ILoginService>();
+            // Logout
+            await CreateProfilePage(loginService.User.NameIdentifier).Logout();
+
+            // Restore password
+            await CreateRestorePasswordPage(new RestorePasswordRequestDto(email1)).RestorePassword();
+            var restorePasswordSecret = _emailService.RestorePasswordSecrets.Last();
+
+            // Create new password
+            var createNewPasswordPageForm = new CreateNewPasswordRequestDto(newNewPassword1, restorePasswordSecret, newNewPassword1);
+            var createNewPasswordPage = CreateCreateNewPasswordPage(createNewPasswordPageForm, restorePasswordSecret.ToString());
+            await createNewPasswordPage.CreateNewPassword();
+
+            // Login using the new password
+            await CreateLoginPage(new LoginRequestDto(email1, newNewPassword1)).Login();
+        }
+
+        [TestMethod]
+        public void CanInjectDependencies()
+        {
+            var provider = SetupDefaultDependencies();
+            
+            var searchBox = new SearchBox();
+
+            provider.InjectDependencies(searchBox);
+
+            Assert.IsNotNull(searchBox.LoginService);
+            Assert.IsNotNull(searchBox.NavigationService);
+            Assert.IsNotNull(searchBox.RequestSender);
+            Assert.IsNotNull(searchBox.ToastService);
+            Assert.IsNotNull(searchBox.JsInteropService);
+        }
+
+        private CreateNewPasswordPage CreateCreateNewPasswordPage(CreateNewPasswordRequestDto createNewPasswordPageForm, string secret)
+        {
+            return new CreateNewPasswordPage(_requestSender, _navigationService, _loginService, secret,
+                createNewPasswordPageForm, _textService);
+        }
+
+        private RegisterPage CreateRegisterPage(RegisterRequestDto registerPageForm)
+        {
+            return new RegisterPage(_requestSender, _navigationService, _loginService, registerPageForm, _textService);
+        }
+
+        private EmailConfirmedPage CreateEmailConfirmedPage(string secret, string email)
+        {
+            return new EmailConfirmedPage(secret, _requestSender, _loginService, _navigationService, _textService, email);
+        }
+
+        private LoginPage CreateLoginPage(LoginRequestDto loginPageForm)
+        {
+            return new LoginPage(_loginService, _navigationService, loginPageForm, _textService);
+        }
+
+        private ChangePasswordPage CreateChangePasswordPage(ChangePasswordRequestDto changePasswordPageForm)
+        {
+            return new ChangePasswordPage(_requestSender, _navigationService, _loginService, changePasswordPageForm, _textService);
+        }
+
+        private ProfilePage CreateProfilePage(string nameIdentifier)
+        {
+            return new ProfilePage(_requestSender, _loginService, _navigationService,
+                nameIdentifier, _textService);
+        }
+
+        private RestorePasswordPage CreateRestorePasswordPage(RestorePasswordRequestDto restorePasswordPageForm)
+        {
+            return new RestorePasswordPage(_navigationService, _requestSender, restorePasswordPageForm, _loginService, _textService);
+        }
+    }
+
+    class FakeHttpService : IHttpService
+    {
+        private readonly IMvcProcessor _mvcProcessor;
+        private readonly IRequestDeserializer _requestDeserializer;
+
+        public FakeHttpService(IMvcProcessor mvcProcessor, IRequestDeserializer requestDeserializer)
+        {
+            _mvcProcessor = mvcProcessor;
+            _requestDeserializer = requestDeserializer;
+        }
+
+        public async Task<HttpResponseMessage> PostAsync(string apiServer, HttpContent data)
+        {
+            // Read the provided data
+            var stringData = await data.ReadAsStringAsync();
+
+            // Deserialize the given data
+            var dataForServer = JsonConvert.DeserializeObject<DataForServer>(stringData);
+
+            var inputContext = new InputContext(dataForServer.AccessToken, Guid.NewGuid(), dataForServer.Language, ClientConstants.AppVersionString);
+
+            var request = _requestDeserializer.Deserialize(dataForServer.Request, dataForServer.Type);
+
+            // Push it to the MVC module
+            var response = await _mvcProcessor.Process(request, inputContext);
+
+            // Serialize response (to simulate real reciving of a request)
+            var serializedResponse = JsonConvert.SerializeObject(response);
+
+            // Create content for http response
+            var stringContent = new StringContent(serializedResponse);
+
+            // Create http response to return
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK) { Content = stringContent };
+
+            return httpResponse;
+        }
+    }
+
+    class FakeNavigationService : INavigationService
+    {
+        public FakeNavigationService(List<string> navigationStack = null)
+        {
+            NavigationStack = navigationStack ?? new List<string>();
+        }
+
+        public List<string> NavigationStack { get; }
+
+        public void NavigateTo(string url, bool forceLoad = false)
+        {
+            NavigationStack.Add(url);
+        }
+
+        public Task Back()
+        {
+            if(NavigationStack.Any())
+                NavigationStack.RemoveAt(NavigationStack.Count - 1);
+
+            return Task.CompletedTask;
+        }
+
+        public void NavigateToTheCurrentUrl()
+        {
+            
+        }
+
+        public void ForceReload()
+        {
+            
+        }
+
+        public string CurrentUrl => NavigationStack.Last();
+    }
+
+    class FakeServerActionResolver : IServerActionResolver
+    {
+        private readonly IServerAction[] _serverActions;
+        private readonly Dictionary<Type, IServerAction> _requestsAndServerActions;
+
+        public FakeServerActionResolver(params IServerAction[] serverActions)
+        {
+            _serverActions = serverActions;
+            _requestsAndServerActions = new Dictionary<Type, IServerAction>();
+            foreach (var serverAction in serverActions)
+            {
+                var type = serverAction.GetType();
+                var baseType = type.BaseType;
+
+                if(baseType == null)
+                    Assert.Fail("The serverAction with type " + type.FullName + " does not have a baseType");
+
+                var genericArguments = baseType.GetGenericArguments();
+
+                if(genericArguments.Length == 1)
+                    Assert.Fail("The serverAction with type " + type.FullName + " does not have one generic argument.");
+
+                _requestsAndServerActions.Add(genericArguments[0], serverAction);
+            }
+        }
+
+        public IServerAction Resolve(IRequest request)
+        {
+            var requestType = request.GetType();
+            var serverAction = _requestsAndServerActions[requestType];
+            return serverAction;
+        }
+    }
+
+    class FakeEmailService : IEmailService
+    {
+        public List<Guid> RestorePasswordSecrets { get; }
+        public List<Guid> RegisterSecrets { get; }
+
+        public FakeEmailService()
+        {
+            RestorePasswordSecrets = new List<Guid>();
+            RegisterSecrets = new List<Guid>();
+        }
+
+        public Task SendRestorePasswordEmail(string recipientEmail, Guid secret)
+        {
+            RestorePasswordSecrets.Add(secret);
+            return Task.CompletedTask;
+        }
+
+        public Task SendRegisterEmail(string recipientEmail, Guid secret)
+        {
+            RegisterSecrets.Add(secret);
+            return Task.CompletedTask;
+        }
+    }
+
+    class FakeToastService : IToastService
+    {
+        public void ShowInfo(string message, string heading = "")
+        {
+            
+        }
+
+        public void ShowSuccess(string message, string heading = "")
+        {
+            
+        }
+
+        public void ShowWarning(string message, string heading = "")
+        {
+            
+        }
+
+        public void ShowError(string message, string heading = "")
+        {
+            
+        }
+
+        public void ShowToast(ToastLevel level, string message, string heading = "")
+        {
+            
+        }
+
+        public event Action<ToastLevel, string, string> OnShow;
+    }
+
+    class FakeTimeService : ITimeService
+    {
+        public DateTime Now { get; private set; }
+
+        public FakeTimeService()
+        {
+            
+        }
+
+        public void SetNow(DateTime newTime)
+        {
+            Now = newTime;
+        }
+
+    }
+
+    class FakePeriodicalTimer : IPeriodicalTimer
+    {
+        public int PeriodsLeft { get; set; }
+
+        public void Start(TimeSpan period, int periods, Action periodElapsed)
+        {
+            
+        }
+
+        public void Stop()
+        {
+            
+        }
+    }
+
+    class FakeLocalStorageService : ILocalStorageService
+    {
+        private readonly Dictionary<string, object> _storage;
+        public FakeLocalStorageService()
+        {
+            _storage = new Dictionary<string, object>();
+        }
+
+        public Task ClearAsync()
+        {
+            _storage.Clear();
+
+            return Task.CompletedTask;
+        }
+
+        public Task<T> GetItemAsync<T>(string key)
+        {
+            return Task.FromResult((T) _storage[key]);
+        }
+
+        public Task<string> KeyAsync(int index)
+        {
+            return Task.FromResult(_storage.Keys.ElementAt(index));
+        }
+
+        public Task<bool> ContainKeyAsync(string key)
+        {
+            return Task.FromResult(_storage.ContainsKey(key));
+
+        }
+
+        public Task<int> LengthAsync()
+        {
+            return Task.FromResult(_storage.Count);
+        }
+
+        public Task RemoveItemAsync(string key)
+        {
+            _storage.Remove(key);
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetItemAsync(string key, object data)
+        {
+            _storage[key] = data;
+
+            return Task.CompletedTask;
+        }
+
+        public event EventHandler<ChangingEventArgs> Changing;
+        public event EventHandler<ChangedEventArgs> Changed;
+    }
+
+    public class FakeJsRuntime : IJSRuntime
+    {
+        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object[] args)
+        {
+            return new ValueTask<TValue>(default(TValue));
+        }
+
+        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object[] args)
+        {
+            return new ValueTask<TValue>(default(TValue));
+        }
+    }
+
+    public class FakeJsInteropService : IJsInteropService
+    {
+        public ValueTask FocusElementAsync(ElementReference element)
+        {
+            return new ValueTask();
+        }
+
+        public ValueTask HideCollapse(string elementId)
+        {
+            return new ValueTask();
+        }
+
+        public ValueTask<bool> NavigationBack()
+        {
+            return new ValueTask<bool>(true);
+        }
+
+        public ValueTask<string> GetBrowserLanguage()
+        {
+            return new ValueTask<string>("en");
+        }
+
+        public ValueTask ScrollIntoView(string elementId)
+        {
+            return new ValueTask();
+        }
+
+        public ValueTask SetScrollCallback(DotNetObjectReference<ScrollService> netRef)
+        {
+            return new ValueTask();
+        }
+
+        public ValueTask SetHeightToInitial(ElementReference element)
+        {
+            return new ValueTask();
+        }
+    }
+}

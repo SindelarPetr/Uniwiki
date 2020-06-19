@@ -1,0 +1,91 @@
+﻿@using System.IO
+@inherits UniwikiComponentBase
+
+@if (IsEditable)
+{
+	<EditForm Model="File">
+		<MyFluentValidator></MyFluentValidator>
+		<div class="d-flex mb-2">
+			<InputText class="form-control d-flex btn-block text-left" type="text" @bind-Value="File.OriginalName" maxlength="@Constants.Validations.FileNameMaxLength" />
+			<button class="btn btn-danger ml-2" type="button" @onclick="HandleRemoveFile">
+				<i class="fas fa-trash"></i>
+			</button>
+			<button class="btn btn-secondary ml-2 @(PeriodicalTimer.IsRunning ? "disabled" : string.Empty)" type="button" @onclick="HandleDownload">
+				@if (PeriodicalTimer.IsRunning)
+				{
+					<div>
+						<span>@PeriodicalTimer.PeriodsLeft&nbsp;s</span>
+					</div>
+				}
+				else
+				{
+					<div>
+						<i class="fas fa-download"></i>
+					</div>
+				}
+			</button>
+		</div>
+		<ValidationMessage class="mb-2" For="@(() => File.OriginalName)" />
+	</EditForm>
+}
+else
+{
+	<button class="btn btn-secondary d-flex btn-block mb-2 @(PeriodicalTimer.IsRunning ? "disabled" : string.Empty)" type="button" @onclick="HandleDownload">
+		<span class="mr-2 dont-break-out">@File.OriginalName</span>
+		@if (PeriodicalTimer.IsRunning)
+		{
+			<span class="mr-2">(@PeriodicalTimer.PeriodsLeft s)</span>
+		}
+		<span class="ml-auto">@TextService.FileSize(File.Size)</span>
+	</button>
+}
+
+@code {
+	[Inject] ILoginService LoginService { get; set; }
+	[Inject] IJsInteropService JsInteropService { get; set; }
+	[Inject] IPeriodicalTimer PeriodicalTimer { get; set; }
+	[Inject] IJSRuntime JsRuntime { get; set; }
+	[Inject] IModalService ModalService { get; set; }
+
+	[Parameter] public PostFileDto File { get; set; }
+
+	[Parameter] public Func<PostFileDto, Task>? OnRemove { get; set; }
+
+	private bool IsEditable => OnRemove != null;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+	}
+
+	private bool IsValidFileName(string name)
+	{
+		return name.All(c => !Path.GetInvalidFileNameChars().Contains(c));
+	}
+
+	private async Task HandleDownload()
+	{
+		if (PeriodicalTimer.PeriodsLeft > 0 || !LoginService.IsAuthenticated)
+		{
+			return;
+		}
+
+		PeriodicalTimer.Start(TimeSpan.FromSeconds(1), Constants.DownloadAgainTime.Seconds, HandleTimerTick);
+
+		var url = ApiRoutes.UploadController.GetPostFile(File.Id, LoginService.LoginToken.SecondaryTokenId, File.OriginalName, TextService.Language);
+
+		await JsRuntime.InvokeVoidAsync("interopJsFunctions.WindowOpen", url);
+	}
+
+	private void HandleTimerTick()
+	{
+		StateHasChanged();
+	}
+
+	private async Task HandleRemoveFile()
+	{
+		// Ask if user is sure
+		if (await ModalService.Confirm(TextService.Modal_ConfirmPostFileRemoval(File.OriginalName)))
+			await OnRemove(File);
+	}
+}

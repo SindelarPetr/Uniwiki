@@ -1,0 +1,296 @@
+﻿@inherits UniwikiComponentBase
+@using Uniwiki.Client.Host.Extensions
+@using Uniwiki.Shared.RequestResponse
+
+<div class="mb-3 shadow-lg post bg-white rounded border" id="@Post.Id">
+	<div class="p-3">
+		@if (_editMode)
+		{
+			<EditPostComponent AllPostTypes="AllPostTypes" CourseId="CourseId" PostToEdit="Post" OnCommitPost="HandleCommitPost" />
+		}
+		else
+		{
+	<div class="d-flex mb-3">
+		<a href="@PageRoutes.ProfilePage.BuildRoute(Post.Author.NameIdentifier)">
+			<img src="@Post.Author.ProfilePictureSrc"
+				 alt="Profile picture"
+				 class="rounded-circle border border-light mr-2"
+				 style="width: 3rem; height: 3rem; object-fit: cover" />
+		</a>
+		<div class="my-auto mr-2">
+			<a href="@PageRoutes.ProfilePage.BuildRoute(Post.Author.NameIdentifier)">
+				<h6 class="">@Post.Author.FullName</h6>
+			</a>
+			<span class="text-secondary my-auto ml-auto dont-break-out">@(Post.PostType)</span>
+		</div>
+
+
+		<h6 class="card-subtitle text-secondary ml-3 my-auto">@Post.CreationTime.ToPassedTimeString(TimeService, TextService)</h6>
+		@if (LoginService.IsAuthenticated && Post.Author.Id == LoginService.User.Id)
+				{
+		<div class="dropleft d-flex ml-auto">
+			<button class="btn border-0 btn-outline-secondary my-auto" type="button" id="contextBtn-@Post.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+			<div class="dropdown-menu" aria-labelledby="contextBtn-@Post.Id">
+				<button class="dropdown-item" type="button" @onclick="HandleEditPost">@TextService.Edit</button>
+				<button class="dropdown-item" type="button" @onclick="HandleRemovePost">@TextService.Remove</button>
+			</div>
+		</div>
+				}
+	</div>
+
+			<p class="lead text-wrap mb-3">
+				<pre class="mb-0">@Post.Text</pre>
+			</p>
+
+			@if (_showFiles)
+			{
+				@if (LoginService.IsAuthenticated)
+				{
+					@* Post files *@
+					@foreach (var file in Post.Files)
+					{
+						<PostFileComponent File="file" />
+					}
+					@* /Post files *@
+				}
+				else
+				{
+					<div class="d-flex align-items-center mb-3">
+						<a class="btn btn-primary mr-2 font-weight-bold" href="@PageRoutes.LoginPage.BuildRoute()">Log in</a>
+						<span class="font-weight-bold">to show the files</span>
+					</div>
+				}
+			}
+
+			@if (Post.NumberOfFiles > 0)
+			{
+				<button class="my-auto btn btn-link ml-0 pl-0" type="button" @onclick="@(() => _showFiles = !_showFiles)">@TextService.CoursePage_NumberOfFiles(Post.NumberOfFiles)</button>
+			}
+		}
+	</div>
+
+	<hr class="my-0" />
+	<div class="d-flex align items-center mx-3 py-3">
+
+		@if (Post.LikedByClient)
+		{
+			<button class="btn btn-link text-danger font-weight-bold" type="button" @onclick="HandleUnlikePost">
+				<i class="fas fa-heart fa-lg mr-1"></i> @Post.LikesCount
+			</button>
+		}
+		else
+		{
+			<button class="btn btn-link text-secondary" type="button" @onclick="HandleLikePost">
+				<i class="far fa-heart fa-lg mr-1"></i> @Post.LikesCount
+			</button>
+		}
+		<button class="btn btn-link text-secondary" type="button" @onclick="HandleCommentCountClick">
+			<i class="far fa-comment-alt fa-lg mr-1"></i> @Post.PostComments.Length
+		</button>
+	</div>
+
+	@if (_showComments)
+	{
+
+		@if (Post.PostComments.Any())
+		{
+			<hr class="mt-0 mx-0 mb-3" />
+			@for (var i = 0; i < Post.PostComments.Length; i++)
+			{
+				var comment = Post.PostComments[i];
+				<PostCommentComponent Comment="@comment" OnCommentModified="HandleOnCommentModified" />
+				@if (i < Post.PostComments.Length - 1)
+				{
+					<hr class="mb-3 mt-0 mx-3" />
+				}
+			}
+		}
+	}
+
+	@if (_showComments || !Post.PostComments.Any())
+	{
+		<hr class="m-0" />
+		<div class="mx-3 d-flex my-3">
+			@if (LoginService.IsAuthenticated)
+			{
+				<img src="@LoginService.User.ProfilePictureSrc" alt="Profile picture" class="rounded-circle border border-light mr-2" style="width: 2rem; height: 2rem; object-fit: cover" />
+			}
+			<textarea class="form-control mr-2" placeholder="@TextService.AddComent" oninput="this.style.height = Math.max(this.scrollHeight) + 'px'" style="overflow-y: hidden" rows="1" @bind="_commentText" @ref="_commentTextInput"></textarea>
+			<button class="btn btn-secondary mb-auto @(_sendingComment ? "disabled" : String.Empty)" @onclick="HandleSendComment">
+				@if (_sendingComment)
+				{
+					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+				}
+				else
+				{
+					<span><i class="fas fa-paper-plane fa-lg"></i></span>
+				}
+			</button>
+		</div>}
+
+</div>
+@code {
+	[Inject] ILoginService LoginService { get; set; }
+	[Inject] ITimeService TimeService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; }
+	[Inject] IJsInteropService JsInteropService { get; set; }
+	[Inject] IToastService ToastService { get; set; }
+	[Inject] IModalService ModalService { get; set; }
+
+	[Parameter] public Guid CourseId { get; set; }
+	[Parameter] public string[] AllPostTypes { get; set; }
+	[Parameter] public PostDto Post { get; set; }
+	[Parameter] public EventCallback OnRemoved { get; set; }
+
+	private bool _showFiles = false;
+
+	private bool _editMode = false;
+
+	private bool _showComments = false;
+	private bool _focusCommentTextInput = false;
+
+
+	private string _commentText = String.Empty;
+	private bool _sendingComment = false;
+	private bool IsSendCommentDisabled => _sendingComment || string.IsNullOrWhiteSpace(_commentText);
+
+	private ElementReference? _commentTextInput;
+
+	private bool _removing = false;
+
+	private void HandleEditPost()
+	{
+		_editMode = true;
+	}
+
+	private async Task HandleCommitPost(EditPostRequestDto editPostRequest)
+	{
+		// Check if user is logged in
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			return;
+		}
+
+		var response = await RequestSender.SendRequestAsync(editPostRequest);
+
+		await JsInteropService.ScrollIntoView(Post.Id.ToString());
+
+		Post = response.EdittedPost;
+
+		_editMode = false;
+
+		StateHasChanged();
+	}
+
+	public async Task HandleLikePost()
+	{
+		// Check if user is logged in
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			return;
+		}
+
+		// Create request
+		var request = new LikePostRequestDto(Post.Id);
+
+		// Send request
+		var response = await RequestSender.SendRequestAsync(request);
+
+		// Display result
+		Post = response.Post;
+
+	}
+
+	public async Task HandleUnlikePost()
+	{
+		// Check if user is logged in
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			return;
+		}
+
+		// Create request
+		var request = new UnlikePostRequestDto(Post.Id);
+
+		// Send request
+		var response = await RequestSender.SendRequestAsync(request);
+
+		// Display result
+		Post = response.Post;
+	}
+
+	public async Task HandleSendComment()
+	{
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			return;
+		}
+
+		if (IsSendCommentDisabled)
+		{
+			return;
+		}
+
+		_sendingComment = true;
+		StateHasChanged();
+
+		var request = new AddCommentRequestDto(Post.Id, _commentText);
+
+		var response = await RequestSender.SendRequestAsync(request, () =>
+		{
+			_sendingComment = false;
+			StateHasChanged();
+		});
+
+		_showComments = true;
+		_commentText = String.Empty;
+		if (_commentTextInput.HasValue)
+			await JsInteropService.SetHeightToInitial(_commentTextInput.Value);
+		Post = response.Post;
+	}
+
+	/// <summary>
+	/// Focuses the text area for inserting the comment text.
+	/// </summary>
+	public void HandleCommentCountClick()
+	{
+		_showComments = !_showComments;
+		_focusCommentTextInput = _showComments;
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+	}
+
+	public void HandleOnCommentModified(PostDto modifiedPost)
+	{
+		Post = modifiedPost;
+		StateHasChanged();
+	}
+
+	public async Task HandleRemovePost()
+	{
+		// Check if user is authorized for it
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			return;
+		}
+
+		// Check if user is sure about it
+		if(!await ModalService.Confirm(TextService.Modal_ConfirmPostRemoval))
+			return;
+
+		var request = new RemovePostRequestDto(Post.Id);
+
+		await RequestSender.SendRequestAsync(request);
+
+		await OnRemoved.InvokeAsync(null);
+	}
+
+}

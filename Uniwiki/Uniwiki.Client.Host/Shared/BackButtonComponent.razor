@@ -1,0 +1,12 @@
+﻿<button class="btn btn-link text-secondary pl-0 pr-4 my-auto" type="button" @onclick="HandleClick">
+	<i class="fas fa-arrow-left fa-lg"></i>
+</button>
+
+@code {
+	[Inject] INavigationService NavigationService { get; set; }
+
+	public async Task HandleClick()
+	{
+		await NavigationService.Back();
+	}
+}

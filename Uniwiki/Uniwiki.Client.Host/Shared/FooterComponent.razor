@@ -1,0 +1,49 @@
+﻿@using global::Shared
+@inherits UniwikiComponentBase
+
+<footer class="bg-dark">
+	<div class="text-secondary py-3 d-flex justify-content-between container flex-column flex-sm-row py-4">
+		<div class="mx-auto ml-sm-0">
+			<a class="btn btn-link text-secondary pl-0 hover-light py-0" href="@Constants.FacebookLink" target="_blank"><i class="fab fa-facebook-f mr-2"></i>Facebook</a>
+		</div>
+		<div class="mx-auto ml-5 my-4 my-sm-0 align-self-center">&copy; Uniwiki (@ClientConstants.AppVersionString)</div>
+		<div class="mx-auto mr-sm-0 mt-sm-0 mt-2">
+			<i class="fas fa-globe-europe mr-2 text-white fa-lg"></i>
+			<span class="d-inline-block">
+
+				<select class="form-control form-control-sm bg-dark text-light border-light" @onchange="OnChangeCurrentLang">
+					<option value="@((int)Language.English)" selected="@(_currentLang == Language.English)">English</option>
+					<option value="@((int)Language.Czech)" selected="@(_currentLang == Language.Czech)">Čeština</option>
+				</select>
+			</span>
+		</div>
+	</div>
+</footer>
+
+@code {
+	[Inject] ILanguageManagerService LanguageManagerService { get; set; }
+	[Inject] INavigationService NavigationService { get; set; }
+
+	private Language _currentLang;
+
+	protected override void OnInitialized()
+	{
+		_currentLang = LanguageManagerService.CurrentLanguage;
+
+		Console.WriteLine("Lang service manager lang: " + _currentLang);
+		Console.WriteLine("Lang service lang: " + TextService.Language);
+
+		base.OnInitialized();
+	}
+
+	private async Task OnChangeCurrentLang(ChangeEventArgs args)
+	{
+		_currentLang = (Language)int.Parse(args.Value.ToString());
+
+		Console.WriteLine("LANG: " + _currentLang);
+
+		await LanguageManagerService.SetLanguage(_currentLang);
+
+		NavigationService.ForceReload();
+	}
+}

@@ -1,0 +1,122 @@
+﻿@using global::Shared
+@using Uniwiki.Shared.RequestResponse
+@inherits UniwikiComponentBase
+
+<EditForm style="min-width: 300px" OnValidSubmit="@HandleValidSubmitAddStudyGroup" Model="@AddStudyGroupRequestDto">
+	<MyFluentValidator></MyFluentValidator>
+	<div class="form-group">
+		<label for="addGroup_Name">@TextService.SearchBox_StudyGroupName</label>
+		<InputText id="addGroup_Name" class="form-control" type="text" placeholder="@TextService.EgGroupName" @bind-Value="AddStudyGroupRequestDto.StudyGroupName" maxlength="@Constants.Validations.StudyGroupNameMaxLength" name="studygroupname"/>
+		<ValidationMessage For="@(() => AddStudyGroupRequestDto.StudyGroupName)" />
+	</div>
+	<div class="form-group">
+		<label for="addGroup_Shortcut">@TextService.SearchBox_StudyGroupShortcut</label>
+		<InputText id="addGroup_Shortcut" class="form-control" type="text" placeholder="@TextService.EgGroupShortcut" @bind-Value="AddStudyGroupRequestDto.StudyGroupShortcut" maxlength="@Constants.Validations.StudyGroupShortcutMaxLength" name="studygroupshortcut" />
+		<ValidationMessage For="@(() => AddStudyGroupRequestDto.StudyGroupShortcut)" />
+	</div>
+
+
+	<div class="form-group">
+		<label for="addGroup_University">@TextService.University</label>
+		@if (_universitiesWithStudyGroups != null)
+		{
+			<select class="form-control" id="addGroup_University" @onchange="HandleUniversitySelect">
+				<option value=""></option>
+					@foreach (var uni in _universitiesWithStudyGroups)
+					{
+						<option selected="@(uni.University.Id == AddStudyGroupRequestDto.UniversityId)" value="@uni.University.Id">@uni.University.ShortName - @uni.University.LongName</option>
+					}
+			</select>
+		}
+		else
+		{
+			<div class="spinner-border text-primary d-block" role="status">
+				<span class="sr-only">Loading...</span>
+			</div>
+		}
+		<ValidationMessage For="@(() => AddStudyGroupRequestDto.UniversityId)" />
+	</div>
+
+	<div class="form-group">
+		<label for="addGroup_Language">@TextService.Language_Language</label>
+		<InputSelect id="addGroup_Language" class="form-control" @bind-Value="@AddStudyGroupRequestDto.PrimaryLanguage">
+			<option value="@Language.Czech">@TextService.Language_Czech</option>
+			<option value="@Language.English">@TextService.Language_English</option>
+		</InputSelect>
+		<ValidationMessage For="@(() => AddStudyGroupRequestDto.PrimaryLanguage)" />
+	</div>
+	<div class="mt-auto">
+		<BusyButtonComponent IsBusy="@_adding" Class="btn btn-primary">@TextService.Create</BusyButtonComponent>
+	</div>
+</EditForm>
+
+@code {
+	[Inject] IRequestSender RequestSender { get; set; }
+
+	[CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
+	[Parameter] public UniversityWithStudyGroupsDto? University { get; set; }
+
+	public AddStudyGroupRequestDto AddStudyGroupRequestDto { get; set; }
+
+	private UniversityWithStudyGroupsDto[]? _universitiesWithStudyGroups;
+
+	private bool _adding;
+
+	public AddStudyGroupModal()
+	{
+		AddStudyGroupRequestDto = new AddStudyGroupRequestDto(String.Empty, string.Empty, Guid.Empty, Language.Czech);
+	}
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		if (University != null)
+			AddStudyGroupRequestDto.UniversityId = University.University.Id;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		AddStudyGroupRequestDto.PrimaryLanguage = TextService.Language;
+
+		var request = new GetUniversitiesAndStudyGroupsRequestDto();
+		var response = await RequestSender.SendRequestAsync(request);
+		_universitiesWithStudyGroups = response.UniversitiesWithStudyGroups;
+	}
+
+	public void HandleStudyGroupSelected(StudyGroupDto studyGroup)
+	{
+		ModalInstance.Close(ModalResult.Ok(studyGroup));
+	}
+
+	public async Task HandleValidSubmitAddStudyGroup()
+	{
+		if (_adding)
+			return;
+
+		_adding = true;
+
+		var response = await RequestSender.SendRequestAsync(AddStudyGroupRequestDto, () =>
+		{
+			_adding = false;
+			StateHasChanged();
+		});
+
+		AddStudyGroupRequestDto = new AddStudyGroupRequestDto(String.Empty, string.Empty, Guid.Empty, Language.Czech);
+
+		ModalInstance.Close(ModalResult.Ok(response.StudyGroupDto));
+	}
+
+	public void HandleCancelClick()
+	{
+		ModalInstance.Close(ModalResult.Cancel());
+	}
+
+	private void HandleUniversitySelect(ChangeEventArgs args)
+	{
+		AddStudyGroupRequestDto.UniversityId = Guid.TryParse(args.Value.ToString(), out var guid) ? guid : Guid.Empty;
+	}
+}

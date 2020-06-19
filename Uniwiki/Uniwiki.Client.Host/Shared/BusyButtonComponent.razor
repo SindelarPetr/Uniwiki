@@ -1,0 +1,30 @@
+﻿<button type="@(OnClick == null && OnClickAsync == null ? "submit" : "button")" class="@(IsFormControl ? "form-control btn btn-primary" : "") @Class @(IsBusy?"disabled":"")" @onclick="@PerformOnClick">
+	@ChildContent
+	@if (IsBusy)
+	{
+		<span class="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true"></span>
+	}
+</button>
+
+@code {
+
+	[Parameter] public bool IsBusy { get; set; }
+	[Parameter] public bool IsFormControl { get; set; } = true;
+	[Parameter] public RenderFragment ChildContent { get; set; }
+	[Parameter] public Action OnClick { get; set; }
+	[Parameter] public Func<Task> OnClickAsync { get; set; }
+	[Parameter] public string Class { get; set; }
+
+	private async Task PerformOnClick()
+	{
+		Console.WriteLine("Performing click");
+		if (OnClickAsync != null)
+		{
+			await OnClickAsync();
+		}
+		else
+		{
+			OnClick?.Invoke();
+		}
+	}
+}

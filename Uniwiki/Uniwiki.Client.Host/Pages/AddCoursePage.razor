@@ -1,0 +1,91 @@
+﻿@page "/AddCourse"
+@using Uniwiki.Shared.RequestResponse
+@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@layout ThinFormLayout
+
+<div class="p-3 text-left">
+	<div class="mb-3">
+		<h1><BackButtonComponent />@TextService.AddNewCourse</h1>
+	</div>
+
+	<EditForm OnValidSubmit="@HandleValidSubmitAddCourse" Model="@AddCourseRequestDto">
+		<MyFluentValidator></MyFluentValidator>
+		<div class="form-group">
+			<label for="addCourse_Name">@TextService.SearchBox_CourseName</label>
+			<InputText id="addCourse_Name" class="form-control" type="text" placeholder="@TextService.EgCourseName" @bind-Value="AddCourseRequestDto.CourseName" maxlength="@Constants.Validations.CourseNameMaxLength" />
+			<ValidationMessage For="@(() => AddCourseRequestDto.CourseName)" />
+		</div>
+		<div class="form-group">
+			<label for="addCourse_Code">@TextService.SearchBox_CourseCode</label>
+			<InputText id="addCourse_Code" class="form-control" type="text" placeholder="@TextService.EgCourseCode" @bind-Value="AddCourseRequestDto.CourseCode" maxlength="@Constants.Validations.CourseCodeMaxLength" />
+			<ValidationMessage For="@(() => AddCourseRequestDto.CourseCode)" />
+		</div>
+		<div class="form-group">
+			<label for="addCourse_StudyGroup">@TextService.StudyGroup</label>
+			<div class="mb-3">
+				<button id="addCourse_StudyGroup" class="btn btn-secondary dont-break-out" type="button" @onclick="HandleOnSelectStudyGroup">
+					@(_selectedStudyGroup == null ? TextService.SelectStudyGroup : _selectedStudyGroup.LongName + " (" + _selectedStudyGroup.University.ShortName + ")")
+				</button>
+			</div>
+			<ValidationMessage For="@(() => AddCourseRequestDto.StudyGroupId)" />
+		</div>
+		<div>
+			<BusyButtonComponent IsBusy="@_adding" Class="btn btn-primary ml-auto">@TextService.Create</BusyButtonComponent>
+		</div>
+	</EditForm>
+</div>
+
+
+@code{
+
+	[Inject] public IModalService ModalService { get; set; }
+	[Inject] public IRequestSender RequestSender { get; set; }
+	[Inject] public INavigationService NavigationService { get; set; }
+	[Inject] public IStaticStateService StaticStateService { get; set; }
+
+	public AddCourseRequestDto AddCourseRequestDto { get; private set; }
+
+	private bool _adding;
+
+	private StudyGroupDto? _selectedStudyGroup;
+
+	public AddCoursePage()
+	{
+		AddCourseRequestDto = new AddCourseRequestDto(string.Empty, string.Empty, Guid.Empty);
+	}
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		_selectedStudyGroup = StaticStateService.SelectedStudyGroup;
+		AddCourseRequestDto.StudyGroupId = _selectedStudyGroup?.Id ?? Guid.Empty;
+	}
+
+	public async Task HandleValidSubmitAddCourse()
+	{
+		if (_adding)
+			return;
+		
+		_adding = true;
+
+		var result = await RequestSender.SendRequestAsync(AddCourseRequestDto, () =>
+		{
+			_adding = false;
+			StateHasChanged();
+		});
+
+		NavigationService.NavigateTo(PageRoutes.CoursePage.BuildRoute(result.CourseDto));
+	}
+
+	public async Task HandleOnSelectStudyGroup()
+	{
+		var modal = ModalService.Show<SelectStudyGroupModal>(TextService.SelectStudyGroup);
+		var result = await modal.Result;
+		if (!result.Cancelled)
+		{
+			_selectedStudyGroup = (StudyGroupDto)result.Data;
+			AddCourseRequestDto.StudyGroupId = _selectedStudyGroup.Id;
+		}
+	}
+}

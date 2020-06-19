@@ -1,0 +1,113 @@
+﻿@inherits UniwikiComponentBase
+@using Uniwiki.Client.Host.Extensions
+@using Uniwiki.Shared.RequestResponse
+
+<div class="mx-3 mt-0 d-flex">
+	<img src="@Comment.Profile.ProfilePictureSrc" alt="Profile picture" class="rounded-circle border border-light mr-2" style="width: 2rem; height: 2rem; object-fit: cover" />
+	<div class="d-flex flex-column flex-grow-1">
+		<div class="d-flex">
+			<a class="btn btn-link mr-auto pl-0 pt-0" href="@PageRoutes.ProfilePage.BuildRoute(Comment.Profile.NameIdentifier)">@Comment.Profile.FullName</a>
+
+
+			@if (LoginService.IsAuthenticated && LoginService.User.Id == Comment.Profile.Id)
+			{
+				<div class="dropleft">
+					<button class="btn border-0 btn-outline-secondary mt-auto" type="button" id="contextBtn-@Comment.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+					<div class="dropdown-menu" aria-labelledby="contextBtn-@Comment.Id">
+						<button class="dropdown-item" type="button" @onclick="HandleRemoveComment">Remove</button>
+					</div>
+				</div>
+			}
+		</div>
+
+		<p class="dont-break-out flex-grow-1 mb-0">
+			<pre class="mb-0">@Comment.Text</pre>
+		</p>
+		<div class="d-flex align-items-center">
+			<small class="text-muted">@Comment.CreationTime.ToPassedTimeString(TimeService, TextService)</small>
+			@if (Comment.LikedByClient)
+			{
+				<button class="ml-auto btn btn-link text-danger font-weight-bold" type="button" @onclick="HandleUnlikeComment"><i class="fas fa-heart "></i> @Comment.LikesCount</button>
+			}
+			else
+			{
+				<button class="ml-auto btn btn-link text-secondary" type="button" @onclick="HandleLikeComment"><i class="far fa-heart"></i> @Comment.LikesCount</button>
+			}
+		</div>
+	</div>
+</div>
+
+@code {
+	[Inject] ILoginService LoginService { get; set; }
+	[Inject] ITimeService TimeService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; }
+	[Inject] IToastService ToastService { get; set; }
+
+	[Parameter] public PostCommentDto Comment { get; set; }
+	[Parameter] public EventCallback<PostDto> OnCommentModified { get; set; }
+
+	private bool _editMode;
+
+	private bool _sendingChanges = false;
+
+	private bool _removing = false;
+
+	public async Task HandleLikeComment()
+	{
+		// Check if user is logged in
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			return;
+		}
+
+		// Create request
+		var request = new LikePostCommentRequestDto(Comment.Id);
+
+		// Send the request
+		var response = await RequestSender.SendRequestAsync(request, () => { });
+
+		// Display result
+		await OnCommentModified.InvokeAsync(response.Post);
+	}
+
+	public async Task HandleUnlikeComment()
+	{
+		// Check if user is logged in
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			return;
+		}
+
+		// Create request
+		var request = new UnlikePostCommentRequestDto(Comment.Id);
+
+		// Send the request
+		var response = await RequestSender.SendRequestAsync(request, () => { });
+
+		// Display result
+		await OnCommentModified.InvokeAsync(response.Post);
+	}
+
+	public async Task HandleRemoveComment()
+	{
+		// Check if user is authenticated
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			return;
+		}
+
+		// Create request
+		var request = new RemovePostCommentRequestDto(Comment.Id);
+
+		// Send request
+		var response = await RequestSender.SendRequestAsync(request, () =>
+		{
+
+		});
+
+		await OnCommentModified.InvokeAsync(response.Post);
+	}
+}

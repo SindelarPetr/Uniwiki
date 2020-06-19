@@ -1,0 +1,33 @@
+﻿@page "/DownloadTimeError"
+@using System.Web
+@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@layout MainLayout
+
+	<div class="container mb-5 mt-3">
+		<PageHeaderComponent Title="@TextService.DownloadTimeErrorPage_Title" />
+
+		<div class="my-5 text-center">
+			<i class="fas fa-grin-beam-sweat fa-4x text-muted"></i>
+		</div>
+		<h5 class="text-center mb-5 text-muted">@TextService.DownloadTimeErrorPage_Message</h5>
+		<div class="mb-3 text-center">
+			<button class="btn btn-primary btn-lg" @onclick="HandleGoBack">@TextService.DownloadTimeErrorPage_GoBack</button>
+		</div>
+	</div>
+
+@code
+{
+	[Inject] public INavigationService NavigationService { get; set; }
+
+	public async Task HandleGoBack()
+	{
+		await NavigationService.Back();
+
+		var uri = new Uri(NavigationService.CurrentUrl);
+
+		var query = HttpUtility.ParseQueryString(uri.Query);
+
+	//TODO: NavigationService.GetQueryParameters();
+	}
+
+}

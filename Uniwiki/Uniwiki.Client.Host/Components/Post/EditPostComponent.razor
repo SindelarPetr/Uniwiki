@@ -1,0 +1,261 @@
+﻿@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@using global::Shared.Dtos
+@using Uniwiki.Shared.RequestResponse
+@using Newtonsoft.Json
+@using Uniwiki.Client.Host.Exceptions
+
+<div class="d-flex mb-3 align-items-center">
+	<a href="@PageRoutes.ProfilePage.BuildRoute(LoginService.User.NameIdentifier)" class="d-flex">
+		<img src="@LoginService.User.ProfilePictureSrc"
+			 alt="Profile picture"
+			 class="rounded-circle border border-light mr-2"
+			 style="width: 2rem; height: 2rem; object-fit: cover" />
+		<h6 class="my-auto">@LoginService.User.FullName</h6>
+	</a>
+</div>
+
+<EditForm Model="@Request" OnValidSubmit="@HandleCommitPost">
+	<MyFluentValidator></MyFluentValidator>
+
+	<p class="lead">
+		<InputTextArea class="form-control" placeholder="@TextService.CoursePage_WriteYourMessageHere" @bind-Value="Request.Text" oninput="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" style="height: 100px;overflow-y: hidden" required></InputTextArea>
+	</p>
+	<hr class="mb-2" />
+
+	@* Post type *@
+	<div class="d-flex flex-wrap">
+		<h5 class="my-auto pt-2 pr-3">
+			@TextService.CoursePage_PostType
+		</h5>
+
+		<SelectPostTypeComponent PostTypes="@AllPostTypes" @bind-SelectedPostType="Request.PostType" />
+	</div>
+	@* /Post type *@
+	<hr />
+	@* Files *@
+	@foreach (var file in Request.PostFiles)
+	{
+		<PostFileComponent File="file" OnRemove="HandleRemove" />
+	}
+	@* /Files *@
+	@* Uploading files *@
+	@foreach (var file in _fileUploads)
+	{
+		<div class="mt-3 p-3 rounded border border-@(file.Failed? "danger" : "0")" style="background:#eee" @key="@file.Id">
+			<div class="d-flex mb-2 text-secondary">
+				<div class="text-wrap dont-break-out">@file.Name</div>
+				<div class="btn-group dropleft mb-auto ml-auto">
+					<button class="btn pl-3 pr-0 no-outline" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="fas fa-ellipsis-v ml-auto text-secondary"></i>
+					</button>
+					<div class="dropdown-menu">
+						<button class="dropdown-item" type="button" @onclick="@(async () => await Abort(file))">Abort</button>
+					</div>
+				</div>
+
+			</div>
+			<div>
+				<div class="progress my-2 bg-white">
+					<div class="progress-bar progress-bar-striped @(!file.Finished ? "progress-bar-animated" : string.Empty) bg-@(file.Failed ? "danger" : file.Finished ? "success" : "primary")" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="@((file.Progress*100).ToString("F0"))" style="width: @((file.Progress*100).ToString("F0"))%"></div>
+				</div>
+			</div>
+			<div class="d-flex">
+				<small class="text-muted">@(file.Failed? "ERROR" : file.Finished ? "COMPLETED" : $"{(file.Progress*100).ToString("F0")}% out of {TextService.FileSize(file.Size)}")</small>
+				@if (file.Failed)
+				{
+					<button class="btn btn-danger ml-auto" @onclick="@(async () => await Upload(file))"><i class="fas fa-redo-alt mr-2"></i>Try again</button>
+				}
+			</div>
+		</div>
+	}
+	@* /Uploading files *@
+	@* Input file (drag and drop) *@
+	<div class="drag-drop-zone border-secondary rounded p-4 my-3 d-flex">
+		<FileUploaderComponent OnSelected="HandleOnSelect" />
+		<i class="fas fa-cloud-upload-alt fa-2x mr-3"></i>
+		<div class="d-flex flex-column">
+			<span>@TextService.AddFiles</span>
+			<small>@TextService.EditPost_MaxFileSize</small>
+		</div>
+	</div>
+	@* /Input file (drag and drop) *@
+
+	<div class="d-flex mt-3">
+		<div class="ml-auto">
+			<span class="mr-3 @(_fileUploads.Any(f => f.Failed) ? "text-danger" : "text-secondary")">@FilesValidationMessage</span>
+			<button class="btn btn-primary" type="submit">
+				@(PostToEdit == null ? TextService.CoursePage_AddPost : TextService.EditPost_EditPost)
+				@if (_committingPost)
+				{
+					<span class="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true"></span>
+				}
+			</button>
+		</div>
+	</div>
+</EditForm>
+
+@code {
+
+	[Inject] ILoginService LoginService { get; set; }
+	[Inject] IToastService ToastService { get; set; }
+
+	[Parameter] public Func<EditPostRequestDto, Task> OnCommitPost { get; set; }
+
+	[Parameter] public Guid CourseId { get; set; }
+	[Parameter] public string[] AllPostTypes { get; set; }
+	[Parameter] public PostDto? PostToEdit { get; set; }
+
+	private string? SelectedPostType { get; set; }
+
+	private bool _committingPost;
+
+	List<UploadFile> _fileUploads = new List<UploadFile>();
+
+	public EditPostRequestDto Request { get; set; }
+		= new EditPostRequestDto(Guid.Empty, string.Empty, null, new PostFileDto[0]);
+
+	private string FilesValidationMessage => !_fileUploads.Any() ? string.Empty : _fileUploads.Any(f => f.Failed) ? TextService.EditPost_HasFailedFile : TextService.EditPost_UploadingFiles(_fileUploads.Count);
+
+	private async Task HandleCommitPost()
+	{
+		if (_committingPost || String.IsNullOrWhiteSpace(Request.Text) || _fileUploads.Any())
+			return;
+
+		_committingPost = true;
+		StateHasChanged();
+
+		try
+		{
+			await OnCommitPost(Request);
+			ResetRequest();
+		}
+		finally
+		{
+			_committingPost = false;
+			StateHasChanged();
+		}
+	}
+
+	protected override void OnParametersSet()
+	{
+		base.OnParametersSet();
+		ResetRequest();
+	}
+
+	private void ResetRequest()
+	{
+		Request = PostToEdit == null
+			? new EditPostRequestDto(Guid.Empty, string.Empty, null, new PostFileDto[0])
+			: new EditPostRequestDto(PostToEdit.Id, PostToEdit.Text, PostToEdit.PostType, PostToEdit.Files);
+	}
+
+	public async Task HandleOnSelect(UploadFile uploadFile)
+	{
+		// Do not keep file if its not unique
+		if (_fileUploads.Any(f => f.Name == uploadFile.Name && f.Type == uploadFile.Type && f.Size == uploadFile.Size && f.LastModified == uploadFile.LastModified)
+		|| Request.PostFiles.Any(f => f.OriginalName == uploadFile.Name && f.Size == uploadFile.Size))
+		{
+			ToastService.ShowInfo(TextService.EditPost_FileAlreadySelected(uploadFile.Name));
+			return;
+		}
+
+		if (uploadFile.Size > Constants.MaxFileSizeInBytes)
+		{
+			ToastService.ShowInfo(TextService.EditPost_FileTooBig(uploadFile.Name, uploadFile.Size));
+			return;
+		}
+
+		_fileUploads.Add(uploadFile);
+
+		uploadFile.OnStart += () =>
+		{
+			StateHasChanged();
+		};
+
+		uploadFile.OnProgress += progress =>
+		{
+			StateHasChanged();
+		};
+
+		uploadFile.OnFailed += () =>
+		{
+			StateHasChanged();
+		};
+
+		uploadFile.OnSuccess += (dataForClient) =>
+		{
+			try
+			{
+				var response = JsonConvert.DeserializeObject<DataForClient<UploadPostFileResponseDto>>(dataForClient);
+
+				if (response?.Response?.PostFile == null || response.Error != null)
+					throw new RequestRejectedException("Could not upload file: " + uploadFile.Name + "\nGot text: " + dataForClient);
+
+				// Save the file to post files
+				Request.PostFiles.Add(response.Response.PostFile);
+				_fileUploads.Remove(uploadFile);
+				Console.WriteLine("Adding post file: " + response.Response.PostFile.OriginalName);
+
+				StateHasChanged();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+				throw;
+			}
+		};
+
+		StateHasChanged();
+
+		try
+		{
+			await Upload(uploadFile);
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
+			throw;
+		}
+	}
+
+	public async ValueTask Upload(UploadFile uploadFile)
+	{
+		try
+		{
+			var cId = CourseId;
+			var request = new UploadPostFileRequestDto(uploadFile.Name, cId);
+			var requestSerialized = JsonConvert.SerializeObject(request);
+			var dataForServer = new DataForServer(requestSerialized, request.GetType(), LoginService.LoginToken?.PrimaryTokenId, TextService.Language, ClientConstants.AppVersionString);
+			await uploadFile.Upload(JsonConvert.SerializeObject(dataForServer));
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
+			throw;
+		}
+	}
+
+	public async ValueTask Abort(UploadFile uploadFile)
+	{
+		try
+		{
+			await uploadFile.Abort();
+			_fileUploads.Remove(uploadFile);
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
+			throw;
+		}
+	}
+
+	public Task HandleRemove(PostFileDto file)
+	{
+		Request.PostFiles.Remove(file);
+
+		StateHasChanged();
+
+		return Task.CompletedTask;
+	}
+
+}

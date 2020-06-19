@@ -1,0 +1,70 @@
+﻿using System;
+using System.Threading.Tasks;
+using Server.Appliaction.ServerActions;
+using Shared.Exceptions;
+using Uniwiki.Server.Application.Extensions;
+using Uniwiki.Server.Application.Services;
+using Uniwiki.Server.Application.Services.Abstractions;
+using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Repositories.Authentication;
+using Uniwiki.Shared;
+using Uniwiki.Shared.RequestResponse.Authentication;
+using Uniwiki.Shared.Services.Abstractions;
+
+namespace Uniwiki.Server.Application.ServerActions.Authentication
+{
+    internal class ResendConfirmationEmailServerAction : ServerActionBase<ResendConfirmationEmailRequestDto, ResendConfirmationEmailResponseDto>
+    {
+        protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
+
+        private readonly IEmailService _emailService;
+        private readonly IEmailConfirmationSecretRepository _emailConfirmationSecretRepository;
+        private readonly IProfileRepository _profileRepository;
+        private readonly IInputValidationService _inputValidationService;
+        private readonly ITimeService _timeService;
+        private readonly TextService _textService;
+
+        public ResendConfirmationEmailServerAction(IServiceProvider serviceProvider, IEmailService emailService, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, IInputValidationService inputValidationService, ITimeService timeService, TextService textService) : base(serviceProvider)
+        {
+            _emailService = emailService;
+            _emailConfirmationSecretRepository = emailConfirmationSecretRepository;
+            _profileRepository = profileRepository;
+            _inputValidationService = inputValidationService;
+            _timeService = timeService;
+            _textService = textService;
+        }
+
+        protected override async Task<ResendConfirmationEmailResponseDto> ExecuteAsync(ResendConfirmationEmailRequestDto request, RequestContext context)
+        {
+            // Standardize mail
+            var email = request.Email.StandardizeEmail();
+
+            // Validate input
+            _inputValidationService.ValidateEmail(email);
+
+            // Get profile
+            var profile = _profileRepository.GetProfileByEmail(email);
+
+            // Try to get an existing secret
+            var currentSecret = _emailConfirmationSecretRepository.TryGetValidEmailConfirmationSecret(profile);
+            
+            // if current secret exists and its not expired
+            if(currentSecret != null && currentSecret.CreationTime.Add(Constants.ResendRegistrationEmailMinTime) > _timeService.Now)
+                throw new RequestException(_textService.Error_EmailHasBeenAlreadySent);
+
+            // Use the old secret(s)
+            _emailConfirmationSecretRepository.InvalidateSecrets(profile);
+
+            // Generate a new secret
+            var secret = _emailConfirmationSecretRepository.GenerateEmailConfirmationSecret(profile, _timeService.Now);
+
+            // Send the email again
+            await _emailService.SendRegisterEmail(email, secret.Secret);
+
+            // Create the response
+            var response = new ResendConfirmationEmailResponseDto();
+
+            return response;
+        }
+    }
+}

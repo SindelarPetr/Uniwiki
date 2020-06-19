@@ -1,0 +1,64 @@
+﻿@inherits UniwikiComponentBase
+
+@foreach (var postType in PostTypes)
+{
+	<button class="btn mr-2 mt-2 @(_buttonSelectedPostType == postType ? "btn-primary" : "btn-secondary")" type="button" @onclick="@(() => HandleButtonPostType(postType))">@postType</button>
+}
+
+<div class="form-inline mr-2 mt-2">
+	<input class="form-control @(string.IsNullOrWhiteSpace(_inputSelectedPostType) ? string.Empty : "bg-primary text-white") selection-text" type="text" maxlength="@Constants.Validations.PostTypeMaxLength" placeholder="@TextService.CoursePage_SearchType" @oninput="HandleInputPostType" value="@_inputSelectedPostType">
+</div>
+
+@code {
+	[Parameter] public string[] PostTypes { get; set; }
+	[Parameter] public string? SelectedPostType { get; set; }
+	[Parameter] public EventCallback<string?> SelectedPostTypeChanged { get; set; }
+
+	private string? _buttonSelectedPostType;
+	private string? _inputSelectedPostType;
+
+	protected override void OnParametersSet()
+	{
+		base.OnParametersSet();
+
+		if (PostTypes.Contains(SelectedPostType))
+			_buttonSelectedPostType = SelectedPostType;
+		else
+			_inputSelectedPostType = SelectedPostType;
+	}
+
+	private async Task HandleButtonPostType(string postType)
+	{
+		// Check if it is unselected
+		if(_buttonSelectedPostType == postType)
+		{
+			// Unselect post type
+			_buttonSelectedPostType = null;
+			_inputSelectedPostType = null;
+
+			// Notify about the change
+			await SelectedPostTypeChanged.InvokeAsync(null);
+		}
+		else
+		{
+			// Select post type
+			_buttonSelectedPostType = postType;
+			_inputSelectedPostType = null;
+
+			// Notify about the change
+			await SelectedPostTypeChanged.InvokeAsync(postType);
+		}
+
+	}
+
+	private async Task HandleInputPostType(ChangeEventArgs args)
+	{
+		var postType = (string)args.Value;
+
+		_inputSelectedPostType = postType;
+		_buttonSelectedPostType = null;
+
+		// Notify about the change
+		await SelectedPostTypeChanged.InvokeAsync(postType);
+	}
+}

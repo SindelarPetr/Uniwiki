@@ -1,0 +1,15 @@
+﻿@inherits UniwikiComponentBase
+
+	<div class="d-flex justify-content-between">
+		<button @onclick="No" class="btn btn-secondary">@TextService.No</button>
+		<button @onclick="Yes" class="btn btn-primary">@TextService.Yes</button>
+	</div>
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    void Yes() => BlazoredModal.Close(ModalResult.Ok(true));
+    void No() => BlazoredModal.Cancel();
+
+}

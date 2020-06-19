@@ -1,0 +1,35 @@
+﻿@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@using Uniwiki.Shared.RequestResponse
+
+<EditPostComponent AllPostTypes="AllPostTypes" CourseId="CourseId" OnCommitPost="HandleCommitPost" />
+
+@code {
+	[Inject] IRequestSender RequestSender { get; set; }
+	[Inject] ILoginService LoginService { get; set; }
+	[Inject] IToastService ToastService { get; set; }
+	[Inject] ILocalAuthenticationStateProvider LocalAuthenticationStateProvider { get; set; }
+	[Inject] INavigationService NavigationService { get; set; }
+	[Inject] IJsInteropService JsInteropService { get; set; }
+	[Inject] ITimeService TimeService { get; set; }
+
+	[Parameter] public Func<PostDto, Task> OnPostCreated { get; set; }
+	[Parameter] public Guid CourseId { get; set; }
+	[Parameter] public string[] AllPostTypes { get; set; }
+
+	private async Task HandleCommitPost(EditPostRequestDto editPostRequest)
+	{
+		// Create request
+		var request = new AddPostRequestDto(editPostRequest.Text, editPostRequest.PostType, CourseId, editPostRequest.PostFiles.ToArray());
+
+		// Send request
+		var response = await RequestSender.SendRequestAsync(request,
+			() =>
+			{
+				StateHasChanged();
+			});
+
+		await OnPostCreated(response.NewPost);
+
+		StateHasChanged();
+	}
+}

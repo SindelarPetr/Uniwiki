@@ -1,0 +1,50 @@
+﻿.no-outline:focus {
+    outline: none !important;
+}
+
+.search-item {
+    &.selected {
+        background-color: rgba(15, 82, 186, 0.10);
+    }
+
+    &:hover {
+        background-color: rgba(15, 82, 186, 0.20);
+        text-decoration: none;
+    }
+}
+
+.university-short-name {
+    min-width: 3.5rem;
+    display: inline-block;
+    padding-right: 1rem;
+}
+
+.search-header {
+    color: #888 !important;
+    font-weight: 500;
+}
+
+.search-item-icon {
+    min-width: 1.2rem;
+    display: inline-block;
+}
+
+.uniwiki-icon {
+    width: 6rem;
+    height: 6rem;
+    min-width: 6rem;
+    min-height: 6rem;
+    max-width: 6rem;
+    max-height: 6rem;
+    background-color: #0f52ba; //#111e6c;//#00008b;
+}
+
+.search-item-university {
+    min-width: 2.5rem;
+    display: inline-block;
+}
+
+.search-item-group {
+    min-width: 2rem;
+    display: inline-block;
+}

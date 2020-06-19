@@ -1,0 +1,234 @@
+﻿@page "/Uni/{UniversityUrl}/{StudyGroupUrl}/{CourseUrl}"
+@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@implements IDisposable
+@using Uniwiki.Shared.RequestResponse
+@using Uniwiki.Client.Host.Extensions
+
+
+<LoadingComponent Finished="@IsLoaded">
+	<div class="container">
+		<PageHeaderComponent Title="@_pageData.Course.LongName" />
+		<h5 class="dont-break-out">@_pageData.Course.StudyGroup.University.ShortName - @_pageData.Course.StudyGroup.LongName</h5>
+	</div>
+		<div class="container container-sm">
+		@* Top bar *@
+		<div class="mb-3" id="accordion">
+			<div class="card">
+				<div class="card-header mb-0 d-flex shadow-sm" id="headingOne">
+					@* Filter posts *@
+					<div class="dropdown">
+						<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							@if (_isFiltering)
+							{
+								<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+							} @(_showAllPostTypes ? TextService.CoursePage_ShowAll : _filteredPostType.ToStringPlural(TextService))
+						</button>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+							<button class="dropdown-item @(_showAllPostTypes ? " active" : "" )" @onclick="@(() => ReloadPosts(null, true))">@TextService.PostType_All_Singular</button>
+
+							@foreach (var type in _pageData.FilterPostTypes)
+							{
+								var postTypeCount = type.Count;
+								var postType = type.PostType;
+								<button class="dropdown-item d-flex align-items-center @(_filteredPostType == postType && !_showAllPostTypes ? " active" : "")" @onclick="@(async () => await ReloadPosts(postType, false))">
+									<span class="mr-3">@postType.ToStringPlural(TextService)</span> <span class="badge badge-secondary ml-auto">@postTypeCount</span>
+								</button>
+							}
+						</div>
+					</div>
+					@* /Filter posts *@
+
+					<button class="btn btn-primary ml-auto" data-toggle="collapse" data-target="#NewPostCollapse" aria-expanded="false" aria-controls="collapseOne">
+						<i class="fas fa-plus mr-2"></i>@TextService.CoursePage_AddPost
+					</button>
+				</div>
+
+				<div id="@_newPostCollapseId" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+					<div class="card-body">
+						@if (LoginService.IsAuthenticated)
+						{
+							<AddPostComponent OnPostCreated="@HandlePostCreated" CourseId="@_pageData.Course.Id" AllPostTypes="@_pageData.NewPostPostTypes" />
+						}
+						else
+						{
+							// Call to log in
+							<div class="h6 d-flex align-items-center"><button class="btn btn-primary text-white mr-2" type="button" @onclick="@(() => NavigationService.NavigateTo(PageRoutes.LoginPage.BuildRoute()))">@TextService.LogIn</button> <span>@TextService.ToAddNewPost</span></div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+		@* /Top bar *@
+
+		@* No posts placeholder *@
+		@if (!_posts.Any())
+		{
+			// Nothing here
+			<div class="d-flex flex-column align-items-center text-muted my-5">
+				<i class="far fa-hand-peace fa-3x mb-3"></i>
+				@TextService.CoursePage_NoPostsPlaceholder
+			</div>
+		}
+		@* /No posts placeholder *@
+
+		@* Posts *@
+		@foreach (var postDto in _posts)
+		{
+			<PostComponent @key="@postDto.Id.ToString()" Post="postDto" AllPostTypes="_pageData.NewPostPostTypes" CourseId="_pageData.Course.Id" OnRemoved="@(() => HandlePostRemoved(postDto))" />
+		}
+		@* /Posts *@
+
+		@* Fetch posts indicator *@
+		@if (_posts.Any())
+		{
+			<div class="d-flex align-items-center justify-content-center mb-4 mt-1">
+				@if (_fetchingMorePosts)
+				{
+					<div>
+						<div class="spinner-border mr-3 text-secondary" role="status">
+							<span class="sr-only">Loading...</span>
+						</div>
+					</div>
+				}
+				else if (_canFetchMorePosts)
+				{
+					<button class="btn btn-primary" type="button" @onclick="FetchMorePosts">@TextService.CoursePage_LoadMorePosts</button>
+				}
+				else
+				{
+					<div>
+						<span class="text-secondary">@TextService.CoursePage_AllPostsShowed</span>
+					</div>
+				}
+			</div>
+		}
+	</div>
+</LoadingComponent>
+
+
+@code {
+	[Inject] IRequestSender RequestSender { get; set; }
+	[Inject] ILoginService LoginService { get; set; }
+	[Inject] INavigationService NavigationService { get; set; }
+	[Inject] IJsInteropService JsInteropService { get; set; }
+	[Inject] IScrollService ScrollService { get; set; }
+	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; }
+
+	[Parameter] public string UniversityUrl { get; set; }
+	[Parameter] public string StudyGroupUrl { get; set; }
+	[Parameter] public string CourseUrl { get; set; }
+
+	private GetCourseResponseDto _pageData;
+
+	public bool IsLoaded => _pageData != null;
+
+	private bool _showAllPostTypes = true;
+	private string? _filteredPostType;
+
+	private readonly string _newPostCollapseId = "NewPostCollapse";
+
+	private bool _isFiltering = false;
+
+	private Guid? _requestedScroll;
+
+	private List<PostDto> _posts = new List<PostDto>();
+
+	private bool _fetchingMorePosts;
+	private bool _canFetchMorePosts;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		await ReloadPosts(_filteredPostType, true);
+		await LocalStorageManagerService.SetRecentCourse(_pageData.Course);
+		ScrollService.ScrolledToEnd += HandleScrolledToEnd;
+	}
+
+	private Task HandleScrolledToEnd()
+	{
+		return FetchMorePosts();
+	}
+
+	private async Task ReloadPosts(string? filterPostType, bool showAll)
+	{
+		_isFiltering = true;
+		_showAllPostTypes = showAll;
+		_filteredPostType = filterPostType;
+		_pageData = await RequestSender.SendRequestAsync(new GetCourseRequestDto(UniversityUrl, StudyGroupUrl, CourseUrl, _filteredPostType, showAll, Constants.MaxPostsToFetch), () =>
+		{
+			_isFiltering = false;
+			StateHasChanged();
+		});
+		_posts = new List<PostDto>(_pageData.Posts);
+		_canFetchMorePosts = _pageData.CanFetchMore;
+
+		_isFiltering = false;
+		StateHasChanged();
+	}
+
+	public async Task HandlePostCreated(PostDto postDto)
+	{
+		// Check if the post is visible according to filters
+		if (_filteredPostType != null && _filteredPostType != postDto.PostType)
+		{
+			_filteredPostType = postDto.PostType;
+		}
+
+		_requestedScroll = postDto.Id;
+
+		await JsInteropService.HideCollapse(_newPostCollapseId);
+
+		// Reload the feed with posts
+		await ReloadPosts(_filteredPostType, _showAllPostTypes);
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+
+		if (_requestedScroll.HasValue)
+		{
+			await JsInteropService.ScrollIntoView(_requestedScroll.Value.ToString());
+			_requestedScroll = null;
+		}
+	}
+
+	private async Task FetchMorePosts()
+	{
+		if (_fetchingMorePosts || !_posts.Any() || !_canFetchMorePosts)
+			return;
+
+		_fetchingMorePosts = true;
+		StateHasChanged();
+
+		// Create request
+		var request = new FetchPostsRequestDto(_pageData.Course.Id, _posts.Last().Id, Constants.MaxPostsToFetch, !_showAllPostTypes, _filteredPostType);
+
+		// Send request
+		var response = await RequestSender.SendRequestAsync(request, () =>
+		{
+			_fetchingMorePosts = false;
+			StateHasChanged();
+		});
+
+		// Add received posts to _posts
+		foreach (var post in response.Posts)
+		{
+			_posts.Add(post);
+		}
+
+		_canFetchMorePosts = response.CanFetchMore;
+
+		StateHasChanged();
+	}
+
+	private void HandlePostRemoved(PostDto post)
+	{
+		_posts.Remove(post);
+	}
+
+	public void Dispose()
+	{
+		ScrollService.ScrolledToEnd -= HandleScrolledToEnd;
+	}
+}

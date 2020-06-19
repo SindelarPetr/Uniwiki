@@ -1,0 +1,16 @@
+﻿<div>
+    <p>Are you sure you want to delete the record?</p>
+
+    <button @onclick="Yes" class="btn btn-outline-danger">Yes</button>
+    <button @onclick="No" class="btn btn-primary">No</button>
+</div>
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    void Yes() => BlazoredModal.Close();
+
+    void No() => BlazoredModal.Cancel();
+
+}

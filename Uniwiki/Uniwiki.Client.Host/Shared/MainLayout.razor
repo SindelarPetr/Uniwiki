@@ -1,0 +1,26 @@
+﻿@using Blazored.Toast.Configuration
+@inherits LayoutComponentBase
+@*<div class="sidebar">
+		<NavMenu />
+	</div>*@
+
+
+<div class="p-0 m-0 min-vh-100 d-flex flex-column" id="root">
+	<HeaderComponent />
+	@Body
+</div>
+
+<FooterComponent />
+
+<BlazoredModal />
+
+<BlazoredToasts Position="@ToastPosition.BottomCenter" SuccessIconClass="fa fa-thumbs-up"
+				ErrorIconClass="fa fa-exclamation-triangle"
+				WarningIconClass="fa fa-exclamation-triangle"
+				InfoIconClass="fa fa-info-circle" />
+
+
+@code
+{
+	[Inject] IToastService ToastService { get; set; }
+}

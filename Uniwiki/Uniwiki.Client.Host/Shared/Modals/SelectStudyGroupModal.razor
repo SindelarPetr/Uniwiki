@@ -1,0 +1,94 @@
+﻿@using Uniwiki.Shared.RequestResponse
+@inherits UniwikiComponentBase
+
+@if (UniversitiesWithStudyGroups != null)
+{
+	@foreach (var uni in UniversitiesWithStudyGroups)
+	{
+		@if (uni.StudyGroups.Any())
+		{
+			<h5 class="mb-3">@uni.University.ShortName - @uni.University.LongName</h5>
+
+			<div class="list-group mb-4">
+				@foreach (var group in uni.StudyGroups)
+				{
+					<button class="list-group-item list-group-item-action text-primary" type="button" @onclick="@(() => HandleStudyGroupSelected(group))">
+						<i class="fas fa-chevron-right mr-3"></i>@group.ShortName - @group.LongName
+					</button>
+				}
+			</div>
+		}
+	}
+
+	<p class="mt-2 mb-0 align-center">
+		@TextService.MissingUniversityOrFacultyQuestion  <a class="btn btn-link m-0 p-0 align-top" href="@Constants.FacebookLink" target="_blank"> Facebook</a>
+	</p>
+}
+else
+{
+	<div class="text-center">
+		<div class="spinner-border text-primary" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+}
+
+@code {
+	[Inject] IRequestSender RequestSender { get; set; }
+	[Inject] IModalService ModalService { get; set; }
+	[Inject] ILoginService LoginService { get; set; }
+	[Inject] IToastService ToastService { get; set; }
+
+	[CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
+	public UniversityWithStudyGroupsDto[]? UniversitiesWithStudyGroups { get; set; }
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+
+		if (firstRender)
+		{
+			await FetchData();
+		}
+	}
+
+	private async Task FetchData()
+	{
+		var request = new GetUniversitiesAndStudyGroupsRequestDto();
+
+		var result = await RequestSender.SendRequestAsync(request);
+
+		UniversitiesWithStudyGroups = result.UniversitiesWithStudyGroups;
+
+		StateHasChanged();
+	}
+
+	public void HandleStudyGroupSelected(StudyGroupDto studyGroup)
+	{
+		ModalInstance.Close(ModalResult.Ok(studyGroup));
+	}
+
+	public async Task HandleAddStudGroup(UniversityWithStudyGroupsDto university)
+	{
+		if (!LoginService.IsAuthenticated)
+		{
+			ToastService.ShowLoginRequired(TextService);
+			return;
+		}
+
+		var parameters = new ModalParameters();
+		parameters.Add(nameof(AddStudyGroupModal.University), university);
+		var modal = ModalService.Show<AddStudyGroupModal>(TextService.AddStudyGroupModal_Title, parameters);
+
+		var result = await modal.Result;
+
+		if (!result.Cancelled)
+		{
+			UniversitiesWithStudyGroups = null;
+			//await FetchData();
+			ModalInstance.Close(ModalResult.Ok(result.Data));
+		}
+	}
+
+}

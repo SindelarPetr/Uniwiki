@@ -1,0 +1,151 @@
+﻿@page "/register"
+@using Uniwiki.Client.Host.Services
+@using Uniwiki.Shared.RequestResponse.Authentication
+@layout ThinFormLayout
+@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+
+
+	<div class="card-header h2 py-4 d-flex">
+		<BackButtonComponent /> <span class="mx-auto">@TextService.RegisterPage_Title</span><span class="mr-5"></span>
+	</div>
+<div class="card-body text-left p-3">
+
+	@*<button class="btn btn-dark btn-block d-flex mb-3">
+			<span class="fab fa-google mr-3 text-white" style="font-size: 1.6rem"></span>
+			<span class="text-center w-100">@TextService.ViaGoogle</span>
+		</button>
+
+
+		<button class="btn btn-primary btn-block d-flex" style="background-color: #4267B2">
+			<span class="fab fa-facebook-f mr-3" style="font-size: 1.6rem"></span>
+			<span class="text-center w-100">@TextService.ViaFacebook</span>
+		</button>
+
+		<hr class="my-3" />*@
+
+	<EditForm Model="@Request" OnValidSubmit="@Register">
+		<MyFluentValidator></MyFluentValidator>
+
+		@* Name *@
+		<label class="mt-3" for="inputName">@TextService.RegisterPage_Name</label>
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-user"></i></span>
+			</div>
+			<InputText class="form-control" type="text" id="inputName" placeholder="@TextService.RegisterPage_Name" aria-describedby="inputGroupPrepend" @bind-Value="Request.Name" maxlength="@Constants.Validations.UserNameMaxLength"/>
+		</div>
+		<ValidationMessage For="@(() => Request.Name)" />
+		@* /Name *@
+
+		@* Surname *@
+		<label class="mt-3" for="inputSurname">@TextService.RegisterPage_Surname</label>
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-signature"></i></span>
+			</div>
+			<InputText type="text" class="form-control" id="inputSurname" placeholder="@TextService.RegisterPage_Surname" aria-describedby="inputGroupPrepend" @bind-Value="Request.Surname" maxlength="@Constants.Validations.UserSurnameMaxLength"/>
+		</div>
+		<ValidationMessage For="@(() => Request.Surname)" />
+		@* /Surname *@
+
+		@* Email *@
+		<label class="mt-3" for="inputEmail">@TextService.Email</label>
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text">
+					<span class="fas fa-at"></span>
+				</span>
+			</div>
+
+			<InputText type="text" class="@IsValidClassAttribute" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" />
+		</div>
+		<ValidationMessage For="@(() => Request.Email)" />
+		@* /Email *@
+
+		@* Password *@
+		<label class="mt-3" for="inputPassword">@TextService.Password</label>
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-key"></i></span>
+			</div>
+			<InputText type="password" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" />
+		</div>
+		<ValidationMessage For="@(() => Request.Password)" />
+		@* /Password *@
+
+		@* Confirm password *@
+		<label class="mt-3" for="inputPasswordAgain">@TextService.PasswordAgain</label>
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-key"></i></span>
+			</div>
+			<InputText type="password" class="form-control" id="inputPasswordAgain" placeholder="@TextService.PasswordAgain" aria-describedby="inputGroupPrepend" @bind-Value="Request.PasswordAgain" />
+		</div>
+		<ValidationMessage For="@(() => Request.PasswordAgain)" />
+		@* /Confirm password *@
+
+		@* Submit *@
+		<BusyButtonComponent IsBusy="@_isBusy" Class="mt-3">
+			<span>@TextService.RegisterPage_Create</span>
+		</BusyButtonComponent>
+	</EditForm>
+</div>
+<div class="card-footer text-muted">
+	<div>
+		<a class="btn btn-link" href="@PageRoutes.LoginPage.BuildRoute()">@TextService.LogIn</a>
+	</div>
+</div>
+
+@code {
+
+	[Inject] private IRequestSender RequestSender { get; set; }
+	[Inject] private INavigationService NavigationService { get; set; }
+	[Inject] private ILoginService LoginService { get; set; }
+	[Inject] private IStaticStateService StaticStateService { get; set; }
+
+	public RegisterRequestDto Request { get; set; }
+
+	private string _email = string.Empty;
+	private Task<bool?> _isEmailAvailableTask = Task.FromResult<bool?>(null);
+	private string IsValidClassAttribute => (_isEmailAvailableTask.IsCompletedSuccessfully && (_isEmailAvailableTask.Result.HasValue && _isEmailAvailableTask.Result.Value) ? "form-control is-valid" : "form-control");
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		if (LoginService.IsAuthenticated)
+			NavigationService.NavigateTo(PageRoutes.HomePage.BuildRoute());
+
+		Request = new RegisterRequestDto(StaticStateService.LoginPageEmail, string.Empty, string.Empty, string.Empty, string.Empty);
+	}
+
+	private bool _isBusy;
+
+	public async Task Register()
+	{
+		// if he is busy, then do not do anything
+		if (_isBusy)
+		{
+			return;
+		}
+
+		// Set and display as busy
+		_isBusy = true;
+		StateHasChanged();
+
+		// Send the request
+		var response = await RequestSender.SendRequestAsync(Request, () =>
+		{
+			_isBusy = false;
+			StateHasChanged();
+		});
+
+		// Reset the email text in the static state storage
+		StaticStateService.SetLoginPageEmail(string.Empty);
+
+		// Navigate to the page about the requirement of confirming the email
+		NavigationService.NavigateTo(PageRoutes.ConfirmEmailPage.BuildRoute(response.UserProfile.Email));
+	}
+
+
+}

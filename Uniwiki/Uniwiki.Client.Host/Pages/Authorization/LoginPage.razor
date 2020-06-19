@@ -1,0 +1,117 @@
+﻿@page "/login"
+@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@using Uniwiki.Client.Host.Services
+@using Uniwiki.Shared.RequestResponse.Authentication
+@layout ThinFormLayout
+
+<div class="card-header h2 py-4 d-flex">
+	<BackButtonComponent/> <span class="mx-auto">@TextService.LoginPage_Title</span><span class="mr-5"></span>
+</div>
+<div class="card-body text-left p-3">
+
+	@*<button class="btn btn-dark btn-block d-flex mb-3">
+			<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="mr-3" style="object-fit:cover; height: 1.6rem" />
+			<span class="text-center w-100">Přes Google</span>
+		</button>*@
+
+	@* Google: *@
+	@* 368020290196-uca1cukdldoapah7ddi1eq26na9vqcnv.apps.googleusercontent.com *@
+	@* Pg0RDehFCBHwM1HFjB3BTVsl *@
+
+	@*<button class="btn btn-primary btn-block d-flex" style="background-color: #4267B2">
+			<span class="fab fa-facebook-f mr-3" style="font-size: 1.6rem"></span>
+			<span class="text-center w-100">Přes Facebook</span>
+		</button>*@
+
+	@*<hr class="my-3" />*@
+
+	<EditForm Model="@Request" OnValidSubmit="@Login">
+		<MyFluentValidator></MyFluentValidator>
+		<label for="inputEmail">@TextService.Email</label>
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-at"></i></span>
+			</div>
+			<InputText class="form-control" type="text" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" />
+		</div>
+		<ValidationMessage For="@(() => Request.Email)" />
+
+		<label class="mt-3" for="inputPassword">@TextService.Password</label>
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-key"></i></span>
+			</div>
+			<InputText type="password" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" />
+		</div>
+		<ValidationMessage For="@(() => Request.Password)" />
+		<BusyButtonComponent IsBusy="@_isBusy" Class="mt-3">
+			<span>@TextService.LogIn</span>
+		</BusyButtonComponent>
+	</EditForm>
+</div>
+<div class="card-footer text-muted">
+	<div>
+		<button type="button" class="btn btn-link" @onclick="HandleGoToCreateAccount">@TextService.LoginPage_CreateNewAccount</button>
+	</div>
+	<a class="btn btn-link text-secondary" href="@PageRoutes.RestorePasswordPage.BuildRoute()">@TextService.LoginPage_ForgottenPassword</a>
+</div>
+
+@code{
+
+	[Inject] private ILoginService LoginService { get; set; }
+	[Inject] private INavigationService NavigationService { get; set; }
+	[Inject] private ILocalStorageManagerService LocalStorageManagerService { get; set; }
+	[Inject] private IStaticStateService StaticStateService { get; set; }
+
+	public LoginRequestDto Request { get; private set; }
+
+	private bool _isBusy;
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		if (LoginService.IsAuthenticated)
+			NavigationService.NavigateTo(PageRoutes.HomePage.BuildRoute());
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		Request = new LoginRequestDto(string.Empty, string.Empty, new CourseDto[0]);
+	}
+
+	public async Task Login()
+	{
+		if (_isBusy)
+			return;
+
+		_isBusy = true;
+
+		// Get recent courses
+		var recentCourses = (await LocalStorageManagerService.GetRecentCourses()).ToArray();
+
+		// Send recent courses with the request
+		Request = new LoginRequestDto(Request.Email, Request.Password, recentCourses);
+
+		await LoginService.Login(Request, () =>
+		{
+			_isBusy = false;
+			StateHasChanged();
+		});
+
+		// Reset the email text in the static state storage
+		StaticStateService.SetLoginPageEmail(string.Empty);
+
+		await NavigationService.Back();
+	}
+
+	public void HandleGoToCreateAccount()
+	{
+		// Save the email for the registration page
+		StaticStateService.SetLoginPageEmail(Request.Email);
+
+		NavigationService.NavigateTo(PageRoutes.RegisterPage.BuildRoute());
+	}
+}

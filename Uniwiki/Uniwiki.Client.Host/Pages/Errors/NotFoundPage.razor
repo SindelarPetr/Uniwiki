@@ -1,0 +1,14 @@
+﻿@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@layout ThinFormLayout
+
+	<div class="container mb-5 mt-3">
+		<PageHeaderComponent Title="@TextService.NotFoundPage_Title" />
+
+		<div class="my-5 text-center">
+			<i class="fas fa-dizzy fa-4x text-muted"></i>
+		</div>
+		<div class="mb-3 text-center">
+			<a class="btn btn-primary" href="@PageRoutes.HomePage.BuildRoute()">@TextService.NotFoundPage_BackToUniwiki</a>
+		</div>
+	</div>
+
