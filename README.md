@@ -10,11 +10,12 @@
   <strong>Uniwki is an application for sharing study materials among students.</strong>
   <br>
   <br>
+  
+  <a href="https://uniwiki.azurewebsites.net/">See Uniwiki App</a>
+  ·
   <a href="https://github.com/SindelarPetr/Uniwiki/issues/new?template=bug_report.md">Report bug</a>
   ·
   <a href="https://github.com/SindelarPetr/Uniwiki/issues/new?template=feature_request.md">Request feature</a>
-  ·
-  <a href="https://uniwiki.azurewebsites.net/">Website</a>
 </p>
 
 <p align="center">
