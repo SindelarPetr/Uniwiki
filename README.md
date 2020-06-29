@@ -7,7 +7,7 @@
 <h1 align="center">Uniwiki</h1>
 
 <p align="center">
-  <strong>Uniwki is an application, which helps sharing study materials among students by helping them to cooperate.</strong>
+  <strong>Uniwki is an application for sharing study materials among students.</strong>
   <br>
   <br>
   <a href="https://github.com/SindelarPetr/Uniwiki/issues/new?template=bug_report.md">Report bug</a>
