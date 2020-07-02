@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Web;
 using Shared;
 
 namespace Uniwiki.Shared
@@ -8,14 +9,23 @@ namespace Uniwiki.Shared
     {
         public static class UploadController
         {
-            public static string GetPostFile(Guid id, Guid secondaryToken, string fileName, Language language) => RouteHelper.BuildRoutePartsWithParameters(
-                new NameValueCollection()
-                {
-                    {nameof(id), id.ToString()},
-                    {"accessToken", secondaryToken.ToString()},
-                    {nameof(fileName), fileName},
-                    {nameof(language), ((int)language).ToString()}
-        }, "upload", nameof(GetPostFile));
+            public const string FileIdParameter = "FileId";
+            public const string SecondaryTokenParameter = "Token";
+            public const string FileNameParameter = "FileName";
+            public const string LanguageParameter = "Language";
+
+            public static string GetPostFile(Guid id, Guid secondaryToken, string fileName, Language language)
+            {
+                var encodedName = HttpUtility.UrlEncode(fileName);
+                var queryParameters = new NameValueCollection()
+                    {
+                    {FileIdParameter, id.ToString()},
+                    {SecondaryTokenParameter, secondaryToken.ToString()},
+                    {FileNameParameter, encodedName},
+                    {LanguageParameter, ((int)language).ToString()} };
+
+                return RouteHelper.BuildRoutePartsWithParameters(queryParameters, "upload", nameof(GetPostFile));
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
+using Shared.Exceptions;
 using Uniwiki.Server.Application.Extensions;
+using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
@@ -14,21 +16,29 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
     {
         private readonly IEmailConfirmationSecretRepository _emailConfirmationSecretRepository;
         private readonly ILoginService _loginService;
+        private readonly TextService _textService;
 
-        public ConfirmEmailServerAction(IServiceProvider serviceProvider, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, ILoginService loginService) : base(serviceProvider)
+        public ConfirmEmailServerAction(IServiceProvider serviceProvider, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, ILoginService loginService, TextService textService) : base(serviceProvider)
         {
             _emailConfirmationSecretRepository = emailConfirmationSecretRepository;
             _loginService = loginService;
+            _textService = textService;
         }
 
         protected override Task<ConfirmEmailResponseDto> ExecuteAsync(ConfirmEmailRequestDto request, RequestContext context)
         {
             // Get secret
-            var secret = _emailConfirmationSecretRepository.FindValidById(request.Secret);
+            var secret = _emailConfirmationSecretRepository.FindById(request.Secret);
 
             // If email was already confirmed, then return ok response, but dont issue login token
             if (secret.Profile.IsConfirmed)
                 return Task.FromResult(new ConfirmEmailResponseDto(secret.Profile.ToDto(), null));
+
+            // If the secret was invalidated, then return error
+            if (!secret.IsValid)
+                throw new RequestException(_textService.Error_EmailConfirmationFailed);
+
+            // If the
 
             // Confirm the email
             _emailConfirmationSecretRepository.ConfirmEmail(secret);

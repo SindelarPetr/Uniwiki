@@ -61,7 +61,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
                     // Check if its possible to resend it to the user
                     if (_timeService.Now < secret.CreationTime.Add(Constants.ResendRegistrationEmailMinTime))
                     {
-                        throw new RequestException( _textService.Error_EmailHasBeenAlreadySent);
+                        throw new RequestException(_textService.Error_EmailHasBeenAlreadySent);
                     }
 
                     // Invalidate it

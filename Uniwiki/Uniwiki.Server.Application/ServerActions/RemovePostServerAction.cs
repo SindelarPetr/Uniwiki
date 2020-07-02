@@ -29,8 +29,8 @@ namespace Uniwiki.Server.Application.ServerActions
             // Get post
             var post = _postRepository.FindById(request.PostId);
 
-            // Verify if the post belongs to the user, who is removing it
-            if (profile != post.Author)
+            // Verify if the post belongs to the user, who is removing it, or that the user is admin
+            if (profile != post.Author && profile.AuthenticationLevel != AuthenticationLevel.Admin)
             {
                 throw new RequestException("Its not possible to remove a post not belonging to the authorized author.");
             }

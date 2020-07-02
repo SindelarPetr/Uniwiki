@@ -12,9 +12,8 @@ namespace Uniwiki.Shared
 
         public static TimeSpan RestorePasswordSecretExpiration => TimeSpan.FromHours(5);
         public static TimeSpan RestorePasswordSecretPause => TimeSpan.FromSeconds(30);
-        public static TimeSpan LoginTokenLife => TimeSpan.FromDays(7);
+        public static TimeSpan LoginTokenLife => TimeSpan.FromDays(60);
         
-
         public static TimeSpan DownloadAgainTime = TimeSpan.FromSeconds(10);
 
         public const string FacebookLink = "https://www.facebook.com/UniwikiOfficial";

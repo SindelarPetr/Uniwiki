@@ -17,6 +17,8 @@ using Shared.Dtos;
 using Shared.Exceptions;
 using Shared.RequestResponse;
 using Uniwiki.Client.Host;
+using Uniwiki.Client.Host.Components.FileUploader;
+using Uniwiki.Client.Host.Components.SearchBox;
 using Uniwiki.Client.Host.Pages;
 using Uniwiki.Client.Host.Pages.Authorization;
 using Uniwiki.Client.Host.Services;
@@ -26,9 +28,12 @@ using Uniwiki.Server.Host;
 using Uniwiki.Server.Host.Mvc;
 using Uniwiki.Server.Host.Services.Abstractions;
 using Uniwiki.Shared;
+using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse.Authentication;
 using Uniwiki.Shared.Services.Abstractions;
+using Uniwiki.Shared.Tests.FakeServices;
 using Uniwiki.Tests.Extensions;
+using ILoginService = Uniwiki.Client.Host.Services.Abstractions.ILoginService;
 using Program = Uniwiki.Client.Host.Program;
 using TextService = Uniwiki.Client.Host.Services.TextService;
 
@@ -39,10 +44,6 @@ namespace Uniwiki.Tests
     {
         private FakeEmailService _emailService;
         private FakeTimeService _timeService;
-        private IRequestSender _requestSender;
-        private FakeNavigationService _navigationService;
-        private ILoginService _loginService;
-        private TextService _textService;
 
         static ComplexTests()
         {
@@ -73,11 +74,6 @@ namespace Uniwiki.Tests
             _timeService = (FakeTimeService) provider.GetService<ITimeService>();
             _timeService.SetNow(new DateTime(2020, 4, 12, 4, 13, 44));
 
-            _requestSender = provider.GetService<IRequestSender>();
-            _navigationService = (FakeNavigationService)provider.GetService<INavigationService>();
-            _loginService = provider.GetService<ILoginService>();
-            _textService = provider.GetService<TextService>();
-
             return provider;
         }
 
@@ -97,32 +93,32 @@ namespace Uniwiki.Tests
 
             // --- Act ---
             var registerRequestDto = new RegisterRequestDto(email, name, surename, password, password);
-            var registerPage = CreateRegisterPage(registerRequestDto);
+            var registerPage = CreateRegisterPage(provider, registerRequestDto);
             await registerPage.Register();
             var registerSecret = _emailService.RegisterSecrets[0];
 
-            var confirmEmailPage = CreateEmailConfirmedPage(registerSecret.ToString(), email);
+            var confirmEmailPage = CreateEmailConfirmedPage(provider, registerSecret.ToString(), email);
             await confirmEmailPage.ConfirmEmail();
 
-            var loginRequestDto = new LoginRequestDto(email, password); // REAL
-            var loginPage = CreateLoginPage(loginRequestDto); // REAL
+            var loginRequestDto = new LoginRequestDto(email, password, new CourseDto[0]); // REAL
+            var loginPage = CreateLoginPage(provider, loginRequestDto); // REAL
             await loginPage.Login();
 
             var passwordRequestDto = new ChangePasswordRequestDto(password, newPassword, newPassword);
-            var changePasswordPage = CreateChangePasswordPage(passwordRequestDto);
+            var changePasswordPage = CreateChangePasswordPage(provider, passwordRequestDto);
             await changePasswordPage.ChangePassword();
 
             var loginService = provider.GetService<ILoginService>();
-            var profilePage = CreateProfilePage(loginService.User.NameIdentifier);
+            var profilePage = CreateProfilePage(provider, loginService.User.NameIdentifier);
             await profilePage.Logout();
 
             var restorePasswordPageForm = new RestorePasswordRequestDto(email);
-            var restorePasswordPage = CreateRestorePasswordPage(restorePasswordPageForm);
+            var restorePasswordPage = CreateRestorePasswordPage(provider, restorePasswordPageForm);
             await restorePasswordPage.RestorePassword();
             var restorePasswordSecret = _emailService.RestorePasswordSecrets[0];
 
             var newPasswordRequestDto = new CreateNewPasswordRequestDto(newNewPassword, restorePasswordSecret, newNewPassword);
-            var createNewPasswordPage = CreateCreateNewPasswordPage(newPasswordRequestDto, restorePasswordSecret.ToString());
+            var createNewPasswordPage = CreateCreateNewPasswordPage(provider, newPasswordRequestDto, restorePasswordSecret.ToString());
             await createNewPasswordPage.CreateNewPassword();
             
             loginRequestDto.Password = newNewPassword;
@@ -164,73 +160,73 @@ namespace Uniwiki.Tests
 
             // --- Act ---
             // Try login without registration
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateLoginPage(new LoginRequestDto(email1, password1)).Login());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateLoginPage(provider, new LoginRequestDto(email1, password1, new CourseDto[0])).Login());
             // Try to validate email without registration
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateEmailConfirmedPage(someSecret.ToString(), email1).ConfirmEmail());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateEmailConfirmedPage(provider, someSecret.ToString(), email1).ConfirmEmail());
             // Try to change password without login
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateChangePasswordPage(new ChangePasswordRequestDto(password1, "sss", "sss")).ChangePassword());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateChangePasswordPage(provider, new ChangePasswordRequestDto(password1, "sss", "sss")).ChangePassword());
             // Try to restore password of non registered user
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRestorePasswordPage(new RestorePasswordRequestDto(email1)).RestorePassword());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRestorePasswordPage(provider, new RestorePasswordRequestDto(email1)).RestorePassword());
             // Create new password of non registered user
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(new CreateNewPasswordRequestDto("www", Guid.Empty, "wwww"),someSecret.ToString()).CreateNewPassword());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(provider, new CreateNewPasswordRequestDto("www", Guid.Empty, "wwww"),someSecret.ToString()).CreateNewPassword());
 
             // Register user 1
-            await CreateRegisterPage(new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register();
+            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register();
             var registerSecret1 = _emailService.RegisterSecrets.Last();
 
             // Try login without confirming the email
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateLoginPage(new LoginRequestDto(email1, password1)).Login());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateLoginPage(provider, new LoginRequestDto(email1, password1, new CourseDto[0])).Login());
             // Try login without registration
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateLoginPage(new LoginRequestDto(email2, password2)).Login());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateLoginPage(provider, new LoginRequestDto(email2, password2, new CourseDto[0])).Login());
             // Try to validate email with wrong secret
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateEmailConfirmedPage(someSecret.ToString(), email2).ConfirmEmail());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateEmailConfirmedPage(provider, someSecret.ToString(), email2).ConfirmEmail());
             // Try to change password without login
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateChangePasswordPage(new ChangePasswordRequestDto(password1, "sss", "sss")).ChangePassword());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateChangePasswordPage(provider, new ChangePasswordRequestDto(password1, "sss", "sss")).ChangePassword());
             // Try to restore password of non registered user
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRestorePasswordPage(new RestorePasswordRequestDto(email2)).RestorePassword());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRestorePasswordPage(provider, new RestorePasswordRequestDto(email2)).RestorePassword());
             // Create new password of non registered user
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(new CreateNewPasswordRequestDto("www", Guid.NewGuid(), "wwww"), someSecret.ToString()).CreateNewPassword());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(provider, new CreateNewPasswordRequestDto("www", Guid.NewGuid(), "wwww"), someSecret.ToString()).CreateNewPassword());
 
             // Register user 1 once more (before he confirms the email, before its time for resending the email)
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register());
 
             // Move time
             _timeService.SetNow(_timeService.Now.Add(Constants.ResendRegistrationEmailMinTime.Add(TimeSpan.FromSeconds(5))));
 
             // Try to register again
-            await CreateRegisterPage(new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register();
+            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register();
             var registerSecret1b = _emailService.RegisterSecrets.Last();
 
             // Try to confirm the email of user 1 with his old confirmation email
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateEmailConfirmedPage(registerSecret1.ToString(), email1).ConfirmEmail());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateEmailConfirmedPage(provider, registerSecret1.ToString(), email1).ConfirmEmail());
             
              // Confirm the email of user 1 with the new confirmation email
-            await CreateEmailConfirmedPage(registerSecret1b.ToString(), email1).ConfirmEmail();
+            await CreateEmailConfirmedPage(provider, registerSecret1b.ToString(), email1).ConfirmEmail();
 
             // Try to register the user
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register());
 
             // Login the user 1
-            await CreateLoginPage(new LoginRequestDto(email1, password1)).Login();
+            await CreateLoginPage(provider, new LoginRequestDto(email1, password1, new CourseDto[0])).Login();
 
             // Change the password of user 1
-            await CreateChangePasswordPage(new ChangePasswordRequestDto(password1, newPassword1, newPassword1)).ChangePassword();
+            await CreateChangePasswordPage(provider, new ChangePasswordRequestDto(password1, newPassword1, newPassword1)).ChangePassword();
 
             var loginService = provider.GetService<ILoginService>();
             // Logout
-            await CreateProfilePage(loginService.User.NameIdentifier).Logout();
+            await CreateProfilePage(provider, loginService.User.NameIdentifier).Logout();
 
             // Restore password
-            await CreateRestorePasswordPage(new RestorePasswordRequestDto(email1)).RestorePassword();
+            await CreateRestorePasswordPage(provider, new RestorePasswordRequestDto(email1)).RestorePassword();
             var restorePasswordSecret = _emailService.RestorePasswordSecrets.Last();
 
             // Create new password
             var createNewPasswordPageForm = new CreateNewPasswordRequestDto(newNewPassword1, restorePasswordSecret, newNewPassword1);
-            var createNewPasswordPage = CreateCreateNewPasswordPage(createNewPasswordPageForm, restorePasswordSecret.ToString());
+            var createNewPasswordPage = CreateCreateNewPasswordPage(provider, createNewPasswordPageForm, restorePasswordSecret.ToString());
             await createNewPasswordPage.CreateNewPassword();
 
             // Login using the new password
-            await CreateLoginPage(new LoginRequestDto(email1, newNewPassword1)).Login();
+            await CreateLoginPage(provider, new LoginRequestDto(email1, newNewPassword1, new CourseDto[0])).Login();
         }
 
         [TestMethod]
@@ -238,7 +234,7 @@ namespace Uniwiki.Tests
         {
             var provider = SetupDefaultDependencies();
             
-            var searchBox = new SearchBox();
+            var searchBox = new SearchBoxComponent();
 
             provider.InjectDependencies(searchBox);
 
@@ -249,41 +245,62 @@ namespace Uniwiki.Tests
             Assert.IsNotNull(searchBox.JsInteropService);
         }
 
-        private CreateNewPasswordPage CreateCreateNewPasswordPage(CreateNewPasswordRequestDto createNewPasswordPageForm, string secret)
+        private CreateNewPasswordPage CreateCreateNewPasswordPage(ServiceProvider provider, CreateNewPasswordRequestDto request, string secret)
         {
-            return new CreateNewPasswordPage(_requestSender, _navigationService, _loginService, secret,
-                createNewPasswordPageForm, _textService);
+            var page = new CreateNewPasswordPage();
+            provider.InjectDependencies(page);
+            page.Request = request;
+            page.Secret = secret;
+            return page;
         }
 
-        private RegisterPage CreateRegisterPage(RegisterRequestDto registerPageForm)
+        private RegisterPage CreateRegisterPage(ServiceProvider provider, RegisterRequestDto request)
         {
-            return new RegisterPage(_requestSender, _navigationService, _loginService, registerPageForm, _textService);
+            var page = new RegisterPage();
+            provider.InjectDependencies(page);
+            page.Request = request;
+            return page;
         }
 
-        private EmailConfirmedPage CreateEmailConfirmedPage(string secret, string email)
+        private EmailConfirmedPage CreateEmailConfirmedPage(ServiceProvider provider, string secret, string email)
         {
-            return new EmailConfirmedPage(secret, _requestSender, _loginService, _navigationService, _textService, email);
+            var page = new EmailConfirmedPage();
+            provider.InjectDependencies(page);
+            page.Secret = secret;
+            page.Email = email;
+            return page;
         }
 
-        private LoginPage CreateLoginPage(LoginRequestDto loginPageForm)
+        private LoginPage CreateLoginPage(ServiceProvider provider, LoginRequestDto request)
         {
-            return new LoginPage(_loginService, _navigationService, loginPageForm, _textService);
+            var page = new LoginPage();
+            provider.InjectDependencies(page);
+            page.Request = request;
+            return page;
         }
 
-        private ChangePasswordPage CreateChangePasswordPage(ChangePasswordRequestDto changePasswordPageForm)
+        private ChangePasswordPage CreateChangePasswordPage(ServiceProvider provider, ChangePasswordRequestDto request)
         {
-            return new ChangePasswordPage(_requestSender, _navigationService, _loginService, changePasswordPageForm, _textService);
+            var page = new ChangePasswordPage();
+            provider.InjectDependencies(page);
+            page.Request = request;
+            return page;
         }
 
-        private ProfilePage CreateProfilePage(string nameIdentifier)
+        private ProfilePage CreateProfilePage(ServiceProvider provider, string url)
         {
-            return new ProfilePage(_requestSender, _loginService, _navigationService,
-                nameIdentifier, _textService);
+            var page = new ProfilePage();
+            provider.InjectDependencies(page);
+            page.Url = url;
+            return page;
         }
 
-        private RestorePasswordPage CreateRestorePasswordPage(RestorePasswordRequestDto restorePasswordPageForm)
+        private RestorePasswordPage CreateRestorePasswordPage(ServiceProvider provider, RestorePasswordRequestDto request)
         {
-            return new RestorePasswordPage(_navigationService, _requestSender, restorePasswordPageForm, _loginService, _textService);
+            var page = new RestorePasswordPage();
+            provider.InjectDependencies(page);
+            page.Request = request;
+            return page;
         }
     }
 
@@ -395,30 +412,6 @@ namespace Uniwiki.Tests
         }
     }
 
-    class FakeEmailService : IEmailService
-    {
-        public List<Guid> RestorePasswordSecrets { get; }
-        public List<Guid> RegisterSecrets { get; }
-
-        public FakeEmailService()
-        {
-            RestorePasswordSecrets = new List<Guid>();
-            RegisterSecrets = new List<Guid>();
-        }
-
-        public Task SendRestorePasswordEmail(string recipientEmail, Guid secret)
-        {
-            RestorePasswordSecrets.Add(secret);
-            return Task.CompletedTask;
-        }
-
-        public Task SendRegisterEmail(string recipientEmail, Guid secret)
-        {
-            RegisterSecrets.Add(secret);
-            return Task.CompletedTask;
-        }
-    }
-
     class FakeToastService : IToastService
     {
         public void ShowInfo(string message, string heading = "")
@@ -468,6 +461,7 @@ namespace Uniwiki.Tests
     class FakePeriodicalTimer : IPeriodicalTimer
     {
         public int PeriodsLeft { get; set; }
+        public bool IsRunning => PeriodsLeft > 0;
 
         public void Start(TimeSpan period, int periods, Action periodElapsed)
         {
@@ -523,7 +517,7 @@ namespace Uniwiki.Tests
             return Task.CompletedTask;
         }
 
-        public Task SetItemAsync(string key, object data)
+        public Task SetItemAsync<T>(string key, T data)
         {
             _storage[key] = data;
 
@@ -580,6 +574,21 @@ namespace Uniwiki.Tests
         }
 
         public ValueTask SetHeightToInitial(ElementReference element)
+        {
+            return new ValueTask();
+        }
+
+        public ValueTask MyInputInit(ElementReference? fileInput, DotNetObjectReference<InputFileCallbacks> callbacksAsNetRef)
+        {
+            return new ValueTask();
+        }
+
+        public ValueTask StartFileUpload(in int id, string dataForServer)
+        {
+            return new ValueTask();
+        }
+
+        public ValueTask AbortFileUpload(in int id)
         {
             return new ValueTask();
         }

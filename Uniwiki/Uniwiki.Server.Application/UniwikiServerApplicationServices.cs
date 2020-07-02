@@ -21,14 +21,14 @@ namespace Uniwiki.Server.Application
             services.AddUniwikiSharedServices();
             services.AddUniwikiServerPersistenceInMemory();
 
-            services.AddTransient<IEmailService, EmailService>(); // Scoped, because it uses HttpContext inside
+            services.AddTransient<IEmailService, EmailService>(); // Transient, because it uses HttpContext inside
             services.AddScoped<IServerActionProvider, ServerActionProvider>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IInputValidationService, InputValidationService>();
             services.AddScoped<TextService>();
             services.AddScoped<TextServiceBase>(p => p.GetService<TextService>());
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
-            services.AddTransient<IFakeDataInitializationService, FakeDataInitializationService>();
+            services.AddTransient<IDataManipulationService, DataManipulationService>();
             services.AddSingleton<IHashService, HashService>();
             services.AddScoped<ILoginService, LoginService>();
 

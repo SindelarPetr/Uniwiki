@@ -6,7 +6,7 @@
 }
 
 <div class="form-inline mr-2 mt-2">
-	<input class="form-control @(string.IsNullOrWhiteSpace(_inputSelectedPostType) ? string.Empty : "bg-primary text-white") selection-text" type="text" maxlength="@Constants.Validations.PostTypeMaxLength" placeholder="@TextService.CoursePage_SearchType" @oninput="HandleInputPostType" value="@_inputSelectedPostType">
+	<input class="form-control border-secondary @(string.IsNullOrWhiteSpace(_inputSelectedPostType) ? string.Empty : "bg-primary text-white") selection-text" type="text" maxlength="@Constants.Validations.PostTypeMaxLength" placeholder="@TextService.CoursePage_SearchType" @oninput="HandleInputPostType" value="@_inputSelectedPostType">
 </div>
 
 @code {

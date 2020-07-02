@@ -63,7 +63,7 @@
 	[Inject] private ILocalStorageManagerService LocalStorageManagerService { get; set; }
 	[Inject] private IStaticStateService StaticStateService { get; set; }
 
-	public LoginRequestDto Request { get; private set; }
+	public LoginRequestDto Request { get; set; }
 
 	private bool _isBusy;
 

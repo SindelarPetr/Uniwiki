@@ -80,5 +80,10 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories
 
             return university;
         }
+
+        public bool IsNameAndUrlUniq(string fullName, string url)
+        {
+            return _dataService.Universities.All(u => u.FullName.ToLower() != fullName.ToLower() && u.Url != url);
+        }
     }
 }

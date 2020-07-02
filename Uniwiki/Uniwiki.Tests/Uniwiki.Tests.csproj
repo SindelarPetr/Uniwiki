@@ -31,6 +31,7 @@
     <ProjectReference Include="..\Uniwiki.Server.Application\Uniwiki.Server.Application.csproj" />
     <ProjectReference Include="..\Uniwiki.Server.Host\Uniwiki.Server.Host.csproj" />
     <ProjectReference Include="..\Uniwiki.Server.Persistence\Uniwiki.Server.Persistence.csproj" />
+    <ProjectReference Include="..\Uniwiki.Shared.Tests\Uniwiki.Shared.Tests.csproj" />
     <ProjectReference Include="..\Uniwiki.Shared\Uniwiki.Shared.csproj" />
   </ItemGroup>
 

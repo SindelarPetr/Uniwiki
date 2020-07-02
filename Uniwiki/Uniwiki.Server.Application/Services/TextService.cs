@@ -1,4 +1,5 @@
-﻿using Uniwiki.Shared;
+﻿using System;
+using Uniwiki.Shared;
 using Uniwiki.Shared.Services;
 
 namespace Uniwiki.Server.Application.Services
@@ -6,6 +7,8 @@ namespace Uniwiki.Server.Application.Services
     // We dont want to abstract this one - translating would then be too much time consuming
     internal class TextService : TextServiceBase
     {
+        public string Error_EmailConfirmationFailed => GetTranslation("Nepodařilo se potvrdit email tímto odkazem.", "Confirmation of your email is not possible with this link.");
+
         public string Error_WaitBeforeRepeatedDownload => GetTranslation($"Pro opětovné stažení souboru musíte počkat {Constants.DownloadAgainTime.Seconds} s.", $"You need to wait ({Constants.DownloadAgainTime.Seconds} s) before you will be able to download the file again.");
         public string Error_EmailHasWrongFormat => GetTranslation("Zadaný email není platný.", "Provided email is not valid.");
         public string Email_RegisterSubject => GetTranslation("Potvrďte Váš email", "Confirm your email");
@@ -15,6 +18,8 @@ namespace Uniwiki.Server.Application.Services
 
         public string Error_CouldNotRefreshPassword => GetTranslation("Nepodařilo se obnovit heslo. Zkuste to znovu.",
             "Could not refresh the password. Try again.");
+
+        internal string Error_UniversityNameOrUrlNotUniq(string name, string url) => GetTranslation($"Buď název univerzity '{name}' nebo url '{url}' je již zabrané.", $"The name of the university {name} or url {url} is not uniq.");
 
         public string Error_OldPasswordsDontMatch =>
             GetTranslation("Staré heslo není správné.", "The old password is not valid.");
@@ -61,7 +66,7 @@ namespace Uniwiki.Server.Application.Services
 
         public string EmailRestorePassword_ContactUs => GetTranslation("Případně nás neváhejte kontaktovat přes", "Do not hesitate to contact us via");
 
-        public string Error_YourEmailWasNotConfirmed(string email) => GetTranslation(
+        public string Error_YourEmailWasNotYetConfirmed(string email) => GetTranslation(
             $"Váš účet nebyl aktivován. Aktivujte jej přes odkaz v emailu {email}. Případně opakujte registraci.",
             $"Your email was not confirmed yet. Confirm it through a link in your email {email}. Register again eventually.");
 

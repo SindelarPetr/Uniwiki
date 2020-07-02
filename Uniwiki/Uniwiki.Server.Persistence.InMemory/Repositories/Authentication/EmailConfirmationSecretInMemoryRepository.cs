@@ -42,7 +42,7 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
             }
         }
 
-        public EmailConfirmationSecretModel TryGetValidEmailConfirmationSecret(ProfileModel profile)
+        public EmailConfirmationSecretModel? TryGetValidEmailConfirmationSecret(ProfileModel profile)
         {
             return _dataStorage.EmailConfirmationSecrets.FirstOrDefault(s => s.Profile == profile && s.IsValid);
         }
@@ -50,6 +50,12 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
         public EmailConfirmationSecretModel FindValidById(Guid secret)
         {
             return _dataStorage.EmailConfirmationSecrets.FirstOrDefault(s => s.Secret == secret && s.IsValid) 
+                   ?? throw new RequestException(_textService.Error_EmailConfirmationFailed);
+        }
+
+        public EmailConfirmationSecretModel FindById(Guid secret)
+        {
+            return _dataStorage.EmailConfirmationSecrets.FirstOrDefault(s => s.Secret == secret)
                    ?? throw new RequestException(_textService.Error_EmailConfirmationFailed);
         }
     }

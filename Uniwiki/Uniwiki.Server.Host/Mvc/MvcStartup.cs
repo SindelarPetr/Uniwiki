@@ -27,7 +27,7 @@ namespace Uniwiki.Server.Host.Mvc
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             using (var scope = serviceProvider.CreateScope())
-                scope.ServiceProvider.GetRequiredService<IFakeDataInitializationService>().InitializeData().GetAwaiter().GetResult();
+                scope.ServiceProvider.GetRequiredService<IDataManipulationService>().InitializeFakeData().GetAwaiter().GetResult();
 
             if (env.IsDevelopment())
             {

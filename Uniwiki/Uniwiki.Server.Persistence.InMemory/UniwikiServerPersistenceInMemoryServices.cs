@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.CompilerServices;
 using Uniwiki.Server.Persistence.InMemory.Repositories;
 using Uniwiki.Server.Persistence.InMemory.Repositories.Authentication;
 using Uniwiki.Server.Persistence.InMemory.Services;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
 
+[assembly: InternalsVisibleTo("Uniwiki.Server.Application.Tests")]
 namespace Uniwiki.Server.Persistence.InMemory
 {
     public static class UniwikiServerPersistenceInMemoryServices

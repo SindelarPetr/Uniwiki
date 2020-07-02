@@ -18,7 +18,7 @@ namespace Uniwiki.Server.Application.Services
 {
 
 
-    internal class FakeDataInitializationService : IFakeDataInitializationService
+    internal class DataManipulationService : IDataManipulationService
     {
         private readonly AddCourseServerAction _addCourseServerAction;
         private readonly RegisterServerAction _registerServerAction;
@@ -36,7 +36,7 @@ namespace Uniwiki.Server.Application.Services
         private readonly ITimeService _timeService;
         private readonly RequestContext _anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid(), Language.English);
 
-        public FakeDataInitializationService(AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, IUniversityRepository universityRepository, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService)
+        public DataManipulationService(AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, IUniversityRepository universityRepository, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService)
         {
             _addCourseServerAction = addCourseServerAction;
             _registerServerAction = registerServerAction;
@@ -54,9 +54,8 @@ namespace Uniwiki.Server.Application.Services
             _timeService = timeService;
         }
 
-        public async Task InitializeData()
+        public async Task InitializeFakeData()
         {
-
             // Register users
             var lucieContext = await RegisterUser("a@a.cz", "Lucie", "Veselá", "a", true);
             var ivanaContext = await RegisterUser("b@b.cz", "Ivana", "Nováková", "b");
@@ -173,7 +172,7 @@ namespace Uniwiki.Server.Application.Services
             await CreateCourse("", "Forensic Science", lawHse, lucieContext);
             await CreateCourse("", "Criminology", lawHse, lucieContext);
             var hseLawFm = (await CreateCourse("", "Financial Markets", lawHse, lucieContext)).CourseDto;
-            var hseLawM2 = (await CreateCourse("", "Management 2", lawHse, lucieContext)).CourseDto;
+            var hseLawM2 = (await CreateCourse("", "Advanced Management", lawHse, lucieContext)).CourseDto;
             await CreateCourse("", "International Law in Action: the Arbitration of International Disputes", lawHse, lucieContext);
             await CreateCourse("", "International Law in Action: A Guide to the International Courts and Tribunals in The Hague", lawHse, lucieContext);
 
@@ -199,7 +198,7 @@ namespace Uniwiki.Server.Application.Services
             await CreateCourse("", "Economy and Politics of Arab Countries", weHse, lucieContext);
             await CreateCourse("", "Energy policy and Diplomacy", weHse, lucieContext);
             var hseWeFm = (await CreateCourse("", "Financial Markets", weHse, lucieContext)).CourseDto;
-            var hseWeM2 = (await CreateCourse("", "Management 2", weHse, lucieContext)).CourseDto;
+            var hseWeM2 = (await CreateCourse("", "Advanced Management", weHse, lucieContext)).CourseDto;
 
 
             var postTypeExperienceEn = "Experience";
@@ -287,7 +286,7 @@ namespace Uniwiki.Server.Application.Services
                 lucieContext);
         }
 
-        private async Task<RequestContext> RegisterUser(string email, string name, string surname, string password, bool isAdmin = false)
+        public async Task<RequestContext> RegisterUser(string email, string name, string surname, string password, bool isAdmin = false)
         {
             var userDto = (await _registerServerAction.ExecuteActionAsync(new RegisterRequestDto(email, name, surname, password, password), _anonymousContext)).UserProfile;
             var user = _profileRepository.FindById(userDto.Id);
@@ -304,7 +303,7 @@ namespace Uniwiki.Server.Application.Services
             return new RequestContext(token, isAdmin ? AuthenticationLevel.Admin : AuthenticationLevel.PrimaryToken, Guid.NewGuid(), Language.English);
         }
 
-        private Task<AddCourseResponseDto> CreateCourse(string code, string name, StudyGroupDto studyGroup, RequestContext requestContext)
+        public Task<AddCourseResponseDto> CreateCourse(string code, string name, StudyGroupDto studyGroup, RequestContext requestContext)
         {
             var request = new AddCourseRequestDto(name, code, studyGroup.Id);
             return _addCourseServerAction.ExecuteActionAsync(request, requestContext);

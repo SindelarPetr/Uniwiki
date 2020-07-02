@@ -34,19 +34,17 @@ namespace Uniwiki.Server.Persistence.InMemory.Services
         public IEnumerable<string> _defaultPostTypesCz => new[]
         {
             "Domácí úkol",
-            "Test",
+            "Test v semesteru",
             "Zkouška",
-            "Studijní materiál",
-            "Volný příspěvek",
+            "Studijní materiál"
         };
 
         public IEnumerable<string> _defaultPostTypesEn => new[]
         {
             "Homework",
-                "Test",
-                "Exam",
-                "Study material",
-                "General",
+                "Test in semester",
+                "Final exam",
+                "Study material"
         };
     }
 }

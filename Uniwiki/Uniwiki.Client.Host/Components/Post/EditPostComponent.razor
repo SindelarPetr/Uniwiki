@@ -4,7 +4,7 @@
 @using Newtonsoft.Json
 @using Uniwiki.Client.Host.Exceptions
 
-<div class="d-flex mb-3 align-items-center">
+@*<div class="d-flex mb-3 align-items-center">
 	<a href="@PageRoutes.ProfilePage.BuildRoute(LoginService.User.NameIdentifier)" class="d-flex">
 		<img src="@LoginService.User.ProfilePictureSrc"
 			 alt="Profile picture"
@@ -12,26 +12,26 @@
 			 style="width: 2rem; height: 2rem; object-fit: cover" />
 		<h6 class="my-auto">@LoginService.User.FullName</h6>
 	</a>
-</div>
+</div>*@
 
 <EditForm Model="@Request" OnValidSubmit="@HandleCommitPost">
 	<MyFluentValidator></MyFluentValidator>
 
-	<p class="lead">
-		<InputTextArea class="form-control" placeholder="@TextService.CoursePage_WriteYourMessageHere" @bind-Value="Request.Text" oninput="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" style="height: 100px;overflow-y: hidden" required></InputTextArea>
-	</p>
-	<hr class="mb-2" />
-
-	@* Post type *@
-	<div class="d-flex flex-wrap">
+	@* Post Category *@
+	<div class="d-flex flex-wrap mb-3">
 		<h5 class="my-auto pt-2 pr-3">
 			@TextService.CoursePage_PostType
 		</h5>
 
 		<SelectPostTypeComponent PostTypes="@AllPostTypes" @bind-SelectedPostType="Request.PostType" />
 	</div>
-	@* /Post type *@
-	<hr />
+	@* /Post Category *@
+
+	<p class="lead">
+		<InputTextArea class="form-control" placeholder="@TextService.CoursePage_WriteYourMessageHere" @bind-Value="Request.Text" oninput="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" style="height: 100px;overflow-y: hidden" required></InputTextArea>
+	</p>
+	<hr class="mb-2" />
+
 	@* Files *@
 	@foreach (var file in Request.PostFiles)
 	{

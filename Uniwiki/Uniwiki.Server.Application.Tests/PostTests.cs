@@ -23,11 +23,12 @@ using Uniwiki.Shared.Tests.FakeServices;
 namespace Uniwiki.Server.Application.Tests
 {
     [TestClass]
-    public class AuthenticationTests
+    public class PostTests
     {
         [TestMethod]
-        public async Task RunAuthenticationComplexTest()
+        public async Task RunPostComplexTest()
         {
+            // TODO: Everything is just copied from authentication tests
             // --------- Arrange
             ServiceCollection services = new ServiceCollection();
             services.AddUniwikiServerApplicationServices();

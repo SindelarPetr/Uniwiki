@@ -55,7 +55,7 @@ namespace Uniwiki.Server.Application.Services
         {
             // Validate profile confirmation
             if (!profile.IsConfirmed)
-                throw new RequestException(_textService.Error_YourEmailWasNotConfirmed(profile.Email));
+                throw new RequestException(_textService.Error_YourEmailWasNotYetConfirmed(profile.Email));
 
             // Issue the token
             var token = _loginTokenRepository.IssueLoginToken(profile, _timeService.Now);

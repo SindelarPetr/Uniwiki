@@ -14,11 +14,15 @@ namespace Uniwiki.Shared.Standardizers
             _stringStandardizationService = stringStandardizationService;
         }
 
-        public AddPostRequestDto Standardize(AddPostRequestDto model) =>
-            new AddPostRequestDto(
-                model.Text.FirstCharToUpper().Trim(),
-                _stringStandardizationService.OptimizeWhiteSpaces(model.PostType?.Trim().FirstCharToUpper()),
-                model.CourseId,
-                model.PostFiles);
+        public AddPostRequestDto Standardize(AddPostRequestDto model)
+        {
+
+            var postCategory = string.IsNullOrWhiteSpace(model.PostType) ? null : _stringStandardizationService.OptimizeWhiteSpaces(model.PostType?.Trim().FirstCharToUpper());
+            return new AddPostRequestDto(
+model.Text.FirstCharToUpper().Trim(),
+postCategory,
+model.CourseId,
+model.PostFiles);
+        }
     }
 }

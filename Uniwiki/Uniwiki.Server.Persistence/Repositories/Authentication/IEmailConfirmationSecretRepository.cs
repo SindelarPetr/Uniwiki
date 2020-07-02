@@ -9,7 +9,8 @@ namespace Uniwiki.Server.Persistence.Repositories.Authentication
         EmailConfirmationSecretModel GenerateEmailConfirmationSecret(ProfileModel profile, DateTime creationTime);
         void ConfirmEmail(EmailConfirmationSecretModel secret);
         void InvalidateSecrets(ProfileModel profile);
-        EmailConfirmationSecretModel TryGetValidEmailConfirmationSecret(ProfileModel profile);
+        EmailConfirmationSecretModel? TryGetValidEmailConfirmationSecret(ProfileModel profile);
         EmailConfirmationSecretModel FindValidById(Guid secret);
+        EmailConfirmationSecretModel FindById(Guid secret);
     }
 }

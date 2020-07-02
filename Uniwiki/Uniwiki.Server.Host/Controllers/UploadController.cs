@@ -96,7 +96,11 @@ namespace Uniwiki.Server.Host.Controllers
         }
 
         [HttpGet(nameof(GetPostFile))]
-        public async Task<ActionResult> GetPostFile([FromQuery] Guid id, [FromQuery] Guid accessToken, [FromQuery] string fileName, [FromQuery] Language language)
+        public async Task<ActionResult> GetPostFile(
+            [FromQuery(Name = ApiRoutes.UploadController.FileIdParameter)] Guid id, 
+            [FromQuery(Name = ApiRoutes.UploadController.SecondaryTokenParameter)] Guid accessToken, 
+            [FromQuery(Name = ApiRoutes.UploadController.FileNameParameter)] string fileName, 
+            [FromQuery(Name = ApiRoutes.UploadController.LanguageParameter)] Language language)
         {
             if (id == default || accessToken == default || fileName == default || language == default)
                 return Redirect(GetBaseUri(HttpContext) + PageRoutes.DownloadErrorPage.BuildRoute());
@@ -104,7 +108,10 @@ namespace Uniwiki.Server.Host.Controllers
             // Create input context
             InputContext inputContext = new InputContext(accessToken, Guid.NewGuid(), language, ClientConstants.AppVersionString);
 
-            var request = new GetPostFileRequest(id, fileName);
+            // Decode the file name from URL format
+            var decodedFileName = HttpUtility.UrlDecode(fileName);
+
+            var request = new GetPostFileRequest(id, decodedFileName);
 
             try
             {

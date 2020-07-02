@@ -14,5 +14,6 @@ namespace Uniwiki.Server.Persistence.Repositories
         IEnumerable<UniversityModel> SearchUniversities(string text);
         UniversityModel FindById(Guid id);
         UniversityModel CreateUniversity(string fullName, string shortName, string url);
+        bool IsNameAndUrlUniq(string fullName, string url);
     }
 }
