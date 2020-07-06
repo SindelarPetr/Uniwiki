@@ -8,14 +8,14 @@ namespace Server.Appliaction.ServerActions
 {
     public class RequestContext
     {
-        public Guid RequestId { get; }
+        public string RequestId { get; }
         public LoginTokenModel? LoginToken { get; }
         public ProfileModel? User => LoginToken?.Profile;
         public Language Language { get; }
         public AuthenticationLevel AuthenticationLevel { get; }
         public bool IsAuthenticated => User != null;
 
-        public RequestContext(LoginTokenModel? loginToken, AuthenticationLevel authenticationLevel, Guid requestId, Language language)
+        public RequestContext(LoginTokenModel? loginToken, AuthenticationLevel authenticationLevel, string requestId, Language language)
         {
             LoginToken = loginToken;
             AuthenticationLevel = authenticationLevel;

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Server.Appliaction.ServerActions;
 using Shared.Dtos;
 using Shared.Exceptions;
@@ -17,12 +18,14 @@ namespace Uniwiki.Server.Host.Controllers
         private readonly IMvcProcessor _mvcProcessor;
         private readonly IMvcRequestExceptionHandlerService _mvcRequestExceptionHandlerService;
         private readonly IRequestDeserializer _requestDeserializer;
+        private readonly ILogger<ServerController> _logger;
 
-        public ServerController(IMvcProcessor mvcProcessor, IMvcRequestExceptionHandlerService mvcRequestExceptionHandlerService, IRequestDeserializer requestDeserializer)
+        public ServerController(IMvcProcessor mvcProcessor, IMvcRequestExceptionHandlerService mvcRequestExceptionHandlerService, IRequestDeserializer requestDeserializer, ILogger<ServerController> logger)
         {
             _mvcProcessor = mvcProcessor;
             _mvcRequestExceptionHandlerService = mvcRequestExceptionHandlerService;
             _requestDeserializer = requestDeserializer;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -30,11 +33,18 @@ namespace Uniwiki.Server.Host.Controllers
         {
             try
             {
-                var inputContext = new InputContext(dataForServer.AccessToken, Guid.NewGuid(), dataForServer.Language,
+                var inputContext = new InputContext(dataForServer.AccessToken, HttpContext.TraceIdentifier, dataForServer.Language,
                     dataForServer.Version);
+
+                _logger.LogInformation("Received Request: {Type}, ID: {RequestId}, Has token: {HasToken}, Language: {Language}", dataForServer.Type, inputContext.RequestId, inputContext.AccessToken.HasValue, dataForServer.Language);
+
                 var request = _requestDeserializer.Deserialize(dataForServer.Request, dataForServer.Type);
 
+                _logger.LogInformation("Successfully deserialized the request");
+
                 var result = await _mvcProcessor.Process(request, inputContext);
+
+                _logger.LogInformation("Processed the request");
 
                 return new JsonResult(result);
             }
@@ -42,9 +52,9 @@ namespace Uniwiki.Server.Host.Controllers
             {
                 return _mvcRequestExceptionHandlerService.HandleRequestException(e, this);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return _mvcRequestExceptionHandlerService.HandleServerException(this);
+                return _mvcRequestExceptionHandlerService.HandleException(e, this);
             }
         }
     }

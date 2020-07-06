@@ -8,6 +8,6 @@ namespace Uniwiki.Server.Host.Services.Abstractions
     public interface IMvcRequestExceptionHandlerService
     {
         ActionResult HandleRequestException(RequestException exception, ControllerBase controller);
-        ActionResult HandleServerException(ControllerBase controller);
+        ActionResult HandleException(Exception exception, ControllerBase controller);
     }
 }

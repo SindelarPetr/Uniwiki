@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Server.Appliaction.ServerActions;
 using Server.Appliaction.Services.Abstractions;
@@ -27,13 +28,15 @@ namespace Uniwiki.Server.Host.Controllers
         private readonly IMvcRequestExceptionHandlerService _mvcRequestExceptionHandlerService;
         private readonly IRequestDeserializer _requestDeserializer;
         private readonly IUploadFileService _uploadFileService;
+        private readonly ILogger<UploadController> _logger;
 
-        public UploadController(IMvcProcessor mvcProcessor, IMvcRequestExceptionHandlerService mvcRequestExceptionHandlerService, IRequestDeserializer requestDeserializer, IUploadFileService uploadFileService)
+        public UploadController(IMvcProcessor mvcProcessor, IMvcRequestExceptionHandlerService mvcRequestExceptionHandlerService, IRequestDeserializer requestDeserializer, IUploadFileService uploadFileService, ILogger<UploadController> logger)
         {
             _mvcProcessor = mvcProcessor;
             _mvcRequestExceptionHandlerService = mvcRequestExceptionHandlerService;
             _requestDeserializer = requestDeserializer;
             _uploadFileService = uploadFileService;
+            _logger = logger;
         }
 
 
@@ -42,16 +45,16 @@ namespace Uniwiki.Server.Host.Controllers
         [RequestFormLimits(MultipartBodyLengthLimit = Constants.MaxFileSizeInBytes)]
         public async Task<ActionResult> Post()
         {
-
+            _logger.LogInformation("Received a file upload request");
             if (HttpContext.Request.Form.Files.Count == 0)
             {
-                Console.WriteLine("Didnt receive any files :(");
+                _logger.LogWarning("The received file upload didnt contain any files!");
                 return BadRequest("Didnt receive any files :(");
             }
 
             if (HttpContext.Request.Form.Files.Count > 1)
             {
-                Console.WriteLine("Received too many files. Send just one file at a time.");
+                _logger.LogWarning("The received file upload contains too many files (FilesCount)!", HttpContext.Request.Form.Files.Count);
                 return BadRequest("Received too many files. Send just one file at a time.");
             }
 
@@ -66,21 +69,31 @@ namespace Uniwiki.Server.Host.Controllers
                 //// TODO: Catch exception when something messes up (like when user cancels it, or connections gets lost, or there is not enough disk space)
 
                 if (!HttpContext.Request.Form.ContainsKey("Data"))
+                {
+                    _logger.LogWarning("Tryed to upload a file without filling in the data for server");
                     return BadRequest("The request must contain " + Constants.FileUploadDataField +
                                " form field with DataForServer"); // TODO: Translate
+                }
 
                 var serializedDataForServer = HttpContext.Request.Form["Data"].First();
-
+                
+                _logger.LogInformation("Deserializing the data for server");
                 var dataForServer = JsonConvert.DeserializeObject<DataForServer>(serializedDataForServer);
 
                 if (dataForServer == null)
-                    return BadRequest($"Couldnt deserialize '{serializedDataForServer}' to DataForServer");
+                {
+                    _logger.LogWarning("Could not deserialize the data for server");
+                    return BadRequest($"Couldnt deserialize '{serializedDataForServer}' to DataForServer"); 
+                }
 
-                var inputContext = new InputContext(dataForServer.AccessToken, Guid.NewGuid(), dataForServer.Language, ClientConstants.AppVersionString);
+                var inputContext = new InputContext(dataForServer.AccessToken, Guid.NewGuid().ToString(), dataForServer.Language, ClientConstants.AppVersionString);
 
+                _logger.LogInformation("Deserializing the request");
                 var request = _requestDeserializer.Deserialize(dataForServer.Request, dataForServer.Type);
 
+                _logger.LogInformation("Processing the upload request");
                 var response = await _mvcProcessor.Process(request, inputContext);
+                _logger.LogInformation("Successfully processed the upload request");
 
                 return new JsonResult(response);
             }
@@ -88,9 +101,9 @@ namespace Uniwiki.Server.Host.Controllers
             {
                 return _mvcRequestExceptionHandlerService.HandleRequestException(e, this);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return _mvcRequestExceptionHandlerService.HandleServerException(this);
+                return _mvcRequestExceptionHandlerService.HandleException(e, this);
             }
 
         }
@@ -106,7 +119,7 @@ namespace Uniwiki.Server.Host.Controllers
                 return Redirect(GetBaseUri(HttpContext) + PageRoutes.DownloadErrorPage.BuildRoute());
 
             // Create input context
-            InputContext inputContext = new InputContext(accessToken, Guid.NewGuid(), language, ClientConstants.AppVersionString);
+            InputContext inputContext = new InputContext(accessToken, HttpContext.TraceIdentifier, language, ClientConstants.AppVersionString);
 
             // Decode the file name from URL format
             var decodedFileName = HttpUtility.UrlDecode(fileName);

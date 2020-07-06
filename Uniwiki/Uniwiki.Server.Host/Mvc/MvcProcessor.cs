@@ -46,7 +46,6 @@ namespace Uniwiki.Server.Host.Mvc
             // Check if the client uses the right version
             if(inputContext.AppVersion != ClientConstants.AppVersionString)
             {
-                // TODO: Improve the cashing of the clients libraries
                 fixes.Add(new FixResponseDto(_textService.Error_RefreshBrowser, ErrorFix.WrongVersion));
                 throw new RequestException(_textService.Error_OldVersionOfAppUsed, fixes.ToArray());
             }

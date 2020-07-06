@@ -22,7 +22,7 @@ namespace Uniwiki.Shared
                     {FileIdParameter, id.ToString()},
                     {SecondaryTokenParameter, secondaryToken.ToString()},
                     {FileNameParameter, encodedName},
-                    {LanguageParameter, ((int)language).ToString()} };
+                    {LanguageParameter, (language).ToString()} };
 
                 return RouteHelper.BuildRoutePartsWithParameters(queryParameters, "upload", nameof(GetPostFile));
             }

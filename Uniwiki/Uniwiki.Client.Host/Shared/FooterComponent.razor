@@ -40,8 +40,6 @@
 	{
 		_currentLang = (Language)int.Parse(args.Value.ToString());
 
-		Console.WriteLine("LANG: " + _currentLang);
-
 		await LanguageManagerService.SetLanguage(_currentLang);
 
 		NavigationService.ForceReload();

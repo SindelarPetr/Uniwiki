@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Server.Appliaction.ServerActions;
 using Shared.Services;
 using Uniwiki.Server.Application.Extensions;
@@ -23,8 +24,9 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly IProfileRepository _profileRepository;
         private readonly ICourseVisitRepository _courseVisitRepository;
+        private readonly ILogger<GetSearchResultsServerAction> _logger;
 
-        public GetSearchResultsServerAction(IServiceProvider serviceProvider, IUniversityRepository universityRepository, IStudyGroupRepository studyGroupRepository, ICourseRepository courseRepository, IStringStandardizationService stringStandardizationService, IProfileRepository profileRepository, ICourseVisitRepository courseVisitRepository) : base(serviceProvider)
+        public GetSearchResultsServerAction(IServiceProvider serviceProvider, IUniversityRepository universityRepository, IStudyGroupRepository studyGroupRepository, ICourseRepository courseRepository, IStringStandardizationService stringStandardizationService, IProfileRepository profileRepository, ICourseVisitRepository courseVisitRepository, ILogger<GetSearchResultsServerAction> logger) : base(serviceProvider)
         {
             _universityRepository = universityRepository;
             _studyGroupRepository = studyGroupRepository;
@@ -32,12 +34,15 @@ namespace Uniwiki.Server.Application.ServerActions
             _stringStandardizationService = stringStandardizationService;
             _profileRepository = profileRepository;
             _courseVisitRepository = courseVisitRepository;
+            _logger = logger;
         }
 
         protected override Task<GetSearchResultsResponseDto> ExecuteAsync(GetSearchResultsRequestDto request, RequestContext context)
         {
             // Get search text
             var searchText = _stringStandardizationService.StandardizeSearchText(request.SearchedText);
+
+            _logger.LogInformation("Searching for text: '{Text}', standardized: '{StandardizedText}'", request.SearchedText, searchText);
 
             UniversityDto[] universityDtos;
             StudyGroupDto[] studyGroupDtos;

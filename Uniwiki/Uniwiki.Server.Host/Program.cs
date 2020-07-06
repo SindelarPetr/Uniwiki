@@ -6,11 +6,11 @@ namespace Uniwiki.Server.Host
     public class Program
     {
 
-        public static async Task Main()
+        public static void Main()
         {
             var uniwiki = new MvcModule();
 
-            await uniwiki.Run();
+            uniwiki.Run();
         }
     }
 }

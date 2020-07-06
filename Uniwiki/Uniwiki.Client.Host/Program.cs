@@ -17,7 +17,7 @@ namespace Uniwiki.Client.Host
 
             builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddUniwikiClientHostServices();
-
+            
             var host = builder.Build();
             await host.InitializeClient();
 
