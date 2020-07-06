@@ -42,12 +42,14 @@ namespace Uniwiki.Server.Application.ServerActions
             // Get search text
             var searchText = _stringStandardizationService.StandardizeSearchText(request.SearchedText);
 
+            // Log the search text
             _logger.LogInformation("Searching for text: '{Text}', standardized: '{StandardizedText}'", request.SearchedText, searchText);
 
             UniversityDto[] universityDtos;
             StudyGroupDto[] studyGroupDtos;
             CourseDto[] courseDtos;
             CourseDto[] recentCourseDtos = new CourseDto[0];
+
 
             var studyGroup = request.StudyGroupId != null
                 ? _studyGroupRepository.FindById(request.StudyGroupId.Value)

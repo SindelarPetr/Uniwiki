@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Server.Appliaction.ServerActions;
 using Shared.Dtos;
 using Shared.Exceptions;
@@ -9,29 +12,42 @@ using Shared.RequestResponse;
 using Uniwiki.Client.Host;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Host.Services;
+using Uniwiki.Shared.Attributes;
 using Uniwiki.Shared.Services;
 
 namespace Uniwiki.Server.Host.Mvc
 {
     internal class MvcProcessor : IMvcProcessor
     {
+        [Pure]
+        private static void LogRequest(ILogger<MvcProcessor> logger, IRequest request)
+        {
+            var requestString = request.GetType().GetProperties().Where(p => !Attribute.IsDefined(p, typeof(DontLogAttribute))).Select(p => $"{p.Name}='{p.GetValue(request)}'").Aggregate((a, b) => $"{a}; {b}");
+
+            logger.LogInformation(requestString);
+        }
+
         private readonly IServiceProvider _serviceProvider;
         private readonly IAuthenticationService _authenticationService;
         private readonly IServerActionResolver _serverActionResolver;
         private readonly TextService _textService;
+        private readonly ILogger<MvcProcessor> _logger;
 
-
-        public MvcProcessor(IServiceProvider serviceProvider, IAuthenticationService authenticationService, IServerActionResolver serverActionResolver, TextService textService)
+        public MvcProcessor(IServiceProvider serviceProvider, IAuthenticationService authenticationService, IServerActionResolver serverActionResolver, TextService textService, ILogger<MvcProcessor> logger)
         {
             _serviceProvider = serviceProvider;
             _authenticationService = authenticationService;
             _serverActionResolver = serverActionResolver;
             _textService = textService;
+            _logger = logger;
         }
 
         // Transforms IRequest to RequestBase
         public async Task<DataForClient<IResponse>> Process(IRequest request, InputContext inputContext)
         {
+            // Log the request
+            LogRequest(_logger, request);
+
             // Set the language
             _serviceProvider.GetService<TextServiceBase>().SetLanguage(inputContext.Language);
 
