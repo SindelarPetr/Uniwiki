@@ -17,5 +17,6 @@ namespace Uniwiki.Client.Host.Services.Abstractions
         ValueTask MyInputInit(ElementReference? fileInput, DotNetObjectReference<InputFileCallbacks> callbacksAsNetRef);
         ValueTask StartFileUpload(in int id, string dataForServer);
         ValueTask AbortFileUpload(in int id);
+        ValueTask Download(in string data, in string fileName);
     }
 }

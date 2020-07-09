@@ -115,8 +115,13 @@ namespace Uniwiki.Server.Host.Controllers
             [FromQuery(Name = ApiRoutes.UploadController.FileNameParameter)] string fileName, 
             [FromQuery(Name = ApiRoutes.UploadController.LanguageParameter)] Language language)
         {
+            // Validate the recived parameters
             if (id == default || accessToken == default || fileName == default || language == default)
-                return Redirect(GetBaseUri(HttpContext) + PageRoutes.DownloadErrorPage.BuildRoute());
+            {
+                // Log failure
+                _logger.LogWarning("Could not download a file, because some of the arguments are missing. File id: '{FileId}', Has Valid Token: {HasValidToken}, File name: '{FileName}', Language: '{Language}'", id, accessToken != default, fileName, language);
+                return Redirect(GetBaseUri(HttpContext) + PageRoutes.DownloadErrorPage.BuildRoute()); 
+            }
 
             // Create input context
             InputContext inputContext = new InputContext(accessToken, HttpContext.TraceIdentifier, language, ClientConstants.AppVersionString);
@@ -128,10 +133,20 @@ namespace Uniwiki.Server.Host.Controllers
 
             try
             {
+                // Log information about request to download
+                _logger.LogInformation("Going to download a file. File id: '{FileId}', File name: '{FileName}', Language: '{Language}'", id, decodedFileName, language);
+
                 var response = await _mvcProcessor.Process(request, inputContext);
+
+                if (response.Response == null)
+                {
+                    _logger.LogWarning("The processor produced an empty response when attempting to download a file. File id: '{FileId}', File name: '{FileName}", id, decodedFileName);
+                    return Redirect(GetBaseUri(HttpContext) + PageRoutes.DownloadErrorPage.BuildRoute());
+                }
 
                 if (!(response.Response is GetPostFileResponse getPostFileResponse))
                 {
+                    _logger.LogWarning("The processor produced a wrong response (produced '{ResponseType}') when attempting to download a file. File id: '{FileId}', File name: '{FileName}", response.Response?.GetType(), id, decodedFileName);
                     return Redirect(GetBaseUri(HttpContext) + PageRoutes.DownloadErrorPage.BuildRoute());
                 }
 
@@ -140,10 +155,12 @@ namespace Uniwiki.Server.Host.Controllers
             }
             catch (FileNotFoundException e)
             {
+                _logger.LogWarning(e, "Was not able to find the file. File id: '{FileId}', File name: '{FileName}", id, decodedFileName);
                 return Redirect(GetBaseUri(HttpContext) + PageRoutes.FileNotFoundErrorPage.BuildRoute());
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.LogWarning(e, "Was not able to find the file. File id: '{FileId}', File name: '{FileName}", id, decodedFileName);
                 return Redirect(GetBaseUri(HttpContext) + PageRoutes.DownloadErrorPage.BuildRoute());
             }
         }

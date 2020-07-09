@@ -52,15 +52,11 @@ namespace Uniwiki.Server.Host.Mvc
             return Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<MvcStartup>();
+                    webBuilder.UseSetting("https_port", "5001").UseStartup<MvcStartup>();
                 })
                 .ConfigureLogging(
                 builder => {
                     builder.AddConsole();
-                    //builder.AddInvisionLog(opts =>
-                    //{
-                    //    opts.StaticKey = "a2195cdd17d140cabdbaffab7031c438";
-                    //})
                     }
                 );
         }

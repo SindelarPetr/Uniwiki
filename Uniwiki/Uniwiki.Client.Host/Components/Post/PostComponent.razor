@@ -10,48 +10,48 @@
 		}
 		else
 		{
-	<div class="d-flex mb-3">
-		<a href="@PageRoutes.ProfilePage.BuildRoute(Post.Author.NameIdentifier)">
-			<img src="@Post.Author.ProfilePictureSrc"
-				 alt="Profile picture"
-				 class="rounded-circle border border-light mr-2"
-				 style="width: 3rem; height: 3rem; object-fit: cover" />
-		</a>
-		<div class="my-auto mr-2">
-			<a href="@PageRoutes.ProfilePage.BuildRoute(Post.Author.NameIdentifier)">
-				<h6 class="">@Post.Author.FullName</h6>
-			</a>
-			<span class="text-secondary my-auto ml-auto dont-break-out">@(Post.PostType)</span>
-		</div>
+			<div class="d-flex mb-3">
+				<a href="@PageRoutes.ProfilePage.BuildRoute(Post.Author.NameIdentifier)">
+					<img src="@Post.Author.ProfilePictureSrc"
+						 alt="Profile picture"
+						 class="rounded-circle border border-light mr-2"
+						 style="width: 3rem; height: 3rem; object-fit: cover" />
+				</a>
+				<div class="my-auto mr-2">
+					<a href="@PageRoutes.ProfilePage.BuildRoute(Post.Author.NameIdentifier)">
+						<h6 class="">@Post.Author.FullName</h6>
+					</a>
+					<span class="text-secondary my-auto ml-auto dont-break-out">@(Post.PostType)</span>
+				</div>
 
 
-		<h6 class="card-subtitle text-secondary ml-3 my-auto">@Post.CreationTime.ToPassedTimeString(TimeService, TextService)</h6>
-		@if (LoginService.IsAuthenticated && Post.Author.Id == LoginService.User.Id)
+				<h6 class="card-subtitle text-secondary ml-3 my-auto">@Post.CreationTime.ToPassedTimeString(TimeService, TextService)</h6>
+				@if (LoginService.IsAuthenticated && Post.Author.Id == LoginService.User.Id)
 				{
-		<div class="dropleft d-flex ml-auto">
-			<button class="btn border-0 btn-outline-secondary my-auto" type="button" id="contextBtn-@Post.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
-			<div class="dropdown-menu" aria-labelledby="contextBtn-@Post.Id">
-				<button class="dropdown-item" type="button" @onclick="HandleEditPost">@TextService.Edit</button>
-				<button class="dropdown-item" type="button" @onclick="HandleRemovePost">@TextService.Remove</button>
-			</div>
-		</div>
+					<div class="dropleft d-flex ml-auto">
+						<button class="btn border-0 btn-outline-secondary my-auto" type="button" id="contextBtn-@Post.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+						<div class="dropdown-menu" aria-labelledby="contextBtn-@Post.Id">
+							<button class="dropdown-item" type="button" @onclick="HandleEditPost">@TextService.Edit</button>
+							<button class="dropdown-item" type="button" @onclick="HandleRemovePost">@TextService.Remove</button>
+						</div>
+					</div>
 				}
-	</div>
+			</div>
 
 			<p class="lead text-wrap mb-3">
 				<pre class="mb-0">@Post.Text</pre>
 			</p>
 
+
+			@* Files *@
 			@if (_showFiles)
 			{
 				@if (LoginService.IsAuthenticated)
 				{
-					@* Post files *@
 					@foreach (var file in Post.Files)
 					{
 						<PostFileComponent File="file" />
 					}
-					@* /Post files *@
 				}
 				else
 				{
@@ -61,11 +61,14 @@
 					</div>
 				}
 			}
-
-			@if (Post.NumberOfFiles > 0)
+			else
 			{
-				<button class="my-auto btn btn-link ml-0 pl-0" type="button" @onclick="@(() => _showFiles = !_showFiles)">@TextService.CoursePage_NumberOfFiles(Post.NumberOfFiles)</button>
+				@if (Post.NumberOfFiles > 0)
+				{
+					<button class="my-auto btn btn-link ml-0 pl-0" type="button" @onclick="@(() => _showFiles = !_showFiles)">@TextService.CoursePage_NumberOfFiles(Post.NumberOfFiles)</button>
+				}
 			}
+			@* /Files *@
 		}
 	</div>
 
@@ -283,7 +286,7 @@
 		}
 
 		// Check if user is sure about it
-		if(!await ModalService.Confirm(TextService.Modal_ConfirmPostRemoval))
+		if (!await ModalService.Confirm(TextService.Modal_ConfirmPostRemoval))
 			return;
 
 		var request = new RemovePostRequestDto(Post.Id);

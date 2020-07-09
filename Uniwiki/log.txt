@@ -1,8 +1,0 @@
-07/04/2020 18:11:48 Application is starting
-07/04/2020 18:12:03 HTTP "GET" "/service-worker.js" responded 404 in 45.3297 ms
-07/04/2020 18:12:09 HTTP "POST" "/api/server" responded 200 in 859.8795 ms
-07/04/2020 18:12:39 HTTP "GET" "/service-worker.js" responded 404 in 0.2651 ms
-07/04/2020 18:12:53 HTTP "POST" "/api/server" responded 200 in 282.0370 ms
-07/04/2020 18:13:00 HTTP "POST" "/api/server" responded 200 in 92.0999 ms
-07/04/2020 18:13:01 HTTP "POST" "/api/server" responded 200 in 62.8697 ms
-07/04/2020 18:13:32 HTTP "GET" "/service-worker.js" responded 404 in 0.2731 ms

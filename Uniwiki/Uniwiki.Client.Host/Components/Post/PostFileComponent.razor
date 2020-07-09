@@ -46,6 +46,7 @@ else
 	[Inject] IPeriodicalTimer PeriodicalTimer { get; set; }
 	[Inject] IJSRuntime JsRuntime { get; set; }
 	[Inject] IModalService ModalService { get; set; }
+	[Inject] INavigationService NavigationService { get; set; }
 
 	[Parameter] public PostFileDto File { get; set; }
 
@@ -74,7 +75,11 @@ else
 
 		var url = ApiRoutes.UploadController.GetPostFile(File.Id, LoginService.LoginToken.SecondaryTokenId, File.OriginalName, TextService.Language);
 
-		await JsRuntime.InvokeVoidAsync("interopJsFunctions.WindowOpen", url);
+		// await JsInteropService.Download(url, File.OriginalName);
+
+		// await JsRuntime.InvokeVoidAsync("interopJsFunctions.WindowOpen", url);
+
+		NavigationService.NavigateTo(url, true);
 	}
 
 	private void HandleTimerTick()

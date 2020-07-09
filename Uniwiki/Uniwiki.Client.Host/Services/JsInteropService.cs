@@ -15,32 +15,37 @@ namespace Uniwiki.Client.Host.Services
             _jsRuntime = jsRuntime;
         }
 
-        public ValueTask FocusElementAsync(ElementReference element) => _jsRuntime.InvokeVoidAsync("interopJsFunctions.FocusElement", element);
-        public ValueTask HideCollapse(string elementId) => _jsRuntime.InvokeVoidAsync("interopJsFunctions.HideCollapse", elementId);
+        public ValueTask FocusElementAsync(ElementReference element) => 
+            _jsRuntime.InvokeVoidAsync("interopJsFunctions.FocusElement", element);
+        
+        public ValueTask HideCollapse(string elementId) => 
+            _jsRuntime.InvokeVoidAsync("interopJsFunctions.HideCollapse", elementId);
 
-        public ValueTask<bool> NavigationBack() => _jsRuntime.InvokeAsync<bool>("interopJsFunctions.GoBack");
+        public ValueTask<bool> NavigationBack() => 
+            _jsRuntime.InvokeAsync<bool>("interopJsFunctions.GoBack");
 
-        public ValueTask<string> GetBrowserLanguage() => _jsRuntime.InvokeAsync<string>("interopJsFunctions.GetBrowserLocale");
-        public ValueTask ScrollIntoView(string elementId) => _jsRuntime.InvokeVoidAsync("interopJsFunctions.ScrollIntoView", elementId);
+        public ValueTask<string> GetBrowserLanguage() => 
+            _jsRuntime.InvokeAsync<string>("interopJsFunctions.GetBrowserLocale");
+        
+        public ValueTask ScrollIntoView(string elementId) => 
+            _jsRuntime.InvokeVoidAsync("interopJsFunctions.ScrollIntoView", elementId);
 
-        public ValueTask SetScrollCallback(DotNetObjectReference<ScrollService> netRef) => _jsRuntime.InvokeVoidAsync("interopJsFunctions.SetScrollCallbacks", netRef);
+        public ValueTask SetScrollCallback(DotNetObjectReference<ScrollService> netRef) => 
+            _jsRuntime.InvokeVoidAsync("interopJsFunctions.SetScrollCallbacks", netRef);
 
         public ValueTask SetHeightToInitial(ElementReference element) =>
             _jsRuntime.InvokeVoidAsync("interopJsFunctions.SetHeightToInitial", element);
 
-        public ValueTask MyInputInit(ElementReference? fileInput, DotNetObjectReference<InputFileCallbacks> callbacksAsNetRef)
-        {
-            return _jsRuntime.InvokeVoidAsync("MyInput.init", fileInput, callbacksAsNetRef );
-        }
+        public ValueTask MyInputInit(ElementReference? fileInput, DotNetObjectReference<InputFileCallbacks> callbacksAsNetRef) => 
+            _jsRuntime.InvokeVoidAsync("MyInput.init", fileInput, callbacksAsNetRef);
 
-        public ValueTask StartFileUpload(in int id, string dataForServer)
-        {
-            return _jsRuntime.InvokeVoidAsync("MyInput.startUpload", id, dataForServer);
-        }
+        public ValueTask StartFileUpload(in int id, string dataForServer) => 
+            _jsRuntime.InvokeVoidAsync("MyInput.startUpload", id, dataForServer);
 
-        public ValueTask AbortFileUpload(in int id)
-        {
-            return _jsRuntime.InvokeVoidAsync("MyInput.abortUpload", id);
-        }
+        public ValueTask AbortFileUpload(in int id) => 
+            _jsRuntime.InvokeVoidAsync("MyInput.abortUpload", id);
+        
+        public ValueTask Download(in string data, in string fileName) =>
+            _jsRuntime.InvokeVoidAsync("interopJsFunctions.Download", data, fileName);
     }
 }
