@@ -6,6 +6,13 @@ namespace Uniwiki.Client.Host.Services
     // We dont want to abstract this one - translating would then be too much time consuming
     internal class TextService : TextServiceBase
     {
+
+        public string ProvideFeedbackText => GetTranslation("Co byste na Uniwiki změnili? přidali? odebrali?", "What would you make on Uniwiki differently? What are you missing?");
+        public string Toast_ThanksForFeedback => GetTranslation("Děkujeme za zpětnou vazbu!", "Thank you for your feedback!");
+        public string Submit => GetTranslation("Odeslat", "Submit");
+        public string Modal_ProvideFeedback => GetTranslation("Napište nám zpětnou vazbu", "Write a feedback for us");
+        public string Modal_OverallRating => GetTranslation("Celkové hodnocení", "Overall rating");
+        public string Modal_Feedback_Title => GetTranslation("Napište nám zpětnou vazbu", "Provide feedback");
         public string GoToUniwiki => GetTranslation("Přejít na Uniwiki", "Go to Uniwiki");
         public string AddCourse => GetTranslation("Přidat předmět", "Add course");
         public string SelectYourFaculty => GetTranslation("Vyberte vaši fakultu", "Select your faculty");
@@ -226,6 +233,15 @@ namespace Uniwiki.Client.Host.Services
 
         public string Modal_ConfirmPostFileRemoval(string fileName) => GetTranslation($"Opravdu chcete odstranit soubor '{fileName}'", $"Are you sure to remove the file '{fileName}'");
 
-        public string SelectStudyGroupModal_Title => GetTranslation("Vybrat univerzitu" , "Select a university");
+        public string SelectStudyGroupModal_Title => 
+            GetTranslation("Vyberte vaši fakultu" , "Select your faculty");
+
+        public string ErrorPage_Title =>
+            GetTranslation("Error", "Error");
+        public string ErrorPage_Message =>
+            GetTranslation("Na serveru se vyskytl problém :(.", "We encountered an error on the server :(.");
+
+        public string ErrorPage_GoBack =>
+            GetTranslation("Zpět na Uniwiki", "Back to Uniwiki");
     }
 }

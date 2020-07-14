@@ -21,6 +21,7 @@ namespace Uniwiki.Server.Host
             services.AddSingleton<IRequestDeserializer, RequestDeserializer>();
             services.AddScoped<IUploadFileService, UploadFileService>();
             services.AddScoped<TextService>();
+            services.AddSingleton<InputContextService>();
         }
     }
 }

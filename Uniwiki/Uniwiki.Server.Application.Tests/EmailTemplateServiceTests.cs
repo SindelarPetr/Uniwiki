@@ -11,6 +11,13 @@ namespace Uniwiki.Server.Application.Tests
     [TestClass]
     public class EmailTemplateServiceTests
     {
+        [TestMethod]
+        public void CanFindEmailTemplates()
+        {
+            var uploadFileService = new FakeUploadFileService();
+            Assert.IsTrue(Directory.Exists(uploadFileService.EmailTemplatesDirectoryPath));
+        }
+
         // Vizual check in the console!
         [TestMethod]
         public void RegistrationEmailCanBeCreated()
@@ -42,7 +49,14 @@ namespace Uniwiki.Server.Application.Tests
     {
         public string PostFilesDirectoryPath => throw new NotImplementedException();
 
-        public string EmailTemplatesDirectoryPath => Path.Combine(typeof(UniwikiServerApplicationServices).Assembly.Location, "EmailTemplates");
+        public string EmailTemplatesDirectoryPath
+        {
+            get
+            {
+                var root = Path.GetDirectoryName(typeof(UniwikiServerApplicationServices).Assembly.Location);
+                return Path.Combine(root, "EmailTemplates");
+            }
+        }
 
         public IFormFile GetFile()
         {

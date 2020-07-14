@@ -69,5 +69,15 @@ namespace Uniwiki.Client.Host.Services
             _localAuthenticationStateProvider.SetAsLoggedOut();
         }
 
+        public Task UpdateUser(ProfileDto user)
+        {
+            // Dont do anything if the user is not authenticated
+            if (!IsAuthenticated)
+                return Task.CompletedTask;
+
+            User = user;
+
+            return _localStorageManagerService.SetLoginProfile(user);
+        }
     }
 }

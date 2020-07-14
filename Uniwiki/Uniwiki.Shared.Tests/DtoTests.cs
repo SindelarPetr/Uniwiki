@@ -10,7 +10,10 @@ namespace Uniwiki.Shared.Tests
         private TypeInfo[] GetAllDtos() => typeof(RouteHelper).Assembly.DefinedTypes
             .Where(t => t.IsClass && t.Name.ToLower().EndsWith("dto")).ToArray();
 
-        [TestMethod]
+        /// <summary>
+        /// By using Newtonsoft.Json, this test became obsolete
+        /// </summary>
+        //[TestMethod]
         public void AllDtosHaveDefaultConstructor()
         {
             // Get all xxxDto types
@@ -26,7 +29,10 @@ namespace Uniwiki.Shared.Tests
             }
         }
 
-        [TestMethod]
+        /// <summary>
+        /// By using Newtonsoft.Json, this test became obsolete
+        /// </summary>
+        // [TestMethod]
         public void AllDtosHavePublicSetterOnAllProperties()
         {
             // Get all xxxDto types

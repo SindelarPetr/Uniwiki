@@ -30,6 +30,7 @@ namespace Uniwiki.Server.Application.Tests
         {
             // --------- Arrange
             ServiceCollection services = new ServiceCollection();
+            services.AddLogging();
             services.AddUniwikiServerApplicationServices();
             
             // Fake time service
@@ -41,7 +42,7 @@ namespace Uniwiki.Server.Application.Tests
             services.AddTransient<IEmailService>(p => emailService);
 
             var provider = services.BuildServiceProvider();
-            var anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid(), Language.English);
+            var anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid().ToString(), Language.English, new System.Net.IPAddress(0x2414188f));
             var registerServerAction = provider.GetService<RegisterServerAction>();
             var confirmEmailServerAction = provider.GetService<ConfirmEmailServerAction>();
             var resendConfirmationEmailServerAction = provider.GetService<ResendConfirmationEmailServerAction>();
@@ -101,7 +102,7 @@ namespace Uniwiki.Server.Application.Tests
 
             // Create authentication context for the user's requests
             var (loginTokenModel, authenticationLevel) = authenticationService.TryAuthenticate(user1Login1.PrimaryTokenId);
-            var user1Context = new RequestContext(loginTokenModel, authenticationLevel, new Guid(), Language.English);
+            var user1Context = new RequestContext(loginTokenModel, authenticationLevel, new Guid().ToString(), Language.English, new System.Net.IPAddress(0x2414188f));
 
             // TEST: The user should be able to confirm the email again, but should not get logged in
             var confirmedEmailResponseAgain = await confirmEmailServerAction.ExecuteActionAsync(new ConfirmEmailRequestDto(confirmationSecret3),

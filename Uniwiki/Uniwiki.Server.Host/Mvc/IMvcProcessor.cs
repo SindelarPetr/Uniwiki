@@ -8,5 +8,6 @@ namespace Uniwiki.Server.Host.Mvc
     public interface IMvcProcessor
     {
         Task<DataForClient<IResponse>> Process(IRequest request, InputContext inputContext);
+
     }
 }

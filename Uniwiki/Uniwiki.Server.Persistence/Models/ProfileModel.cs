@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Uniwiki.Server.Persistence.Models.Authentication;
 
 namespace Uniwiki.Server.Persistence.Models
@@ -20,8 +21,10 @@ namespace Uniwiki.Server.Persistence.Models
         public string Url { get; set; }
         public string ProfilePictureSrc { get; }
         public IEnumerable<CourseModel> RecentCourses { get; }
-        
-        public ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, IEnumerable<CourseModel> recentCourses) 
+        public IEnumerable<FeedbackModel> Feedbacks { get; }
+        public bool FeedbackProvided => Feedbacks.Any();
+
+        public ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, IEnumerable<CourseModel> recentCourses, IEnumerable<FeedbackModel>  feedbacks) 
         {
             Id = id;
             Email = email;
@@ -35,6 +38,7 @@ namespace Uniwiki.Server.Persistence.Models
             FirstName = firstName;
             FamilyName = familyName;
             Url = url;
+            Feedbacks = feedbacks;
         }
 
         public void SetAsConfirmed()

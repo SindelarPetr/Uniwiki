@@ -8,6 +8,7 @@ namespace Uniwiki.Client.Host.Services.Abstractions
     {
         bool IsAuthenticated { get; }
         ProfileDto? User { get; }
+        Task UpdateUser(ProfileDto user);
         LoginTokenDto? LoginToken { get; }
 
         Task LocalLogout();

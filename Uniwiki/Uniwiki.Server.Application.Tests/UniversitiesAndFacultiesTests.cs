@@ -31,6 +31,7 @@ namespace Uniwiki.Server.Application.Tests
         {
             // --------- Arrange
             ServiceCollection services = new ServiceCollection();
+            services.AddLogging();
             services.AddUniwikiServerApplicationServices();
 
             // Fake time service
@@ -42,7 +43,7 @@ namespace Uniwiki.Server.Application.Tests
             services.AddTransient<IEmailService>(p => emailService);
 
             var provider = services.BuildServiceProvider();
-            var anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid(), Language.English);
+            var anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid().ToString(), Language.English, new System.Net.IPAddress(0x2414188f));
             var registerServerAction = provider.GetService<RegisterServerAction>();
             var confirmEmailServerAction = provider.GetService<ConfirmEmailServerAction>();
             var resendConfirmationEmailServerAction = provider.GetService<ResendConfirmationEmailServerAction>();
@@ -62,6 +63,7 @@ namespace Uniwiki.Server.Application.Tests
             var likePostServerAction = provider.GetService<LikePostServerAction>();
             var addCommentServerAction = provider.GetService<AddCommentServerAction>();
             var likePostCommentServerAction = provider.GetService<LikePostCommentServerAction>();
+            var provideFeedbackServerAction = provider.GetService<ProvideFeedbackServerAction>();
 
             var user1Email = "petr@gmail.com";
             var user1Password = "Password";
@@ -286,6 +288,10 @@ namespace Uniwiki.Server.Application.Tests
             // TEST: The category of removed post will not be shown in the add post and neither in the filter list
             CollectionAssert.AreEquivalent(dataService._defaultPostTypesEn.ToArray(), getCourse9Response.NewPostPostTypes);
             Assert.IsFalse(getCourse9Response.FilterPostTypes.Any());
+
+            // TEST: It is possible to provide feedback as an anonymous user
+            var provideFeedbackRequest = new ProvideFeedbackRequestDto(4, "This course is pretty damn good.");
+            await provideFeedbackServerAction.ExecuteActionAsync(provideFeedbackRequest, anonymousContext);
         }
     }
 }

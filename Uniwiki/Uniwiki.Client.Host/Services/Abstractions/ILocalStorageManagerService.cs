@@ -21,5 +21,8 @@ namespace Uniwiki.Client.Host.Services.Abstractions
         Task SetRecentCourses(CourseDto[] courses);
         Task SetRecentCourse(CourseDto course);
         Task<CourseDto[]> GetRecentCourses();
+
+        Task<bool> IsFeedbackProvided();
+        Task SetFeedbackProvided();
     }
 }

@@ -73,11 +73,7 @@ else
 
 		PeriodicalTimer.Start(TimeSpan.FromSeconds(1), Constants.DownloadAgainTime.Seconds, HandleTimerTick);
 
-		var url = ApiRoutes.UploadController.GetPostFile(File.Id, LoginService.LoginToken.SecondaryTokenId, File.OriginalName, TextService.Language);
-
-		// await JsInteropService.Download(url, File.OriginalName);
-
-		// await JsRuntime.InvokeVoidAsync("interopJsFunctions.WindowOpen", url);
+		var url = ApiRoutes.FileController.GetPostFile(File.Id, LoginService.LoginToken.SecondaryTokenId, File.OriginalName, TextService.Language);
 
 		NavigationService.NavigateTo(url, true);
 	}

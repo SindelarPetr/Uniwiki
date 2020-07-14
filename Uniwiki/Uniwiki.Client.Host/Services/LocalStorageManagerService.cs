@@ -24,7 +24,7 @@ namespace Uniwiki.Client.Host.Services
         private readonly string _languageKey = "Language";
         public async Task<Language?> GetCurrentLanguage()
         {
-            var stringLang = await SafeGetItemAsync<string>(_languageKey) ?? string.Empty;
+            var stringLang = await GetItemOrDefaultAsync(_languageKey, string.Empty) ?? string.Empty;
 
             if (!int.TryParse(stringLang, out var intLang))
             {
@@ -38,11 +38,10 @@ namespace Uniwiki.Client.Host.Services
 
             return lang;
         }
-
         public Task SetCurrentLanguage(Language language) => _localStorageService.SetItemAsync(_languageKey, language);
 
         private readonly string _loginTokenKey = "LoginToken";
-        public Task<LoginTokenDto?> GetLoginToken() => SafeGetItemAsync<LoginTokenDto?>(_loginTokenKey);
+        public Task<LoginTokenDto?> GetLoginToken() => GetItemOrDefaultAsync<LoginTokenDto?>(_loginTokenKey, null);
         public Task SetLoginToken(LoginTokenDto loginToken) => _localStorageService.SetItemAsync(_loginTokenKey, loginToken);
         public Task RemoveLoginToken() => _localStorageService.RemoveItemAsync(_loginTokenKey);
 
@@ -53,7 +52,7 @@ namespace Uniwiki.Client.Host.Services
 
             if (containsProfile)
             {
-                return await SafeGetItemAsync<ProfileDto?>(_loginProfileKey);
+                return await GetItemOrDefaultAsync<ProfileDto?>(_loginProfileKey, null);
             }
             else
             {
@@ -63,7 +62,7 @@ namespace Uniwiki.Client.Host.Services
         public Task SetLoginProfile(ProfileDto loginProfile) => _localStorageService.SetItemAsync(_loginProfileKey, loginProfile);
         public Task RemoveLoginProfile() => _localStorageService.RemoveItemAsync(_loginProfileKey);
 
-        private async Task<T> SafeGetItemAsync<T>(string key)
+        private async Task<T> GetItemOrDefaultAsync<T>(string key, T defaultT)
         {
             try
             {
@@ -72,15 +71,15 @@ namespace Uniwiki.Client.Host.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return default;
+                return defaultT;
             }
         }
 
         private const string RecentCoursesKey = "RecentCourses";
-        public async Task SetRecentCourses(CourseDto[] courses)
+        public Task SetRecentCourses(CourseDto[] courses)
         {
             // Save it to the storage
-            await _localStorageService.SetItemAsync(RecentCoursesKey, courses);
+            return _localStorageService.SetItemAsync(RecentCoursesKey, courses);
         }
 
         public async Task SetRecentCourse(CourseDto course)
@@ -106,24 +105,23 @@ namespace Uniwiki.Client.Host.Services
 
         public async Task<CourseDto[]> GetRecentCourses()
         {
-            // Check if the courses are saved there
-            var hasCourses = await _localStorageService.ContainKeyAsync(RecentCoursesKey);
+            var serializedCourses = await GetItemOrDefaultAsync(RecentCoursesKey, string.Empty);
 
-            Console.WriteLine("HasCourses: " + hasCourses);
-
-            // Load them if they are there
-            if (hasCourses)
-            { 
-                var serializedCourses = await SafeGetItemAsync<string>(RecentCoursesKey);
-
-                // Deserialize courses
-                var courses = JsonConvert.DeserializeObject<CourseDto[]>(serializedCourses);
-
-                return courses;
+            try
+            {
+                // Deserialize courses or return empty array
+                return string.IsNullOrWhiteSpace(serializedCourses) ? new CourseDto[0] : JsonConvert.DeserializeObject<CourseDto[]>(serializedCourses);
             }
-            else
+            catch (Exception)
+            {
+                // Return empty array if there was a problem
                 return new CourseDto[0];
+            }
 
         }
+
+        private const string FeedbackProvidedKey = "FeedbackProvided";
+        public Task<bool> IsFeedbackProvided() => GetItemOrDefaultAsync(FeedbackProvidedKey, false);
+        public Task SetFeedbackProvided() => _localStorageService.SetItemAsync(FeedbackProvidedKey, true);
     }
 }

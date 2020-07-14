@@ -7,25 +7,28 @@ using Server.Appliaction.ServerActions;
 using Shared.Dtos;
 using Shared.Exceptions;
 using Uniwiki.Server.Host.Mvc;
+using Uniwiki.Server.Host.Services;
 using Uniwiki.Server.Host.Services.Abstractions;
 
 namespace Uniwiki.Server.Host.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/Server")]
     public class ServerController : ControllerBase
     {
         private readonly IMvcProcessor _mvcProcessor;
         private readonly IMvcRequestExceptionHandlerService _mvcRequestExceptionHandlerService;
         private readonly IRequestDeserializer _requestDeserializer;
         private readonly ILogger<ServerController> _logger;
+        private readonly InputContextService _inputContextService;
 
-        public ServerController(IMvcProcessor mvcProcessor, IMvcRequestExceptionHandlerService mvcRequestExceptionHandlerService, IRequestDeserializer requestDeserializer, ILogger<ServerController> logger)
+        public ServerController(IMvcProcessor mvcProcessor, IMvcRequestExceptionHandlerService mvcRequestExceptionHandlerService, IRequestDeserializer requestDeserializer, ILogger<ServerController> logger, InputContextService inputContextService)
         {
             _mvcProcessor = mvcProcessor;
             _mvcRequestExceptionHandlerService = mvcRequestExceptionHandlerService;
             _requestDeserializer = requestDeserializer;
             _logger = logger;
+            _inputContextService = inputContextService;
         }
 
         [HttpPost]
@@ -33,8 +36,7 @@ namespace Uniwiki.Server.Host.Controllers
         {
             try
             {
-                var inputContext = new InputContext(dataForServer.AccessToken, HttpContext.TraceIdentifier, dataForServer.Language,
-                    dataForServer.Version);
+                var inputContext = _inputContextService.CreateFromHttpContext(dataForServer.AccessToken, dataForServer.Language, dataForServer.Version, HttpContext); 
 
                 _logger.LogInformation("Received Request: {Type}, ID: {RequestId}, Has token: {HasToken}, Language: {Language}", dataForServer.Type, inputContext.RequestId, inputContext.AccessToken.HasValue, dataForServer.Language);
 

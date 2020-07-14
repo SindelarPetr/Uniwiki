@@ -13,8 +13,8 @@
 		</AuthorizeView>
 
 		@*<NavLink class="btn btn-secondary text-light nav-item" href="@PageRoutes.ChooseCoursePage.BuildRoute()" Match="NavLinkMatch.All">
-			<i class="fas fa-search mr-2"></i>@TextService.SearchCourse
-		</NavLink>*@
+				<i class="fas fa-search mr-2"></i>@TextService.SearchCourse
+			</NavLink>*@
 	</div>
 </header>
 
@@ -27,9 +27,11 @@
 	private string _name;
 	private string _profilePictureSrc;
 
-	protected override void OnParametersSet()
+	protected override async Task OnParametersSetAsync()
 	{
-		base.OnParametersSet();
+		await base.OnParametersSetAsync();
+
+		await AuthenticationState;
 
 		if (LoginService.IsAuthenticated)
 		{

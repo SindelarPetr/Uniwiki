@@ -1,0 +1,110 @@
+﻿@inherits UniwikiComponentBase
+
+@if (!_showThankYou)
+{
+<form @onsubmit="Submit">
+	<label>@TextService.Modal_OverallRating</label>
+	<div class="d-flex">
+		<button class="btn btn-link p-0 m-0 mr-2 text-@(Request.Rating != null && Request.Rating >= 1 ? "warning" : "muted")" type="button" @onclick="() => SetRating(1)">
+			<span class="fas fa-star fa-3x"></span>
+		</button>
+		<button class="btn btn-link p-0 m-0 mr-2 text-@(Request.Rating != null && Request.Rating >= 2 ? "warning" : "muted")" type="button" @onclick="() => SetRating(2)">
+			<span class="fas fa-star fa-3x"></span>
+		</button>
+		<button class="btn btn-link p-0 m-0 mr-2 text-@(Request.Rating != null && Request.Rating >= 3 ? "warning" : "muted")" type="button" @onclick="() => SetRating(3)">
+			<span class="fas fa-star fa-3x"></span>
+		</button>
+		<button class="btn btn-link p-0 m-0 mr-2 text-@(Request.Rating != null && Request.Rating >= 4 ? "warning" : "muted")" type="button" @onclick="() => SetRating(4)">
+			<span class="fas fa-star fa-3x"></span>
+		</button>
+		<button class="btn btn-link p-0 m-0 mr-2 text-@(Request.Rating != null && Request.Rating >= 5 ? "warning" : "muted")" type="button" @onclick="@(() => SetRating(5))">
+			<span class="fas fa-star fa-3x"></span>
+		</button>
+	</div>
+	<label class="mt-3" for="feedback-text">@TextService.Modal_ProvideFeedback</label>
+	<textarea class="form-control" id="feedback-text" rows="5" @bind="Request.Text"></textarea>
+	<div class="text-right">
+		<BusyButtonComponent IsBusy="@_sending" Class="mt-2">@TextService.Submit</BusyButtonComponent>
+
+		@if (!string.IsNullOrEmpty(_error))
+		{
+<p class="text-danger mt-2">
+	@_error
+</p>}
+	</div>
+</form>}
+else
+{
+<p></p>}
+
+@code { [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+	[Inject] IToastService ToastService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; }
+	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; }
+	[Inject] ILocalLoginService LocalLoginService { get; set; }
+
+	public ProvideFeedbackRequestDto Request { get; set; }
+
+	private string _error;
+
+	private bool _sending = false;
+	private bool _showThankYou = false;
+
+	public FeedbackModal()
+	{
+		Request = new ProvideFeedbackRequestDto(null, string.Empty);
+		_error = string.Empty;
+	}
+
+	public async Task Submit()
+	{
+		if (_sending == true)
+			return;
+
+		// Validate that either rating or text is filled
+		if (Request.Rating == null && string.IsNullOrWhiteSpace(Request.Text))
+		{
+			_error = "Please fill at least one of the values.";
+			return;
+		}
+
+		// Clear the error
+		_error = string.Empty;
+
+		// Send the feedback
+		_sending = true;
+
+		// Send the request
+		var response = await RequestSender.SendRequestAsync(Request, () =>
+		{
+			_sending = false;
+			StateHasChanged();
+		});
+
+		// Save the info about feedback to the local storage
+		await LocalStorageManagerService.SetFeedbackProvided();
+
+		// Update the user info locally
+		if(response.User != null)
+		{
+			await LocalLoginService.UpdateUser(response.User);
+		}
+
+		// Success
+		ToastService.ShowSuccess(TextService.Toast_ThanksForFeedback);
+
+		// Indicate success
+		BlazoredModal.Close(ModalResult.Ok(true));
+	}
+
+	void SetRating(int rating)
+	{
+		// Unselect the rating if the same value is selected for the second time
+		if (rating == Request.Rating)
+			Request.Rating = null;
+		else
+			Request.Rating = rating;
+
+		StateHasChanged();
+	} }

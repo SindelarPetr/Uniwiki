@@ -10,6 +10,7 @@ using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
+using Uniwiki.Shared.Extensions;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
@@ -17,32 +18,32 @@ namespace Uniwiki.Server.Application.ServerActions
 
     internal class EditPostServerAction : ServerActionBase<EditPostRequestDto, EditPostResponseDto>
     {
-        private static void LogAction(ILogger<EditPostServerAction> logger, PostModel post, EditPostRequestDto request) => 
+        private static void LogAction(ILogger<EditPostServerAction> logger, PostModel post, EditPostRequestDto request)
+        {
             logger.LogInformation("About to edit the post with ID: '{PostId}', Text '{OldText}', Category '{OldCategory}', Files count {OldFilesCount}, File names {OldFiles} to values Text '{NewText}', Category '{NewCategory}', Files count {NewFilesCount}, File names {NewFiles}",
                 post.Id,
                 post.Text,
                 post.PostType ?? "null",
                 post.Files.Length,
-                post.Files.Select(f => f.OriginalName).Aggregate((a, b) => $"'{a}', '{b}'"),
+                post.Files.Select(f => f.OriginalName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"),
                 request.Text,
                 request.PostType,
                 request.PostFiles.Count(),
-                request.PostFiles.Select(f => f.OriginalName).Aggregate((a, b) => $"'{a}', '{b}'"));
+                request.PostFiles.Select(f => f.OriginalName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"));
+        }
 
         private readonly IPostRepository _postRepository;
         private readonly TextService _textService;
-        private readonly IPostTypeRepository _postTypeRepository;
         private readonly IPostFileRepository _postFileRepository;
         private readonly IProfileRepository _profileRepository;
         private readonly ILogger<EditPostServerAction> _logger;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public EditPostServerAction(IServiceProvider serviceProvider, IPostRepository postRepository, TextService textService, IPostTypeRepository postTypeRepository, IPostFileRepository postFileRepository, IProfileRepository profileRepository, ILogger<EditPostServerAction> logger) :base (serviceProvider)
+        public EditPostServerAction(IServiceProvider serviceProvider, IPostRepository postRepository, TextService textService, IPostFileRepository postFileRepository, IProfileRepository profileRepository, ILogger<EditPostServerAction> logger) : base(serviceProvider)
         {
             _postRepository = postRepository;
             _textService = textService;
-            _postTypeRepository = postTypeRepository;
             _postFileRepository = postFileRepository;
             _profileRepository = profileRepository;
             _logger = logger;
@@ -58,7 +59,7 @@ namespace Uniwiki.Server.Application.ServerActions
 
             // Get user profile
             var profile = _profileRepository.FindById(context.User.Id);
-            
+
             // Find all files from the request in DB
             var filesForSearch = request.PostFiles.Select(f => (f.Id, f.OriginalName));
 

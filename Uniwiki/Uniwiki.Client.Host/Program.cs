@@ -22,11 +22,10 @@ namespace Uniwiki.Client.Host
                 Console.WriteLine(service.ServiceType.ToString());
             }
 
-            builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddUniwikiClientHostServices();
             
             var host = builder.Build();
-            await host.InitializeClient();
+            await host.InitializeClient(builder.HostEnvironment.BaseAddress);
 
             await host.RunAsync();
         }

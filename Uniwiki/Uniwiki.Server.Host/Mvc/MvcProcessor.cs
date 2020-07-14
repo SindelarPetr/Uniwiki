@@ -22,7 +22,18 @@ namespace Uniwiki.Server.Host.Mvc
         [Pure]
         private static void LogRequest(ILogger<MvcProcessor> logger, IRequest request)
         {
-            var requestString = request.GetType().GetProperties().Where(p => !Attribute.IsDefined(p, typeof(DontLogAttribute))).Select(p => $"{p.Name}='{p.GetValue(request)}'").Aggregate((a, b) => $"{a}; {b}");
+            var requestProps = request.GetType().GetProperties().Where(p => !Attribute.IsDefined(p, typeof(DontLogAttribute))).Select(p => $"{p.Name}='{p.GetValue(request)}'");
+            
+            var requestString = $"Request '{request.GetType().Name}' with ";
+
+            if (requestProps.Any())
+            {
+                requestString += requestProps.Aggregate((a, b) => $"{a}; {b}");
+            }
+            else
+            {
+                requestString += "no properties";
+            }
 
             logger.LogInformation(requestString);
         }
@@ -67,7 +78,7 @@ namespace Uniwiki.Server.Host.Mvc
             }
 
             // Create request context
-            var requestContext = new RequestContext(userInfo.Item1, userInfo.Item2, inputContext.RequestId, inputContext.Language);
+            var requestContext = new RequestContext(userInfo.Item1, userInfo.Item2, inputContext.RequestId, inputContext.Language, inputContext.IpAddress);
 
             // Get the server action
             IServerAction action = _serverActionResolver.Resolve(request);

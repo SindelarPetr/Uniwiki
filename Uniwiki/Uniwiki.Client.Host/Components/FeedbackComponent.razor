@@ -1,0 +1,51 @@
+﻿@inherits UniwikiComponentBase
+
+@if (_showThis)
+{
+	<div class="bg-info">
+		<div class="container">
+			<button class="btn btn-link pl-0 text-white mr-3" type="button" @onclick="HandleShowFeedbackForm">@TextService.ProvideFeedbackText</button>
+		</div>
+	</div>
+}
+
+@code {
+	[Inject] IModalService ModalService { get; set; }
+	[Inject] ILoginService LoginService { get; set; }
+	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; }
+	[Inject] AuthenticationStateProvider authenticationStateProvider { get; set; }
+
+	[CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; }
+
+	[Parameter] public string Title { get; set; }
+
+	private bool _showThis = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await base.OnParametersSetAsync();
+
+		await AuthenticationState;
+
+
+		var loginFeedbackProvided = LoginService.IsAuthenticated && LoginService.User.FeedbackProvided;
+
+		_showThis = !loginFeedbackProvided && !(await LocalStorageManagerService.IsFeedbackProvided());
+
+		Console.WriteLine("Show this: " + _showThis);
+		Console.WriteLine("Login show: " + _showThis);
+		Console.WriteLine("Local show: " + _showThis);
+	}
+
+	public async Task HandleShowFeedbackForm()
+	{
+		var modal = ModalService.Show<FeedbackModal>(TextService.Modal_Feedback_Title);
+		var success = (await modal.Result).Data as bool?;
+		_showThis = _showThis && !(success ?? false);
+	}
+}

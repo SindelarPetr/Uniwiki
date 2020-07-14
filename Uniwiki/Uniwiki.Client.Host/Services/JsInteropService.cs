@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Uniwiki.Client.Host.Components.FileUploader;
 using Uniwiki.Client.Host.Services.Abstractions;
+using Uniwiki.Shared;
 
 namespace Uniwiki.Client.Host.Services
 {
@@ -40,7 +41,7 @@ namespace Uniwiki.Client.Host.Services
             _jsRuntime.InvokeVoidAsync("MyInput.init", fileInput, callbacksAsNetRef);
 
         public ValueTask StartFileUpload(in int id, string dataForServer) => 
-            _jsRuntime.InvokeVoidAsync("MyInput.startUpload", id, dataForServer);
+            _jsRuntime.InvokeVoidAsync("MyInput.startUpload", id, dataForServer, ApiRoutes.FileController.UploadFile.BuildRoute());
 
         public ValueTask AbortFileUpload(in int id) => 
             _jsRuntime.InvokeVoidAsync("MyInput.abortUpload", id);

@@ -12,8 +12,9 @@ namespace Uniwiki.Shared.ModelDtos
         public DateTime CreationDate { get; set; }
         public string NameIdentifier { get; set; }
         public string Email { get; set; }
+        public bool FeedbackProvided { get; set; }
 
-        public ProfileDto(Guid id, string firstName, string familyName, string fullName, string profilePictureSrc, DateTime creationDate, string nameIdentifier, string email)
+        public ProfileDto(Guid id, string firstName, string familyName, string fullName, string profilePictureSrc, DateTime creationDate, string nameIdentifier, string email, bool feedbackProvided)
         {
             Id = id;
             FirstName = firstName;
@@ -23,6 +24,7 @@ namespace Uniwiki.Shared.ModelDtos
             CreationDate = creationDate;
             NameIdentifier = nameIdentifier;
             Email = email;
+            FeedbackProvided = feedbackProvided;
         }
     }
 }

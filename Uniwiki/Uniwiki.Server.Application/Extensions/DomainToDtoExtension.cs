@@ -5,7 +5,6 @@ using Uniwiki.Server.Persistence.Models.Authentication;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;
-using ProfileModel = Uniwiki.Server.Persistence.Models.ProfileModel;
 
 namespace Uniwiki.Server.Application.Extensions
 {
@@ -21,7 +20,7 @@ namespace Uniwiki.Server.Application.Extensions
             => new PostFileDto(postFile.Id, postFile.OriginalName, postFile.IsSaved, postFile.Size);
 
         public static ProfileDto ToDto(this ProfileModel profile) 
-            => new ProfileDto(profile.Id, profile.FirstName, profile.FamilyName, profile.FullName, profile.ProfilePictureSrc, profile.CreationDate, profile.Url, profile.Email);
+            => new ProfileDto(profile.Id, profile.FirstName, profile.FamilyName, profile.FullName, profile.ProfilePictureSrc, profile.CreationDate, profile.Url, profile.Email, profile.FeedbackProvided);
 
         public static UniversityDto ToDto(this UniversityModel university) 
             => new UniversityDto(university.Id, university.FullName, university.ShortName, university.ShortName.Neutralize());

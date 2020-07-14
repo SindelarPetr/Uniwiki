@@ -7,13 +7,14 @@ namespace Uniwiki.Shared
 {
     public static class ApiRoutes
     {
-        public static class UploadController
+        public static class FileController
         {
             public const string FileIdParameter = "FileId";
             public const string SecondaryTokenParameter = "Token";
             public const string FileNameParameter = "FileName";
             public const string LanguageParameter = "Language";
 
+            public const string FileControllerRoute = "File";
             public static string GetPostFile(Guid id, Guid secondaryToken, string fileName, Language language)
             {
                 var encodedName = HttpUtility.UrlEncode(fileName);
@@ -22,9 +23,14 @@ namespace Uniwiki.Shared
                     {FileIdParameter, id.ToString()},
                     {SecondaryTokenParameter, secondaryToken.ToString()},
                     {FileNameParameter, encodedName},
-                    {LanguageParameter, (language).ToString()} };
+                    {LanguageParameter, language.ToString()} };
 
-                return RouteHelper.BuildRoutePartsWithParameters(queryParameters, "upload", nameof(GetPostFile));
+                return RouteHelper.BuildRoutePartsWithParameters(queryParameters, FileControllerRoute, nameof(GetPostFile));
+            }
+
+            public static class UploadFile
+            {
+                public static string BuildRoute() => "/" + FileControllerRoute;
             }
         }
     }

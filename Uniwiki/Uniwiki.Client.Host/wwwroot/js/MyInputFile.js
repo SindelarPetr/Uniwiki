@@ -32,7 +32,7 @@ window.MyInput = {
 		});
 	},
 
-	startUpload: function (fileId, dataForServer) {
+	startUpload: function (fileId, dataForServer, path) {
 
 		console.log("startUpload");
 
@@ -60,7 +60,7 @@ window.MyInput = {
 		formData.append("File", fileFromInput);
 		formData.append("Data", dataForServer);
 
-		xhr.open("POST", "/upload");
+		xhr.open("POST", path);
 
 		console.log(xhr);
 

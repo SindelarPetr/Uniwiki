@@ -31,6 +31,8 @@ namespace Uniwiki.Server.Persistence.InMemory.Services
         public IEnumerable<PostFileDownload> PostFileDownloads => _postFileDownloads.OrderBy(d => d.DownloadTime);
         public List<PostFileDownload> _postFileDownloads = new List<PostFileDownload>();
 
+        public List<FeedbackModel> Feedbacks = new List<FeedbackModel>();
+
         public IEnumerable<string> _defaultPostTypesCz => new[]
         {
             "Domácí úkol",

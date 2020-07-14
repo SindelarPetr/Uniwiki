@@ -53,6 +53,7 @@ namespace Uniwiki.Tests
         private ServiceProvider SetupDefaultDependencies()
         {
             ServiceCollection services = new ServiceCollection();
+            services.AddLogging();
             services.AddUniwikiClientHostServices();
             services.AddHostServices();
 
@@ -67,6 +68,7 @@ namespace Uniwiki.Tests
             services.AddSingleton<INavigationService, FakeNavigationService>();
             services.AddSingleton<ILocalStorageService, FakeLocalStorageService>();
             services.AddSingleton<IJsInteropService, FakeJsInteropService>();
+
 
             var provider = services.BuildServiceProvider();
 
@@ -122,6 +124,7 @@ namespace Uniwiki.Tests
             await createNewPasswordPage.CreateNewPassword();
             
             loginRequestDto.Password = newNewPassword;
+            loginPage = CreateLoginPage(provider, loginRequestDto);
             await loginPage.Login();
 
             // --- Assert ---
@@ -234,15 +237,12 @@ namespace Uniwiki.Tests
         {
             var provider = SetupDefaultDependencies();
             
-            var searchBox = new SearchBoxComponent();
+            var objectWithInjects = new FakeObjectWithInjects();
 
-            provider.InjectDependencies(searchBox);
+            provider.InjectDependencies(objectWithInjects);
 
-            Assert.IsNotNull(searchBox.LoginService);
-            Assert.IsNotNull(searchBox.NavigationService);
-            Assert.IsNotNull(searchBox.RequestSender);
-            Assert.IsNotNull(searchBox.ToastService);
-            Assert.IsNotNull(searchBox.JsInteropService);
+            Assert.IsTrue(objectWithInjects.HasPublicDependency(), "The object did not receive the public dependency");
+            Assert.IsTrue(objectWithInjects.HasPrivateDependency(), "The object did not receive the private dependency");
         }
 
         private CreateNewPasswordPage CreateCreateNewPasswordPage(ServiceProvider provider, CreateNewPasswordRequestDto request, string secret)
@@ -323,7 +323,7 @@ namespace Uniwiki.Tests
             // Deserialize the given data
             var dataForServer = JsonConvert.DeserializeObject<DataForServer>(stringData);
 
-            var inputContext = new InputContext(dataForServer.AccessToken, Guid.NewGuid(), dataForServer.Language, ClientConstants.AppVersionString);
+            var inputContext = new InputContext(dataForServer.AccessToken, Guid.NewGuid().ToString(), dataForServer.Language, ClientConstants.AppVersionString, new System.Net.IPAddress(0x2414188f));
 
             var request = _requestDeserializer.Deserialize(dataForServer.Request, dataForServer.Type);
 
@@ -592,5 +592,19 @@ namespace Uniwiki.Tests
         {
             return new ValueTask();
         }
+
+        public ValueTask Download(in string data, in string fileName)
+        {
+            return new ValueTask();
+        }
+    }
+
+    public class FakeObjectWithInjects
+    {
+        [Inject] private IRequestSender RequestSender { get; set; }
+        [Inject] public ITimeService TimeService { get; set; }
+
+        public bool HasPrivateDependency() => RequestSender != null;
+        public bool HasPublicDependency() => TimeService != null;
     }
 }

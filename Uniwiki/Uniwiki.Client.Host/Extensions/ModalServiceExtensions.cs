@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Blazored.Modal.Services;
-using Uniwiki.Client.Host.Shared.Modals;
+using Uniwiki.Client.Host.Modals;
 
 namespace Uniwiki.Client.Host.Extensions
 {

@@ -11,7 +11,7 @@ namespace Uniwiki.Tests.Extensions
         {
             var propertiesWithInjectAttribute = tObject
                 .GetType()
-                .GetProperties()
+                .GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.GetCustomAttribute(typeof(InjectAttribute)) != null);
 
             foreach (var propertyInfo in propertiesWithInjectAttribute)

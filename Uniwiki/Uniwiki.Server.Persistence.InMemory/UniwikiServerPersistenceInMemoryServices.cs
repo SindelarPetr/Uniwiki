@@ -32,6 +32,7 @@ namespace Uniwiki.Server.Persistence.InMemory
             services.AddScoped<IUniversityRepository, UniversityInMemoryRepository>();
             services.AddScoped<ICourseVisitRepository, CourseVisitRepository>();
             services.AddScoped<IPostFileDownloadRepository, PostFileDownloadRepository>();
+            services.AddScoped<IFeedbackRepository, FeedbackRepository>();
         }
     }
 }

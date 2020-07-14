@@ -30,6 +30,8 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
             var recentCourses = _dataStorage.CourseVisits.Where(cv => cv.Profile.Id == id)
                 .OrderByDescending(cv => cv.VisitDateTime).Select(cv => cv.Course).Distinct().Reverse();
 
+            var feedbacks = _dataStorage.Feedbacks.Where(f => f.User != null && f.User.Id == id);
+
             var newProfile = new ProfileModel(
                 id, 
                 email, 
@@ -42,7 +44,8 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
                 registrationTime, 
                 false, 
                 AuthenticationLevel.PrimaryToken, 
-                recentCourses);
+                recentCourses,
+                feedbacks);
 
             _dataStorage.Profiles.Add(newProfile);
 

@@ -34,7 +34,7 @@ namespace Uniwiki.Server.Application.Services
         private readonly IEmailConfirmationSecretRepository _emailConfirmationSecretRepository;
         private readonly IProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
-        private readonly RequestContext _anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid().ToString(), Language.English);
+        private readonly RequestContext _anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid().ToString(), Language.English, new System.Net.IPAddress(0x2414188));
 
         public DataManipulationService(AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, IUniversityRepository universityRepository, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService)
         {
@@ -300,7 +300,7 @@ namespace Uniwiki.Server.Application.Services
             var loginTokenDto = (await _loginServerAction.ExecuteActionAsync(new LoginRequestDto(email, password, new CourseDto[0]), _anonymousContext)).LoginToken;
             var token = _loginTokenRepository.TryFindById(loginTokenDto.PrimaryTokenId, _timeService.Now);
             
-            return new RequestContext(token, isAdmin ? AuthenticationLevel.Admin : AuthenticationLevel.PrimaryToken, Guid.NewGuid().ToString(), Language.English);
+            return new RequestContext(token, isAdmin ? AuthenticationLevel.Admin : AuthenticationLevel.PrimaryToken, Guid.NewGuid().ToString(), Language.English, _anonymousContext.IpAddress);
         }
 
         public Task<AddCourseResponseDto> CreateCourse(string code, string name, StudyGroupDto studyGroup, RequestContext requestContext)
