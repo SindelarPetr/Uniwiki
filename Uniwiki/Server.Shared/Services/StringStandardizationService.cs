@@ -25,14 +25,24 @@ namespace Shared.Services
 
         private string CreateUrl(string text, int? salt)
         {
-            return HttpUtility.UrlEncode(Regex.Replace(text.ToLower(), @"\s+", string.Empty)).Where(char.IsLetter)
-                       .Aggregate(string.Empty, (s, c) => s + c) + (salt == null ? "" : salt.ToString());
+            text = RemoveAccents(text);
+            text = RemoveNonEnglishLetters(text, true);
+            text = OptimizeWhiteSpaces(text, "-");
+            text = text.Trim('-');
+            text = text.ToLower();
+            text = HttpUtility.UrlEncode(text);
+            text = new string(text.Take(20).ToArray()); // Take only first X letters
+            text = text + salt.ToString(); // Add salt
+
+            return  text;
         }
 
         /// <summary>
         /// Replaces all multiple whitespace characters by a single space character and trims whitespaces from both sides. 
         /// </summary>
-        public string OptimizeWhiteSpaces(string? text) => text != null ? Regex.Replace(text, @"\s+", " ").Trim() : null;
+        public string OptimizeWhiteSpaces(string text, string optimizeBy = " ") => text != null ? Regex.Replace(text.Trim(), @"\s+", optimizeBy) : null;
+
+        public string RemoveWhiteSpaces(string text) => Regex.Replace(text, @"\s+", string.Empty).Trim();
 
         public string RemoveAccents(string text)
         {
@@ -61,5 +71,12 @@ namespace Shared.Services
         {
             return OptimizeWhiteSpaces(name).FirstCharToUpper();
         }
+
+        public string RemoveNonEnglishLetters(string text, bool preserveWhiteSpace)
+        {
+            return text.Aggregate("", (acc, letter) => IsEnglishLetter(letter) || (preserveWhiteSpace && char.IsWhiteSpace(letter)) ? acc + letter : acc);
+        }
+
+        public bool IsEnglishLetter(char letter) => (letter >= 'A' && letter <= 'Z') || (letter >= 'a' && letter <= 'z');
     }
 }
