@@ -45,8 +45,8 @@ namespace Uniwiki.Server.Host.Mvc
             
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseSerilogRequestLogging();
             app.UseBlazorFrameworkFiles();
+            app.UseSerilogRequestLogging();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {

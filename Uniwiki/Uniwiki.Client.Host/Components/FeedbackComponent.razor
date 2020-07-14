@@ -32,14 +32,9 @@
 
 		await AuthenticationState;
 
-
 		var loginFeedbackProvided = LoginService.IsAuthenticated && LoginService.User.FeedbackProvided;
 
 		_showThis = !loginFeedbackProvided && !(await LocalStorageManagerService.IsFeedbackProvided());
-
-		Console.WriteLine("Show this: " + _showThis);
-		Console.WriteLine("Login show: " + _showThis);
-		Console.WriteLine("Local show: " + _showThis);
 	}
 
 	public async Task HandleShowFeedbackForm()
