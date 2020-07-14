@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Shared;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -38,12 +39,25 @@ namespace Uniwiki.Server.Host.Controllers
         {
             try
             {
+                DriveInfo drive = new DriveInfo(Path.GetDirectoryName(typeof(ServiceController).Assembly.Location));
+
+                var totalBytes = drive.TotalSize;
+                var freeBytes = drive.AvailableFreeSpace;
+
+                var freePercent = freeBytes / (double)totalBytes;
+
                 var ip = HttpContext.Connection.RemoteIpAddress;
                 return
                     $"Server is running!\n" +
                     $"Expected client version: ({ ClientConstants.AppVersionString })\n" +
                     $"Server time: {_timeService.Now}\n" +
-                    $"Client IP: {ip}";
+                    $"Client IP: {ip}\n" +
+                    $"ASP.NET Environment: {_webHostEnvironment.EnvironmentName}\n" +
+                    //$"Configuration: {}\n" +
+                    $"Storage size: {drive.TotalSize / 1_000_000.0:N} MB\n" +
+                     $"Storage available free space: {drive.AvailableFreeSpace / 1_000_000.0:N} MB ({freePercent:P})\n" +
+                     $"Storage total free space: {drive.TotalFreeSpace / 1_000_000.0:N} MB\n";
+
             }
             catch (Exception ex)
             {

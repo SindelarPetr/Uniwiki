@@ -15,27 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="appsettings.Debug.json" />
-    <Content Remove="appsettings.Release.json" />
-    <Content Remove="appsettings.Test.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="appsettings.Debug.json">
-      <IsTransformFile>true</IsTransformFile>
-      <DependentUpon>appsettings.json</DependentUpon>
-    </None>
-    <None Include="appsettings.Release.json">
-      <IsTransformFile>true</IsTransformFile>
-      <DependentUpon>appsettings.json</DependentUpon>
-    </None>
-    <None Include="appsettings.Test.json">
-      <IsTransformFile>true</IsTransformFile>
-      <DependentUpon>appsettings.json</DependentUpon>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
     <PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="3.2.26">
@@ -60,7 +39,31 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="appsettings - Copy %282%29.Development.json">
+      <TransformOnBuild>true</TransformOnBuild>
+      <DependentUpon>appsettings.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings.Staging.json">
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
+    <Content Update="appsettings - Copy - Copy.Development.json">
+      <TransformOnBuild>true</TransformOnBuild>
+      <DependentUpon>appsettings - Copy.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy.Development.json">
+      <TransformOnBuild>true</TransformOnBuild>
+      <DependentUpon>appsettings.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings.Production.json">
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
+    <Content Update="appsettings.Development.json">
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
     <Content Update="appsettings.json">
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
+    <Content Update="Properties\launchSettings.json">
       <TransformOnBuild>true</TransformOnBuild>
     </Content>
   </ItemGroup>
