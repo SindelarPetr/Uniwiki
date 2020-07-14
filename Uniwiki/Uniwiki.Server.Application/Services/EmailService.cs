@@ -3,7 +3,10 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
+using Uniwiki.Server.Application.Configuration;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Shared;
 
@@ -13,12 +16,17 @@ namespace Uniwiki.Server.Application.Services
     {
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly TextService _textService;
+        private readonly UniwikiConfiguration _uniwikiConfiguration;
+        private readonly ILogger<EmailService> _logger;
         private readonly string _baseUrl;
-        public EmailService(IHttpContextAccessor httpContextAccessor, IEmailTemplateService emailTemplateService, TextService textService)
+        public EmailService(IHttpContextAccessor httpContextAccessor, IEmailTemplateService emailTemplateService, TextService textService, UniwikiConfiguration uniwikiConfiguration, ILogger<EmailService> logger)
         {
             _emailTemplateService = emailTemplateService;
             _textService = textService;
+            _uniwikiConfiguration = uniwikiConfiguration;
+            _logger = logger;
             _baseUrl = GetBaseUri(httpContextAccessor.HttpContext);
+
         }
 
         private string GetBaseUri(HttpContext context)
@@ -38,23 +46,24 @@ namespace Uniwiki.Server.Application.Services
             return $"{request.Scheme}://{host}{pathBase}";
         }
 
-        private async Task SendEmail(string recipientEmail, string subject, string messageText, bool isHtml = false)
+        private async Task SendEmail(string recipientEmail, string subject, string messageText, bool isHtml = true)
         {
             // Dont send emails if the address of Uniwiki is unknown
             if(string.IsNullOrWhiteSpace(_baseUrl))
                 return;
 
-            var senderAddress = "uniwiki.official@gmail.com";
-            var password = "upnaiswsiwko12";
-            var host = "smtp.gmail.com";
-            var port = 587;
+            // Get the configuration
+            var senderAddress = _uniwikiConfiguration.Email.SenderAddress;
+            var password = _uniwikiConfiguration.Email.Password;
+            var host = _uniwikiConfiguration.Email.Host;
+            var port = _uniwikiConfiguration.Email.Port;
 
             // Prepare message
             MailMessage message = new MailMessage();
             message.From = new MailAddress(senderAddress, "Uniwiki");
             message.To.Add(new MailAddress(recipientEmail));
             message.Subject = subject;
-            message.IsBodyHtml = isHtml; //to make message body as html  
+            message.IsBodyHtml = isHtml; // Mark message body as html  
             message.Body = messageText;
 
             // Prepare SMTP client
@@ -72,7 +81,7 @@ namespace Uniwiki.Server.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(0, e, $"Encountered a problem while sending an email to: '{recipientEmail}'");
                 throw new RequestException(_textService.Error_CouldNotSendEmail(recipientEmail));
             }
         }

@@ -414,4 +414,4 @@ MigrationBackup/
 .ionide/
 /Uniwiki/Uniwiki.Server.Host/uploads
 /Uniwiki/Uniwiki.Server.Host/appsettings.Production.json
-emailsettings.*.json
+emailsettings.json

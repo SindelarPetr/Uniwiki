@@ -42,8 +42,8 @@ namespace Uniwiki.Server.Application.Services
 
         public string EmailVerifyRegistration_Addressing => GetTranslation("Dobrý den,", "Hello,");
 
-        public string EmailVerifyRegistration_Text => GetTranslation("Děkujeme za registraci na Uniwiki. K dokončení již zbývá poslední krok, což je potvrzení emailu.", 
-            "Thank you for registration on Uniwiki. There is just one step left, which is the email confirmation.");
+        public string EmailVerifyRegistration_Text => GetTranslation("Děkujeme, že jste se rozhodl/a stát se součástí Uniwiki. K dokončení již zbývá poslední krok, což je potvrzení emailu.", 
+            "Thank you for becoming a member of Uniwiki. There is just one step left fo you, which is to confirm your email.");
 
         public string EmailVerifyRegistration_ButtonConfirmEmail => GetTranslation("Potvrdit email", "Confirm email");
 

@@ -52,13 +52,21 @@ namespace Uniwiki.Server.Host.Mvc
             return Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseSetting("https_port", "5001").UseStartup<MvcStartup>();
+                    webBuilder
+                    .UseSetting("https_port", "5001") // Fix HTTPS redirection
+                    .ConfigureAppConfiguration(AddEmailConfiguration) // Add email configuration
+                    .UseStartup<MvcStartup>();
                 })
                 .ConfigureLogging(
                 builder => {
                     builder.AddConsole();
                     }
                 );
+        }
+
+        private void AddEmailConfiguration(IConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.AddJsonFile("emailsettings.json");
         }
     }
 }
