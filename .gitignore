@@ -413,3 +413,4 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /Uniwiki/Uniwiki.Server.Host/uploads
+/Uniwiki/Uniwiki.Server.Host/appsettings.Production.json
