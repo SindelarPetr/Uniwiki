@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
+using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
@@ -10,7 +11,6 @@ using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
 using Uniwiki.Shared.RequestResponse.Authentication;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Application.ServerActions.Authentication
 {

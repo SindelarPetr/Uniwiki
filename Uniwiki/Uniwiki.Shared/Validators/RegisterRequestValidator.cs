@@ -9,7 +9,7 @@ namespace Uniwiki.Shared.Validators
 {
     internal class RegisterRequestValidator : StandardizerValidator<RegisterRequestDto>
     {
-        public RegisterRequestValidator(TextServiceBase textService, IStandardizer<RegisterRequestDto> standardizer) : base(standardizer)
+        public RegisterRequestValidator(TextServiceBase textService, IStandardizer<RegisterRequestDto> standardizer, Constants constants) : base(standardizer)
         {
             RuleFor(f => f.Name).Cascade(CascadeMode.StopOnFirstFailure)
                 .MinMaxLengthWithMessages(textService, Constants.Validations.UserNameMinLength, Constants.Validations.UserNameMaxLength);
@@ -23,7 +23,8 @@ namespace Uniwiki.Shared.Validators
 
             RuleFor(f => f.Password).Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty().WithMessage(textService.Validation_TypeYourPassword)
-                .MinimumLength(1).WithMessage(textService.Validation_TypePasswordMatchingRequirements);
+                .MinMaxLengthWithMessages(textService, constants.PasswordMinLength, Constants.PasswordMaxLength);
+                //.MinimumLength(1).WithMessage(textService.Validation_TypePasswordMatchingRequirements);
 
             RuleFor(f => f.PasswordAgain).Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty().WithMessage(textService.Validation_TypeYourNewPassword)

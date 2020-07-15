@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
+using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
 using Uniwiki.Shared.RequestResponse;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Application.ServerActions
 {

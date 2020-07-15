@@ -2,25 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <DisableImplicitComponentsAnalyzers>true</DisableImplicitComponentsAnalyzers>
+    <!--<DisableImplicitComponentsAnalyzers>true</DisableImplicitComponentsAnalyzers>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>
+    <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>-->
     <Nullable>enable</Nullable>
-    <UserSecretsId>9e6f2274-fdba-46fa-845c-074bc06f77a6</UserSecretsId>
-    <Configurations>Debug;Release;Test</Configurations>
+    <UserSecretsId>d420c30c-badd-4ef0-bd8e-c2d8a9ffa9ed</UserSecretsId>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|AnyCPU'">
+  <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|AnyCPU'">
     <Optimize>true</Optimize>
-  </PropertyGroup>
+  </PropertyGroup>-->
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
-    <PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="3.2.26">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.3" />
     <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.1" />
@@ -36,32 +32,6 @@
     <ProjectReference Include="..\Uniwiki.Server.Persistence\Uniwiki.Server.Persistence.csproj" />
     <ProjectReference Include="..\Uniwiki.Shared\Uniwiki.Shared.csproj" />
     <ProjectReference Include="..\Uniwiki.Client.Host\Uniwiki.Client.Host.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="appsettings.Staging.json">
-      <TransformOnBuild>true</TransformOnBuild>
-    </Content>
-    <Content Update="appsettings - Copy - Copy.Development.json">
-      <TransformOnBuild>true</TransformOnBuild>
-      <DependentUpon>appsettings - Copy.Development.json</DependentUpon>
-    </Content>
-    <Content Update="appsettings - Copy.Development.json">
-      <TransformOnBuild>true</TransformOnBuild>
-      <DependentUpon>appsettings.Development.json</DependentUpon>
-    </Content>
-    <Content Update="appsettings.Production.json">
-      <TransformOnBuild>true</TransformOnBuild>
-    </Content>
-    <Content Update="appsettings.Development.json">
-      <TransformOnBuild>true</TransformOnBuild>
-    </Content>
-    <Content Update="appsettings.json">
-      <TransformOnBuild>true</TransformOnBuild>
-    </Content>
-    <Content Update="Properties\launchSettings.json">
-      <TransformOnBuild>true</TransformOnBuild>
-    </Content>
   </ItemGroup>
 
 </Project>

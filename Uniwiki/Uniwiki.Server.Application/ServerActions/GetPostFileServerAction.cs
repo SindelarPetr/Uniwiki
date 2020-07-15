@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Server.Appliaction.Services.Abstractions;
 using Shared.Exceptions;
+using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared;
 using Uniwiki.Shared.RequestResponse;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Application.ServerActions
 {

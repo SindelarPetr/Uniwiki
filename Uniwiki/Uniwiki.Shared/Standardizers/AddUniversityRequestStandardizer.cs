@@ -1,5 +1,5 @@
 ﻿using Shared.Extensions;
-using Shared.Services;
+using Shared.Services.Abstractions;
 using Shared.Standardizers;
 using Uniwiki.Shared.RequestResponse;
 

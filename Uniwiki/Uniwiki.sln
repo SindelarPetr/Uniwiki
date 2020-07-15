@@ -42,7 +42,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Persistence.InMemory
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uniwiki.Server.Persistence.InMemory", "Uniwiki.Server.Persistence.InMemory\Uniwiki.Server.Persistence.InMemory.csproj", "{78C39F86-29AA-4F92-BE26-F91F12BCCC42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Tests", "Shared.Tests\Shared.Tests.csproj", "{B7F92039-5746-4AE0-842D-EA3CA4020AA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Tests", "Shared.Tests\Shared.Tests.csproj", "{B7F92039-5746-4AE0-842D-EA3CA4020AA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,10 +3,8 @@ using System.Linq;
 using Shared.Exceptions;
 using Uniwiki.Server.Persistence.InMemory.Services;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.Models.Authentication;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
 using Uniwiki.Server.Persistence.Services;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
 {

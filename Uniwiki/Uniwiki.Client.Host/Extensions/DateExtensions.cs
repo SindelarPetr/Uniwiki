@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Shared.Services.Abstractions;
+using System;
 using Uniwiki.Client.Host.Services;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Client.Host.Extensions
 {

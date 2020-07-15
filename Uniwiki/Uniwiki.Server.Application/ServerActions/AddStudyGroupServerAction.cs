@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
-using Shared.Services;
+using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;

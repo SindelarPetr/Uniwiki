@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using Shared.Extensions;
+using Shared.Services.Abstractions;
 
 namespace Shared.Services
 {

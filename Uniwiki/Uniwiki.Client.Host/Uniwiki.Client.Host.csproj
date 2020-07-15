@@ -3,14 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
-    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+    <!--<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>-->
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
-    <BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
-    <Version>1.0.1</Version>
+    <!--<BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>-->
+    <!--<Version>1.0.1</Version>-->
     <AssemblyVersion>1.0.*</AssemblyVersion>
     <Deterministic>false</Deterministic>
-    <Configurations>Debug;Release;Test</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,21 +31,18 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.0" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
   </ItemGroup>
 
   <!-- When publishing, swap service-worker.published.js in place of service-worker.js -->
-  <ItemGroup Condition="'$(DesignTimeBuild)' != 'true'">
+  <!--<ItemGroup Condition="'$(DesignTimeBuild)' != 'true'">
     <Content Remove="wwwroot\service-worker.js" />
     <Content Update="wwwroot\service-worker.published.js" Link="wwwroot\service-worker.js" />
-  </ItemGroup>
+  </ItemGroup>-->
   <ItemGroup>
+    <ProjectReference Include="..\Server.Shared\Shared.csproj" />
     <ProjectReference Include="..\Uniwiki.Shared\Uniwiki.Shared.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

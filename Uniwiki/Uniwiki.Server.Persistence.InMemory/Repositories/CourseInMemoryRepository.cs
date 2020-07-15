@@ -4,7 +4,7 @@ using System.Linq;
 using Shared;
 using Shared.Exceptions;
 using Shared.Extensions;
-using Shared.Services;
+using Shared.Services.Abstractions;
 using Uniwiki.Server.Persistence.InMemory.Services;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories;

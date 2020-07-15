@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Shared.Services.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Shared.Tests.FakeServices
 {

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared;
+using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.ServerActions;
 using Uniwiki.Server.Application.ServerActions.Authentication;
 using Uniwiki.Server.Persistence;
@@ -12,7 +13,6 @@ using Uniwiki.Server.Persistence.Repositories.Authentication;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Application.Services
 {
@@ -57,12 +57,12 @@ namespace Uniwiki.Server.Application.Services
         public async Task InitializeFakeData()
         {
             // Register users
-            var lucieContext = await RegisterUser("a@a.cz", "Lucie", "Veselá", "a", true);
-            var ivanaContext = await RegisterUser("b@b.cz", "Ivana", "Nováková", "b");
-            var terezieContext = await RegisterUser("c@c.cz", "Marie", "Terezie", "c");
-            var petrContext = await RegisterUser("d@d.cz", "Petr", "Šindelář", "d");
-            var barboraContext = await RegisterUser("e@e.cz", "Barbora", "Zelená", "e");
-            var martinContext = await RegisterUser("f@f.cz", "Martin", "Novák", "f");
+            var lucieContext = await RegisterUser("a@a.cz", "Lucie", "Veselá", "aaaaaa", true);
+            var ivanaContext = await RegisterUser("b@b.cz", "Ivana", "Nováková", "aaaaaa");
+            var terezieContext = await RegisterUser("c@c.cz", "Marie", "Terezie", "aaaaaa");
+            var petrContext = await RegisterUser("d@d.cz", "Petr", "Šindelář", "aaaaaa");
+            var barboraContext = await RegisterUser("e@e.cz", "Barbora", "Zelená", "aaaaaa");
+            var martinContext = await RegisterUser("f@f.cz", "Martin", "Novák", "aaaaaa");
 
             // Universities
             var uniCvut = _universityRepository.CreateUniversity("České vysoké učení technické v Praze", "ČVUT", "cvut");

@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Server.Appliaction.ServerActions;
 using Shared;
 using Shared.Exceptions;
+using Shared.Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,6 @@ using Uniwiki.Server.Persistence.InMemory.Services;
 using Uniwiki.Shared;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;
-using Uniwiki.Shared.Services.Abstractions;
 using Uniwiki.Shared.Tests.FakeServices;
 
 namespace Uniwiki.Server.Application.Tests

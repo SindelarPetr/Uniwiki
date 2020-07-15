@@ -17,8 +17,8 @@ using Uniwiki.Shared;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;
-using Uniwiki.Shared.Services.Abstractions;
 using Uniwiki.Shared.Tests.FakeServices;
+using Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Application.Tests
 {

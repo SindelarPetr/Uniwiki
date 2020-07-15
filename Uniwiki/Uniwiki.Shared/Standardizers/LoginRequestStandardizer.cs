@@ -1,4 +1,4 @@
-﻿using Shared.Services;
+﻿using Shared.Services.Abstractions;
 using Shared.Standardizers;
 using System.Linq;
 using Uniwiki.Shared.RequestResponse.Authentication;

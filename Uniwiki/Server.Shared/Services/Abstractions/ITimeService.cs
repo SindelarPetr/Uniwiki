@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Uniwiki.Shared.Services.Abstractions
+namespace Shared.Services.Abstractions
 {
     public interface ITimeService
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Shared.Services
+namespace Shared.Services.Abstractions
 {
     public interface IStringStandardizationService
-    { 
+    {
         string CreateUrl(string text, Func<string, bool> isUniq);
         string OptimizeWhiteSpaces(string? text, string optimizeBy = " ");
         string StandardizeSearchText(string text);

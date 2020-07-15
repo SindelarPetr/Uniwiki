@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using Shared.Services.Abstractions;
+using System.Threading.Tasks;
 using Uniwiki.Client.Host.Services.Abstractions;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse.Authentication;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Client.Host.Services
 {

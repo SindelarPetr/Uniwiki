@@ -5,7 +5,6 @@ using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Models.Authentication;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
 using Uniwiki.Shared;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
 {

@@ -23,7 +23,9 @@ namespace Uniwiki.Client.Host
             }
 
             builder.Services.AddUniwikiClientHostServices();
-            
+
+            Console.WriteLine("Environment: " + builder.HostEnvironment.Environment);
+
             var host = builder.Build();
             await host.InitializeClient(builder.HostEnvironment.BaseAddress);
 

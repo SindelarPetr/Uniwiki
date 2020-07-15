@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Server.Appliaction.ServerActions;
-using Shared.Services;
+using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;

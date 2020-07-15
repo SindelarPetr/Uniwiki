@@ -1,5 +1,4 @@
-﻿@using global::Shared
-@inherits UniwikiComponentBase
+﻿@inherits UniwikiComponentBase
 
 <footer class="bg-dark">
 	<div class="text-secondary py-3 d-flex justify-content-between container flex-column flex-sm-row py-4">
@@ -21,17 +20,16 @@
 </footer>
 
 @code {
+
 	[Inject] ILanguageManagerService LanguageManagerService { get; set; }
 	[Inject] INavigationService NavigationService { get; set; }
+	[Inject] IApplicationHostEnvironment ApplicationHostEnvironment { get; set; }
 
 	private Language _currentLang;
 
 	protected override void OnInitialized()
 	{
 		_currentLang = LanguageManagerService.CurrentLanguage;
-
-		Console.WriteLine("Lang service manager lang: " + _currentLang);
-		Console.WriteLine("Lang service lang: " + TextService.Language);
 
 		base.OnInitialized();
 	}

@@ -1,5 +1,5 @@
-﻿using System;
-using Uniwiki.Shared.Services.Abstractions;
+﻿using Shared.Services.Abstractions;
+using System;
 
 namespace Uniwiki.Shared.Services
 {

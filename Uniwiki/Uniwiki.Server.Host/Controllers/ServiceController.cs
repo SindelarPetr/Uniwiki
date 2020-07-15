@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared;
+using Shared.Services.Abstractions;
 using System;
 using System.IO;
 using System.Linq;
@@ -12,7 +13,6 @@ using Uniwiki.Client.Host;
 using Uniwiki.Server.Application.ServerActions;
 using Uniwiki.Server.Host.Mvc;
 using Uniwiki.Server.Host.Services;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Host.Controllers
 {

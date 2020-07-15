@@ -12,6 +12,8 @@ namespace Uniwiki.Client.Host.Shared
             // Make sure, that StateHasChanged is not called during tests (it throws an exception)
             if (!Program.IsTest) 
                 base.StateHasChanged();
+
+
         }
     }
 }

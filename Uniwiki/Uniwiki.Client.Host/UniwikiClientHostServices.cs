@@ -6,6 +6,7 @@ using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
+using Shared.Services.Abstractions;
 using Uniwiki.Client.Host.Authentication;
 using Uniwiki.Client.Host.Services;
 using Uniwiki.Client.Host.Services.Abstractions;
@@ -37,15 +38,16 @@ namespace Uniwiki.Client.Host
             services.AddSingleton<IFixingService, FixingService>();
             services.AddSingleton<IScrollService, ScrollService>();
             services.AddSingleton<IStaticStateService, StaticStateService>();
+            services.AddSingleton<IApplicationHostEnvironment, ClientHostEnvironment>();
 
             services.AddSingleton(new HttpClient());
             services.AddOptions();
             services.AddAuthorizationCore();
-            services.AddBlazoredLocalStorage();
+            services.AddSingleton<ILocalStorageService, LocalStorageService>(); // AddBlazoredLocalStorage();
             services.AddBlazoredModal();
             services.AddSingleton<IToastService, ToastService>(); // Cannot use AddBlazoredToast(), because it needs to be singleton (that one is scoped)
             services.AddSingleton<IHttpService, HttpService>();
-
+            
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Server.Appliaction;
 using Server.Appliaction.ServerActions;
+using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
@@ -31,6 +32,7 @@ namespace Uniwiki.Server.Application
             services.AddTransient<IDataManipulationService, DataManipulationService>();
             services.AddSingleton<IHashService, HashService>();
             services.AddScoped<ILoginService, LoginService>();
+            services.AddSingleton<IApplicationHostEnvironment, ServerHostEnvironment>();
 
             AddServerActions(services);
         }

@@ -1,10 +1,16 @@
 ﻿using System;
 using Shared;
+using Shared.Services.Abstractions;
 
 namespace Uniwiki.Shared
 {
-    public static class Constants
+    public class Constants
     {
+        public Constants(IApplicationHostEnvironment applicationHostEnvironment)
+        {
+            _applicationHostEnvironment = applicationHostEnvironment;
+        }
+
         /// <summary>
         /// Determines how much time the user has to wait in order for him to be possible to have the confirmation email resent.
         /// </summary>
@@ -32,7 +38,13 @@ namespace Uniwiki.Shared
 
         public const int MaxPostsToFetch = 15;
 
-        public static class Validations
+        private readonly IApplicationHostEnvironment _applicationHostEnvironment;
+
+        public int PasswordMinLength => _applicationHostEnvironment.IsProduction() ? 6 : 1; // Require 6 digit password just for production
+        public const int PasswordMaxLength = 40;
+
+
+        public class Validations
         {
             public const int CourseCodeMaxLength = 10;
             public const int CourseCodeMinLength = 0;

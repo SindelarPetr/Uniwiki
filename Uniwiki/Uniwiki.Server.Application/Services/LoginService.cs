@@ -1,4 +1,5 @@
 ﻿using Shared.Exceptions;
+using Shared.Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +8,6 @@ using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Models.Authentication;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
-using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Application.Services
 {
