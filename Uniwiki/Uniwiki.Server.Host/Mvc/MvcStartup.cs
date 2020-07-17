@@ -1,11 +1,14 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Shared;
 using Uniwiki.Server.Application.Configuration;
@@ -32,6 +35,7 @@ namespace Uniwiki.Server.Host.Mvc
             services.AddHostServices();
             services.AddScoped<IMvcRequestExceptionHandlerService, MvcRequestExceptionHandlerService>();
             services.AddControllersWithViews().AddNewtonsoftJson();
+            services.AddTransient<IConfigureOptions<KestrelServerOptions>, KestrelServerOptionsSetup>(); // For kestrel
 
             // Add configuration
             var uniwikiConfiguration = new UniwikiConfiguration();
@@ -40,8 +44,10 @@ namespace Uniwiki.Server.Host.Mvc
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP requestBase pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider, ILogger<MvcStartup> logger)
         {
+            logger.LogInformation($"Configuring server... Stage: '{env.EnvironmentName}', Content root: '{env.ContentRootPath}, Web root path: '{env.WebRootPath}', Web root exists: {env.WebRootFileProvider.GetDirectoryContents("/").Exists}, Application name: '{env.ApplicationName}'");
+            
             using (var scope = serviceProvider.CreateScope())
                 scope.ServiceProvider.GetRequiredService<IDataManipulationService>().InitializeFakeData().GetAwaiter().GetResult();
 
@@ -59,7 +65,7 @@ namespace Uniwiki.Server.Host.Mvc
             
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseBlazorFrameworkFiles();
+            app.UseBlazorFrameworkFiles(); 
             app.UseSerilogRequestLogging();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
