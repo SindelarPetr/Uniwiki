@@ -10,15 +10,12 @@
     <!--<Version>1.0.1</Version>-->
     <AssemblyVersion>1.0.*</AssemblyVersion>
     <Deterministic>false</Deterministic>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <OutputPath>../Uniwiki.Server.Host/bin/$(Configuration)</OutputPath>
+     <!--<EnableDefaultContentItems>false</EnableDefaultContentItems>--> 
+    <!--<CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>-->
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Remove="compilerconfig.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="compilerconfig.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Accelist.FluentValidation.Blazor" Version="2.0.0" />
@@ -35,14 +32,31 @@
     <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
   </ItemGroup>
 
+  <Target Name="Name" AfterTargets="Build">
+    <Message Text="Hello" />
+  </Target>
+  
+  <!-- One way is to just run an exec command -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo Output written to $(TargetDir)" />
+  </Target>
+ 
+
   <!-- When publishing, swap service-worker.published.js in place of service-worker.js -->
   <!--<ItemGroup Condition="'$(DesignTimeBuild)' != 'true'">
     <Content Remove="wwwroot\service-worker.js" />
     <Content Update="wwwroot\service-worker.published.js" Link="wwwroot\service-worker.js" />
   </ItemGroup>-->
+  
   <ItemGroup>
     <ProjectReference Include="..\Server.Shared\Shared.csproj" />
     <ProjectReference Include="..\Uniwiki.Shared\Uniwiki.Shared.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Update="wwwroot\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
