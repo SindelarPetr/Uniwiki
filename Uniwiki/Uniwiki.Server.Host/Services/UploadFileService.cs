@@ -15,7 +15,7 @@ namespace Uniwiki.Server.Host.Services
             _webHostEnvironment = webHostEnvironment;
         }
 
-        private string basePath => Path.GetDirectoryName(typeof(Application.UniwikiServerApplicationServices).Assembly.Location);
+        private string basePath => _webHostEnvironment.ContentRootPath;
 
         public string PostFilesDirectoryPath => Path.Combine(basePath, "uploads");
 
