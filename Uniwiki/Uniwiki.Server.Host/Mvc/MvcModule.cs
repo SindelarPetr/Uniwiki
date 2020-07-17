@@ -1,8 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Uniwiki.Server.Host.Mvc
@@ -17,7 +25,8 @@ namespace Uniwiki.Server.Host.Mvc
                 .Build();
 
             Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
+                .ReadFrom
+                .Configuration(configuration)
                 .CreateLogger();
 
             try
@@ -26,9 +35,7 @@ namespace Uniwiki.Server.Host.Mvc
                 Log.Information("Application is starting");
                 
                 // Start the web host
-                CreateHostBuilder()
-                    .UseSerilog() // Use serilog instead of the built-in Microsoft logger
-                    .Build().Run();
+                CreateHostBuilder().Build().Run();
                 
                 // Log end
                 Log.Information("Application gracefully finished");
@@ -46,27 +53,63 @@ namespace Uniwiki.Server.Host.Mvc
 
         }
 
-
-        private IHostBuilder CreateHostBuilder()
+        public static IWebHostBuilder CreateHostBuilder()
         {
-            return Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
-                .ConfigureWebHostDefaults(webBuilder =>
+            var builder = new WebHostBuilder()
+                .UseKestrel()
+                //.UseContentRoot(Directory.GetCurrentDirectory()) // This line probably makes us troubles - maybe not?
+                .UseWebRoot(Path.Combine("wwwroot")) // Set the web root to d
+                .ConfigureAppConfiguration(ConfigureAppConfiguration)
+                .UseDefaultServiceProvider((context, options) => // TODO: Do the same in the Client
                 {
-                    webBuilder
-                    .UseSetting("https_port", "5001") // Fix HTTPS redirection
-                    .ConfigureAppConfiguration(AddEmailConfiguration) // Add email configuration
-                    .UseStartup<MvcStartup>();
+                    options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
                 })
-                .ConfigureLogging(
-                builder => {
-                    builder.AddConsole();
-                    }
-                );
+                .UseSerilog() // Use serilog for logging
+                .UseSetting("https_port", "5001") // Fix HTTPS redirection
+                .UseStartup<MvcStartup>();
+
+            return builder;
         }
 
-        private void AddEmailConfiguration(IConfigurationBuilder configurationBuilder)
+        private static void ConfigureAppConfiguration(WebHostBuilderContext webHostBuilderContext, IConfigurationBuilder configurationBuilder)
         {
-            configurationBuilder.AddJsonFile("emailsettings.json");
+            var env = webHostBuilderContext.HostingEnvironment;
+            Log.Logger.Information("The environment is: " + webHostBuilderContext.HostingEnvironment.EnvironmentName);
+
+            configurationBuilder
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) // Add general configuration
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true) // Add environment-specific configuration
+                .AddJsonFile("emailsettings.json"); // Add email configuration
+
+            if (env.IsDevelopment())
+            {
+                var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
+                if (appAssembly != null)
+                {
+                    configurationBuilder.AddUserSecrets(appAssembly, optional: true);
+                }
+            }
+            configurationBuilder.AddEnvironmentVariables(); // TODO: Isnt it going to override my variables? (I think this loads the configuration from the launchsettings)
+
+            //if (args != null) // We dont have command line args I guess
+            //{
+            //    config.AddCommandLine(args);
+            //}
+        }
+    }
+
+    public class KestrelServerOptionsSetup : IConfigureOptions<KestrelServerOptions>
+    {
+        private IServiceProvider _services;
+
+        public KestrelServerOptionsSetup(IServiceProvider services)
+        {
+            _services = services;
+        }
+
+        public void Configure(KestrelServerOptions options)
+        {
+            options.ApplicationServices = _services;
         }
     }
 }
