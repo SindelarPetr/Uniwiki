@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,6 +52,11 @@ namespace Uniwiki.Server.Host.Mvc
             using (var scope = serviceProvider.CreateScope())
                 scope.ServiceProvider.GetRequiredService<IDataManipulationService>().InitializeFakeData().GetAwaiter().GetResult();
 
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -63,9 +69,9 @@ namespace Uniwiki.Server.Host.Mvc
                 app.UseHsts();
             }
             
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseBlazorFrameworkFiles(); 
+            app.UseBlazorFrameworkFiles();
             app.UseSerilogRequestLogging();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
