@@ -1,6 +1,14 @@
-﻿@implements IDisposable
+﻿@inherits UniwikiComponentBase 
+@implements IDisposable
 
-<input type="file" @ref="_fileInput" @key="_id" multiple />
+<div class="drag-drop-zone border-secondary rounded p-4 my-3 d-flex">
+	<input type="file" @ref="_fileInput" @key="_id" multiple />
+	<i class="fas fa-cloud-upload-alt fa-2x mr-3"></i>
+	<div class="d-flex flex-column">
+		<span>@TextService.AddFiles</span>
+		<small>@TextService.EditPost_MaxFileSize</small>
+	</div>
+</div>
 
 @code {
 	private static int Id = 1;
