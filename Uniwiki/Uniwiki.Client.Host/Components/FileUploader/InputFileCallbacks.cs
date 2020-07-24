@@ -7,10 +7,10 @@ namespace Uniwiki.Client.Host.Components.FileUploader
     public sealed class InputFileCallbacks
     {
         public event Func<UploadFile, Task>? OnFileSelected;
-        public event Action<int>? OnStart;
+        public event Action<string>? OnStart;
         public event Action<ProgressInfo>? OnProgress;
-        public event Action<int>? OnError;
-        public event Action<int>? OnAbort;
+        public event Action<string>? OnError;
+        public event Action<string>? OnAbort;
         public event Action<SuccessInfo>? OnSuccess;
 
         [JSInvokable(nameof(HandleFileSelected))]
@@ -21,7 +21,7 @@ namespace Uniwiki.Client.Host.Components.FileUploader
         }
 
         [JSInvokable(nameof(HandleStart))]
-        public void HandleStart(int fileId)
+        public void HandleStart(string fileId)
         {
             OnStart?.Invoke(fileId);
         }
@@ -33,13 +33,13 @@ namespace Uniwiki.Client.Host.Components.FileUploader
         }
 
         [JSInvokable(nameof(HandleError))]
-        public void HandleError(int fileId)
+        public void HandleError(string fileId)
         {
             OnError?.Invoke(fileId);
         }
 
         [JSInvokable(nameof(HandleAbort))]
-        public void HandleAbort(int fileId)
+        public void HandleAbort(string fileId)
         {
             OnAbort?.Invoke(fileId);
         }

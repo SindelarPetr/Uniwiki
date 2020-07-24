@@ -2,7 +2,7 @@
 {
     public class SuccessInfo
     {
-        public int FileId { get; set; }
+        public string FileId { get; set; }
         public string DataForClient { get; set; }
     }
 }

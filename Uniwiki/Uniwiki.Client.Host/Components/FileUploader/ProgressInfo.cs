@@ -2,7 +2,7 @@
 {
     public class ProgressInfo
     {
-        public int FileId { get; set; }
+        public string FileId { get; set; }
         public double Progress { get; set; }
     }
 }

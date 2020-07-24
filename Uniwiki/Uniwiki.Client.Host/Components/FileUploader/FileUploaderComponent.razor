@@ -5,7 +5,7 @@
 @code {
 	private ElementReference? _fileInput;
 
-	private readonly IDictionary<int, UploadFile> _files = new Dictionary<int, UploadFile>();
+	private readonly IDictionary<string, UploadFile> _files = new Dictionary<string, UploadFile>();
 	private DotNetObjectReference<InputFileCallbacks> _callbacksAsNetRef;
 
 	[Inject] IJsInteropService JsInteropService { get; set; }

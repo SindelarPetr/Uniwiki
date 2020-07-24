@@ -6,7 +6,7 @@ namespace Uniwiki.Client.Host.Components.FileUploader
 {
     public class UploadFile
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public DateTime LastModified { get; set; }
         public string Name { get; set; }
         public long Size { get; set; }

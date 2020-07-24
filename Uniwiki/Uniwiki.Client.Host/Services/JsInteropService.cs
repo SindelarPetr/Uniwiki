@@ -40,10 +40,10 @@ namespace Uniwiki.Client.Host.Services
         public ValueTask MyInputInit(ElementReference? fileInput, DotNetObjectReference<InputFileCallbacks> callbacksAsNetRef) => 
             _jsRuntime.InvokeVoidAsync("MyInput.init", fileInput, callbacksAsNetRef);
 
-        public ValueTask StartFileUpload(in int id, string dataForServer) => 
+        public ValueTask StartFileUpload(in string id, string dataForServer) => 
             _jsRuntime.InvokeVoidAsync("MyInput.startUpload", id, dataForServer, ApiRoutes.FileController.UploadFile.BuildRoute());
 
-        public ValueTask AbortFileUpload(in int id) => 
+        public ValueTask AbortFileUpload(in string id) => 
             _jsRuntime.InvokeVoidAsync("MyInput.abortUpload", id);
         
         public ValueTask Download(in string data, in string fileName) =>

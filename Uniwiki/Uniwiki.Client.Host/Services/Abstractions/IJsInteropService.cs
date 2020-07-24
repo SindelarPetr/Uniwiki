@@ -15,8 +15,8 @@ namespace Uniwiki.Client.Host.Services.Abstractions
         ValueTask SetScrollCallback(DotNetObjectReference<ScrollService> netRef);
         ValueTask SetHeightToInitial(ElementReference element);
         ValueTask MyInputInit(ElementReference? fileInput, DotNetObjectReference<InputFileCallbacks> callbacksAsNetRef);
-        ValueTask StartFileUpload(in int id, string dataForServer);
-        ValueTask AbortFileUpload(in int id);
+        ValueTask StartFileUpload(in string id, string dataForServer);
+        ValueTask AbortFileUpload(in string id);
         ValueTask Download(in string data, in string fileName);
     }
 }
