@@ -139,6 +139,11 @@
 	private int _searchOrder = 0;
 	private bool _searching;
 
+	public SearchBoxComponent()
+	{
+		Console.WriteLine("Constructor: SearchBoxComponent");
+	}
+
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();

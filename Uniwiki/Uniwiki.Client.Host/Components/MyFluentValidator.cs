@@ -28,7 +28,7 @@ namespace Uniwiki.Client.Host.Shared
         /// <summary>
         /// Isolate scoped DbContext to this component.
         /// </summary>
-        private IServiceScope ServiceScope { get; set; }
+        // private IServiceScope ServiceScope { get; set; }
 
         /// <summary>
         /// The AbstractValidator object for the corresponding form Model object type.
@@ -58,7 +58,7 @@ namespace Uniwiki.Client.Host.Shared
                 $"inside an EditForm.");
             }
 
-            this.ServiceScope = ServiceProvider.CreateScope();
+            //this.ServiceScope = ServiceProvider.CreateScope();
 
             if (this.Validator == null)
             {
@@ -90,7 +90,7 @@ namespace Uniwiki.Client.Host.Shared
         {
             var validatorType = typeof(IValidator<>);
             var formValidatorType = validatorType.MakeGenericType(modelType);
-            return ServiceScope.ServiceProvider.GetService(formValidatorType) as IValidator;
+            return /*ServiceScope.*/ServiceProvider.GetService(formValidatorType) as IValidator;
         }
 
         /// <summary>
@@ -262,13 +262,13 @@ namespace Uniwiki.Client.Host.Shared
                 if (disposing)
                 {
                     // Dispose managed state (managed objects).
-                    ServiceScope.Dispose();
+                    // ServiceScope.Dispose();
                 }
 
                 // Free unmanaged resources (unmanaged objects) and override a finalizer below.
 
                 // Set large fields to null.
-                ServiceScope = null;
+                // ServiceScope = null;
                 Validator = null;
                 ChildValidators = null;
 

@@ -16,6 +16,9 @@ window.MyInput = {
 			// Get selected files
 			var inputFiles = element.files;
 
+			console.log('EVENT LISTENED, FILES: ' + element.files.length);
+			console.log(event);
+
 			for (var inputFile of inputFiles) {
 
 				var file = {
@@ -46,7 +49,7 @@ window.MyInput = {
 		var input = inputMemory[fileId];
 
 		if (!input)
-			throw Error("No callbacks and file for defined! ID: " + fileId);
+			throw Error("No callbacks and file defined! ID: " + fileId);
 
 		var fileCallbacks = input.callbacks;
 		var fileFromInput = input.file;
@@ -102,13 +105,6 @@ window.MyInput = {
 				fileCallbacks.invokeMethodAsync('HandleError', fileId);
 			}
 		}
-
-		// Callback error
-		//xhr.onerror = function (e) {
-		//	console.log("-------- error in onerror ......../////////............");
-		//	console.log(e);
-		//	//fileCallbacks.invokeMethodAsync('HandleError', fileId);
-		//}
 
 		// Callback abort
 		xhr.onabort = function (e) {

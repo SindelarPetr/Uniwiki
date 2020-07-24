@@ -70,18 +70,18 @@ namespace Uniwiki.Client.Host.Services
         {
             try
             {
-                Console.WriteLine("// Serializing request from: " + callerName + " on line " + lineNumber);
+                //Console.WriteLine("// Serializing request from: " + callerName + " on line " + lineNumber);
                 var serialized = await Task.Run(() => JsonConvert.SerializeObject(request));
-                Console.WriteLine(serialized);
+                //Console.WriteLine(serialized);
 
                 // Get the type of the request
                 var type = request.GetType();
 
                 var wrapped = new DataForServer(serialized, type, _localAuthenticationStateProvider.Token, _textService.Language, ClientConstants.AppVersionString);
-                Console.WriteLine("Wrapped serialized request");
+                //Console.WriteLine("Wrapped serialized request");
 
                 var serializedWrapped = JsonSerializer.Serialize(wrapped);
-                Console.WriteLine("Serialized wrapped serialized request");
+                //Console.WriteLine("Serialized wrapped serialized request");
 
                 var data = dataCreator.Invoke(serializedWrapped);
 
@@ -89,9 +89,9 @@ namespace Uniwiki.Client.Host.Services
 
                 try
                 {
-                    Console.WriteLine("Before sending");
+                    //Console.WriteLine("Before sending");
                     httpResponse = await _client.PostAsync(apiPath, data);
-                    Console.WriteLine("After sending");
+                    //Console.WriteLine("After sending");
                 }
                 catch (HttpRequestException ex)
                 {
@@ -106,18 +106,18 @@ namespace Uniwiki.Client.Host.Services
                     throw new ServerErrorException();
                 }
 
-                Console.WriteLine("// Reading response");
+                //Console.WriteLine("// Reading response");
                 var responseString = await httpResponse.Content.ReadAsStringAsync();
-                Console.WriteLine(responseString);
+                //Console.WriteLine(responseString);
 
-                Console.WriteLine("// Deserializing response to data for client");
+                //Console.WriteLine("// Deserializing response to data for client");
                 var dataForClient = JsonConvert.DeserializeObject<DataForClient<T>>(responseString);
 
                 // Fix fixable errors
                 if (dataForClient.Fixes != null)
                     foreach (var fix in dataForClient.Fixes)
                     {
-                        Console.WriteLine("Response has fix: " + fix.Message);
+                        //Console.WriteLine("Response has fix: " + fix.Message);
 
                         await _fixingService.Fix(fix.ErrorFix);
                     }

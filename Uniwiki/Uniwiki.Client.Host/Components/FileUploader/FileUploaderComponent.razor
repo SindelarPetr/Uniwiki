@@ -1,8 +1,12 @@
 ﻿@implements IDisposable
 
-<input type="file" @ref="_fileInput" multiple />
+<input type="file" @ref="_fileInput" @key="_id" multiple />
 
 @code {
+	private static int Id = 1;
+
+	private int _id;
+
 	private ElementReference? _fileInput;
 
 	private readonly IDictionary<string, UploadFile> _files = new Dictionary<string, UploadFile>();
@@ -13,16 +17,28 @@
 	[Parameter]
 	public EventCallback<UploadFile> OnSelected { get; set; }
 
+	private InputFileCallbacks _callbacks;
+
+	public FileUploaderComponent()
+	{
+		_id = Id;
+		Id++;
+		Console.WriteLine("Constructor: FileUploaderComponent, ID: " + _id);
+	}
+
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		base.OnAfterRender(firstRender);
 
+		// Return if it is not the first render
 		if (!firstRender)
 			return;
 
-		var callbacks = new InputFileCallbacks();
+		Console.WriteLine("Initializing FileUploaderComponent (OnAfterRenderAsync)");
 
-		callbacks.OnFileSelected += async file =>
+		_callbacks = new InputFileCallbacks();
+
+		_callbacks.OnFileSelected += async file =>
 		{
 			// Log action
 			Console.WriteLine("OnFileSelected: " + file.Id + " >> " + file.Name);
@@ -32,38 +48,39 @@
 			await OnSelected.InvokeAsync(file);
 		};
 
-		callbacks.OnStart += fileId =>
+		_callbacks.OnStart += fileId =>
 		{
 			Console.WriteLine("OnStart: " + fileId);
 			_files[fileId].SetStart();
 		};
 
-		callbacks.OnProgress += progressInfo =>
+		_callbacks.OnProgress += progressInfo =>
 		{
 			Console.WriteLine($"OnProgress: { progressInfo.FileId } - { progressInfo.Progress }");
 			_files[progressInfo.FileId].SetProgress(progressInfo.Progress);
 		};
 
-		callbacks.OnError += fileId =>
+		_callbacks.OnError += fileId =>
 		{
 			Console.WriteLine($"OnError: { fileId }");
 			_files[fileId].SetError();
 		};
 
-		callbacks.OnAbort += fileId =>
+		_callbacks.OnAbort += fileId =>
 		{
 			Console.WriteLine($"OnAbort: { fileId }");
 			_files[fileId].SetAbort();
 		};
 
-		callbacks.OnSuccess += successInfo =>
+		_callbacks.OnSuccess += successInfo =>
 		{
 			Console.WriteLine($"OnSuccess: { successInfo.DataForClient }");
 			_files[successInfo.FileId].SetSuccess(successInfo.DataForClient);
 		};
 
-		_callbacksAsNetRef = DotNetObjectReference.Create(callbacks);
+		_callbacksAsNetRef = DotNetObjectReference.Create(_callbacks);
 
+		// Register the callbacks
 		await JsInteropService.MyInputInit(_fileInput, _callbacksAsNetRef);
 	}
 
