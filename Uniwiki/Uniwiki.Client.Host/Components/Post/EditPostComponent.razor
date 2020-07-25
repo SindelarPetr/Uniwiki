@@ -17,10 +17,9 @@
 @* /Post Category *@
 
 <p class="lead">
-	<textarea class="form-control" placeholder="@TextService.CoursePage_WriteYourMessageHere" @bind="Request.Text" oninput="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" style="height: 100px;overflow-y: hidden" required></textarea>
+	<h5>@TextService.Message</h5>
+	<textarea class="form-control @(string.IsNullOrWhiteSpace(Request.Text) ? "border-danger" : string.Empty)" placeholder="@TextService.CoursePage_WriteYourMessageHere" @bind:event="oninput" @bind="Request.Text" onkeyup="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" style="height: 100px;overflow-y: hidden"></textarea>
 </p>
-
-<hr class="mb-2" />
 
 <h5>@TextService.Files</h5>
 
@@ -67,7 +66,7 @@
 <div class="d-flex mt-3">
 	<div class="ml-auto">
 		<span class="mr-3 @(_fileUploads.Any(f => f.Failed) ? "text-danger" : "text-secondary")">@FilesValidationMessage</span>
-		<button class="btn btn-primary" type="button" @onclick="HandleCommitPost">
+		<button class="btn btn-primary" disabled="@string.IsNullOrWhiteSpace(Request.Text)" type="button" @onclick="HandleCommitPost">
 			@(PostToEdit == null ? TextService.CoursePage_AddPost : TextService.EditPost_EditPost)
 			@if (_committingPost)
 			{
