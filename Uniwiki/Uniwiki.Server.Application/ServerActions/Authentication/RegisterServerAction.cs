@@ -24,8 +24,9 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         private readonly TextService _textService;
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly IHashService _hashService;
+        private readonly IEmailConfirmationSenderService _emailConfirmationSenderService;
 
-        public RegisterServerAction(IServiceProvider serviceProvider, IEmailService emailService, IProfileRepository profileRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, ITimeService timeService, TextService textService, IStringStandardizationService stringStandardizationService, IHashService hashService)
+        public RegisterServerAction(IServiceProvider serviceProvider, IEmailService emailService, IProfileRepository profileRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, ITimeService timeService, TextService textService, IStringStandardizationService stringStandardizationService, IHashService hashService, IEmailConfirmationSenderService emailConfirmationSenderService)
             : base(serviceProvider)
         {
             _emailService = emailService;
@@ -35,6 +36,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             _textService = textService;
             _stringStandardizationService = stringStandardizationService;
             _hashService = hashService;
+            _emailConfirmationSenderService = emailConfirmationSenderService;
         }
 
         protected override async Task<RegisterResponseDto> ExecuteAsync(RegisterRequestDto request, RequestContext context)
@@ -42,35 +44,15 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             // Try to get profile
             var profile = _profileRepository.TryGetProfileByEmail(request.Email);
 
-            // Email is already registered
-            if (profile != null)
+            // Email is already registered and confirmed
+            if (profile != null && profile.IsConfirmed)
             {
-                // Email is even confirmed
-                if (profile.IsConfirmed)
-                {
-                    throw new RequestException(_textService.Error_EmailIsAlreadyUsed(request.Email));
-                }
-
-                // Try to get an exiting secret
-                var secret = _emailConfirmationSecretRepository.TryGetValidEmailConfirmationSecret(profile);
-
-                // If the secret was already generated
-                if (secret != null)
-                {
-                    // Check if its possible to resend it to the user
-                    if (_timeService.Now < secret.CreationTime.Add(Constants.ResendRegistrationEmailMinTime))
-                    {
-                        throw new RequestException(_textService.Error_EmailHasBeenAlreadySent);
-                    }
-
-                    // Invalidate it
-                    _emailConfirmationSecretRepository.InvalidateSecrets(profile);
-                }
+                throw new RequestException(_textService.Error_EmailIsAlreadyUsed(request.Email));
             }
             else
             {
                 // Create url for the new profile
-                string url = _stringStandardizationService.CreateUrl(request.Name + request.Surname, 
+                string url = _stringStandardizationService.CreateUrl(request.Name + request.Surname,
                     u => _profileRepository.TryGetProfileByUrl(u) == null);
 
                 // Get the hash from the password
@@ -80,11 +62,8 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
                 profile = _profileRepository.Register(request.Email, request.Name, request.Surname, url, password.hashedPassword, password.salt, _timeService.Now);
             }
 
-            // Generate verify email secret
-            var emailConfirmationSecret = _emailConfirmationSecretRepository.GenerateEmailConfirmationSecret(profile, _timeService.Now);
-
-            // Send the message to email
-            await _emailService.SendRegisterEmail(request.Email, emailConfirmationSecret.Secret);
+            // Send the confirmation email
+            await _emailConfirmationSenderService.SendConfirmationEmail(profile);
 
             return new RegisterResponseDto(profile.ToDto());
         }

@@ -23,8 +23,9 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         private readonly IInputValidationService _inputValidationService;
         private readonly ITimeService _timeService;
         private readonly TextService _textService;
+        private readonly IEmailConfirmationSenderService _emailConfirmationSenderService;
 
-        public ResendConfirmationEmailServerAction(IServiceProvider serviceProvider, IEmailService emailService, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, IInputValidationService inputValidationService, ITimeService timeService, TextService textService) : base(serviceProvider)
+        public ResendConfirmationEmailServerAction(IServiceProvider serviceProvider, IEmailService emailService, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, IInputValidationService inputValidationService, ITimeService timeService, TextService textService, IEmailConfirmationSenderService emailConfirmationSenderService) : base(serviceProvider)
         {
             _emailService = emailService;
             _emailConfirmationSecretRepository = emailConfirmationSecretRepository;
@@ -32,6 +33,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             _inputValidationService = inputValidationService;
             _timeService = timeService;
             _textService = textService;
+            _emailConfirmationSenderService = emailConfirmationSenderService;
         }
 
         protected override async Task<ResendConfirmationEmailResponseDto> ExecuteAsync(ResendConfirmationEmailRequestDto request, RequestContext context)
@@ -45,21 +47,8 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             // Get profile
             var profile = _profileRepository.GetProfileByEmail(email);
 
-            // Try to get an existing secret
-            var currentSecret = _emailConfirmationSecretRepository.TryGetValidEmailConfirmationSecret(profile);
-            
-            // if current secret exists and its not expired
-            if(currentSecret != null && currentSecret.CreationTime.Add(Constants.ResendRegistrationEmailMinTime) > _timeService.Now)
-                throw new RequestException(_textService.Error_EmailHasBeenAlreadySent);
-
-            // Use the old secret(s)
-            _emailConfirmationSecretRepository.InvalidateSecrets(profile);
-
-            // Generate a new secret
-            var secret = _emailConfirmationSecretRepository.GenerateEmailConfirmationSecret(profile, _timeService.Now);
-
-            // Send the email again
-            await _emailService.SendRegisterEmail(email, secret.Secret);
+            // Send the new email confirmation secret
+            await _emailConfirmationSenderService.SendConfirmationEmail(profile);
 
             // Create the response
             var response = new ResendConfirmationEmailResponseDto();

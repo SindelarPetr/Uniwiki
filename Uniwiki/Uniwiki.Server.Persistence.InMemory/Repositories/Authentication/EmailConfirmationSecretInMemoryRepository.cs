@@ -24,8 +24,13 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
         {
             var secretGuid = Guid.NewGuid();
             var secret = new EmailConfirmationSecretModel(profile, secretGuid, creationTime, true);
-            _dataStorage.EmailConfirmationSecrets.Add(secret);
+            
             return secret;
+        }
+
+        public void SaveEmailConfirmationSecret(EmailConfirmationSecretModel emailConfirmationSecret)
+        {
+            _dataStorage.EmailConfirmationSecrets.Add(emailConfirmationSecret);
         }
 
         public void ConfirmEmail(EmailConfirmationSecretModel secret)

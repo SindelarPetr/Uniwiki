@@ -57,10 +57,11 @@ namespace Uniwiki.Server.Application.Services
             var password = _uniwikiConfiguration.Email.Password;
             var host = _uniwikiConfiguration.Email.Host;
             var port = _uniwikiConfiguration.Email.Port;
+            var displayName = _uniwikiConfiguration.Email.DisplayName;
 
             // Prepare message
             MailMessage message = new MailMessage();
-            message.From = new MailAddress(senderAddress, "Uniwiki");
+            message.From = new MailAddress(senderAddress, displayName);
             message.To.Add(new MailAddress(recipientEmail));
             message.Subject = subject;
             message.IsBodyHtml = isHtml; // Mark message body as html  
