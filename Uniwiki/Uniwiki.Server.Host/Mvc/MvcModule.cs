@@ -19,6 +19,10 @@ namespace Uniwiki.Server.Host.Mvc
     {
         public void Run()
         {
+            var rootDirectory = Path.GetDirectoryName(typeof(MvcModule).Assembly.Location) ?? string.Empty;
+            
+            Directory.SetCurrentDirectory(rootDirectory);
+
             // Configure Logging
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
