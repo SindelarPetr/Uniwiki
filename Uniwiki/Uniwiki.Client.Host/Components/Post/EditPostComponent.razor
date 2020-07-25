@@ -18,7 +18,7 @@
 
 <p class="lead">
 	<h5>@TextService.Message</h5>
-	<textarea class="form-control @(string.IsNullOrWhiteSpace(Request.Text) ? "border-danger" : string.Empty)" placeholder="@TextService.CoursePage_WriteYourMessageHere" @bind:event="oninput" @bind="Request.Text" onkeyup="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" style="height: 100px;overflow-y: hidden"></textarea>
+	<textarea class="form-control @(string.IsNullOrWhiteSpace(Request.Text) ? "border-danger" : string.Empty)" placeholder="@TextService.CoursePage_WriteYourMessageHere" @bind:event="oninput" @bind="Request.Text" onkeyup="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" style="height: 100px;overflow-y: hidden; border-width:2px"></textarea>
 </p>
 
 <h5>@TextService.Files</h5>
