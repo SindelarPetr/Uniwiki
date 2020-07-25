@@ -2,7 +2,7 @@
 @implements IDisposable
 
 <div class="drag-drop-zone border-secondary rounded p-4 my-3 d-flex">
-	<input type="file" @ref="_fileInput" @key="_id" multiple />
+	<input type="file" @ref="_fileInput" multiple />
 	<i class="fas fa-cloud-upload-alt fa-2x mr-3"></i>
 	<div class="d-flex flex-column">
 		<span>@TextService.AddFiles</span>
@@ -11,10 +11,6 @@
 </div>
 
 @code {
-	private static int Id = 1;
-
-	private int _id;
-
 	private ElementReference? _fileInput;
 
 	private readonly IDictionary<string, UploadFile> _files = new Dictionary<string, UploadFile>();
@@ -29,31 +25,29 @@
 
 	public FileUploaderComponent()
 	{
-		_id = Id;
-		Id++;
-		Console.WriteLine("Constructor: FileUploaderComponent, ID: " + _id);
+		Console.WriteLine("Constructor: FileUploaderComponent");
 	}
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
+	protected override Task OnAfterRenderAsync(bool firstRender)
 	{
 		base.OnAfterRender(firstRender);
 
 		// Return if it is not the first render
 		if (!firstRender)
-			return;
+			return Task.CompletedTask;
 
 		Console.WriteLine("Initializing FileUploaderComponent (OnAfterRenderAsync)");
 
 		_callbacks = new InputFileCallbacks();
 
-		_callbacks.OnFileSelected += async file =>
+		_callbacks.OnFileSelected += file =>
 		{
 			// Log action
 			Console.WriteLine("OnFileSelected: " + file.Id + " >> " + file.Name);
 			file.JsInteropService = JsInteropService;
 			_files[file.Id] = file;
 
-			await OnSelected.InvokeAsync(file);
+			return OnSelected.InvokeAsync(file);
 		};
 
 		_callbacks.OnStart += fileId =>
@@ -89,7 +83,7 @@
 		_callbacksAsNetRef = DotNetObjectReference.Create(_callbacks);
 
 		// Register the callbacks
-		await JsInteropService.MyInputInit(_fileInput, _callbacksAsNetRef);
+		return JsInteropService.MyInputInit(_fileInput, _callbacksAsNetRef).AsTask();
 	}
 
 	public void Dispose()

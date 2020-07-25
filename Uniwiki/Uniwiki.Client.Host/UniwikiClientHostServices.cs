@@ -39,6 +39,7 @@ namespace Uniwiki.Client.Host
             services.AddSingleton<IScrollService, ScrollService>();
             services.AddSingleton<IStaticStateService, StaticStateService>();
             services.AddSingleton<IApplicationHostEnvironment, ClientHostEnvironment>();
+            services.AddTransient<IFileUploadQueueService, FileUploadQueueService>();
 
             services.AddSingleton(new HttpClient());
             services.AddOptions();

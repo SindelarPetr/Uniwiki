@@ -52,7 +52,7 @@
 			<small class="text-muted">@(file.Failed? "ERROR" : file.Finished ? "COMPLETED" : $"{(file.Progress*100).ToString("F0")}% out of {TextService.FileSize(file.Size)}")</small>
 			@if (file.Failed)
 			{
-				<button class="btn btn-danger ml-auto" @onclick="@(async () => await Upload(file))"><i class="fas fa-redo-alt mr-2"></i>Try again</button>
+				<button class="btn btn-danger ml-auto" @onclick="@(async () => await FileUploadQueueService.Upload(file, CourseId))"><i class="fas fa-redo-alt mr-2"></i>Try again</button>
 			}
 		</div>
 	</div>
@@ -74,12 +74,11 @@
 	</div>
 </div>
 
-
-
 @code {
 
 	[Inject] ILoginService LoginService { get; set; }
 	[Inject] IToastService ToastService { get; set; }
+	[Inject] IFileUploadQueueService FileUploadQueueService { get; set; }
 
 	[Parameter] public Func<EditPostRequestDto, Task> OnCommitPost { get; set; }
 
@@ -144,7 +143,7 @@
 
 	public async Task HandleOnSelect(UploadFile uploadFile)
 	{
-		// Do not keep file if its not unique
+		// Of the file is not unique, then dont take it
 		if (_fileUploads.Any(f => f.Name == uploadFile.Name && f.Type == uploadFile.Type && f.Size == uploadFile.Size && f.LastModified == uploadFile.LastModified)
 		|| Request.PostFiles.Any(f => f.OriginalName == uploadFile.Name && f.Size == uploadFile.Size))
 		{
@@ -184,8 +183,8 @@
 				if (response?.Response?.PostFile == null || response.Error != null)
 					throw new RequestRejectedException("Could not upload file: " + uploadFile.Name + "\nGot text: " + dataForClient);
 
-			// Save the file to post files
-			Request.PostFiles.Add(response.Response.PostFile);
+				// Save the file to post files
+				Request.PostFiles.Add(response.Response.PostFile);
 				_fileUploads.Remove(uploadFile);
 				Console.WriteLine("Adding post file: " + response.Response.PostFile.OriginalName);
 
@@ -202,24 +201,7 @@
 
 		try
 		{
-			await Upload(uploadFile);
-		}
-		catch (Exception e)
-		{
-			Console.WriteLine(e);
-			throw;
-		}
-	}
-
-	public async ValueTask Upload(UploadFile uploadFile)
-	{
-		try
-		{
-			var cId = CourseId;
-			var request = new UploadPostFileRequestDto(uploadFile.Name, cId);
-			var requestSerialized = JsonConvert.SerializeObject(request);
-			var dataForServer = new DataForServer(requestSerialized, request.GetType(), LoginService.LoginToken?.PrimaryTokenId, TextService.Language, ClientConstants.AppVersionString);
-			await uploadFile.Upload(JsonConvert.SerializeObject(dataForServer));
+			await FileUploadQueueService.Upload(uploadFile, CourseId);
 		}
 		catch (Exception e)
 		{

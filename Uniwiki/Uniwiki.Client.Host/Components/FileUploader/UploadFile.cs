@@ -41,6 +41,7 @@ namespace Uniwiki.Client.Host.Components.FileUploader
 
         public void SetSuccess(string dataForClient)
         {
+            Progress = 1;
             Succeeded = true;
             OnSuccess?.Invoke(dataForClient);
         }
