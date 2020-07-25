@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using Shared;
 using Shared.Services.Abstractions;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -85,12 +88,89 @@ namespace Uniwiki.Server.Host.Controllers
                 date = _timeService.Now.ToString("yyyyMMdd");
             }
 
-            var logFileName = $"./bin/log-{ date }.json";
+            var logFileName = $"../log-{ date }.txt";
+            var logFilePath = Path.GetFullPath(logFileName);
 
-            _logger.LogInformation("Looking for a log with the name: '{LogFileName}'", logFileName);
-            var logFile = _webHostEnvironment.ContentRootFileProvider.GetFileInfo(logFileName);
+            _logger.LogInformation("Looking for a log with the name: '{LogFilePath}'", logFilePath);
+            var logFileExists = System.IO.File.Exists(logFilePath);
 
-            return File(logFile.CreateReadStream(), System.Net.Mime.MediaTypeNames.Text.Plain, $"Log-{date}.json");
+            // Return the log if it exists
+            if (logFileExists)
+            {
+                try
+                {
+                    using var stream = new FileStream(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    return File(stream, System.Net.Mime.MediaTypeNames.Text.Plain, logFileName);
+                }
+                catch (Exception ex)
+                {
+                    return base.Problem($"We had a problem reading the log PhysicalPath:'{ logFilePath }'. Exception: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                }
+            }
+            else
+            {
+                return base.Problem($"The log '{ logFilePath }' does not exist.");
+            }
+        }
+
+        /// <returns>The file used to store logs</returns>
+        [HttpGet("PeekLog")]
+        public IActionResult PeekLog([FromQuery(Name = "AccessKey")] string accessKey)
+        {
+            // Check the access key
+            ThrowIfWrongAccessKey(accessKey);
+
+            // Provide the default value
+            var date = _timeService.Now.ToString("yyyyMMdd");
+
+            var logFileName = $"../log-{ date }.txt";
+            var logFilePath = Path.GetFullPath(logFileName);
+
+            _logger.LogInformation("Looking for a log with the name: '{LogFilePath}'", logFilePath);
+            var logFileExists = System.IO.File.Exists(logFilePath);
+
+            // Return the log if it exists
+            if (logFileExists)
+            {
+                try
+                {
+                    var lines = 500;
+                    var header = $"The last {lines} (or less) lines of the log named: '{ logFileName }'.{Environment.NewLine}";
+                    var lastLines = ReadLastLines(lines, logFilePath);
+
+                    return Ok(header + lastLines);
+                }
+                catch (Exception ex)
+                {
+                    return base.Problem($"We had a problem reading the log PhysicalPath:'{ logFilePath }'. Exception: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                }
+            }
+            else
+            {
+                return base.Problem($"The log '{ logFilePath }' does not exist.");
+            }
+        }
+
+        private string ReadLastLines(int lastLinesCount, string fileName)
+        {
+            using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var file = new StreamReader(stream);
+
+            var buffor = new Queue<string>(lastLinesCount);
+            string? line;
+            while ((line = file.ReadLine()) != null)
+            {
+                if (buffor.Count >= lastLinesCount)
+                    buffor.Dequeue();
+
+                buffor.Enqueue(line);
+            }
+
+            string[] lastLines = buffor.ToArray();
+
+            string contentOfLastLines = String.Join(Environment.NewLine, lastLines);
+
+            return contentOfLastLines;
         }
 
         [HttpGet("Feedback")]
