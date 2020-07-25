@@ -6,7 +6,7 @@ namespace Uniwiki.Client.Host.Services
     // We dont want to abstract this one - translating would then be too much time consuming
     internal class TextService : TextServiceBase
     {
-
+        public string Files => GetTranslation("Soubory", "Files");
         public string ProvideFeedbackText => GetTranslation("Co byste na Uniwiki změnili? přidali? odebrali?", "What would you make on Uniwiki differently? What are you missing?");
         public string Toast_ThanksForFeedback => GetTranslation("Děkujeme za zpětnou vazbu!", "Thank you for your feedback!");
         public string Submit => GetTranslation("Odeslat", "Submit");

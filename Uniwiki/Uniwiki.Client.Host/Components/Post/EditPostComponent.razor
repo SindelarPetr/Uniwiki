@@ -19,7 +19,10 @@
 <p class="lead">
 	<textarea class="form-control" placeholder="@TextService.CoursePage_WriteYourMessageHere" @bind="Request.Text" oninput="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" style="height: 100px;overflow-y: hidden" required></textarea>
 </p>
+
 <hr class="mb-2" />
+
+<h5>@TextService.Files</h5>
 
 @* Files *@
 @foreach (var file in Request.PostFiles)
