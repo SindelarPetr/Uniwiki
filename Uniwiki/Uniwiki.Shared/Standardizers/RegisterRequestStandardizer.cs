@@ -20,7 +20,8 @@ namespace Uniwiki.Shared.Standardizers
                 _stringStandardizationService.StandardizeName(model.Name),
                 _stringStandardizationService.StandardizeName(model.Surname),
                 model.Password,
-                model.PasswordAgain
+                model.PasswordAgain,
+                model.AgreeToTermsOfUse
                 );
         }
     }

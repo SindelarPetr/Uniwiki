@@ -1,4 +1,5 @@
-﻿using Uniwiki.Shared;
+﻿using System;
+using Uniwiki.Shared;
 using Uniwiki.Shared.Services;
 
 namespace Uniwiki.Client.Host.Services
@@ -6,6 +7,9 @@ namespace Uniwiki.Client.Host.Services
     // We dont want to abstract this one - translating would then be too much time consuming
     internal class TextService : TextServiceBase
     {
+        public string RegisterPage_AgreeOn => GetTranslation("Souhlasím s ", "I agree with ");
+        public string RegisterPage_TermsOfUse => GetTranslation("podmínkami použití", "the terms of use");
+        public string ConfirmEmailPage_EmailSentAgain => GetTranslation("Potvrzovací email byl znovu odeslán", "The confirmation email has been sent again.");
         public string Message => GetTranslation("Text příspěvku", "Text");
         public string Files => GetTranslation("Soubory", "Files");
         public string ProvideFeedbackText => GetTranslation("Co byste na Uniwiki změnili? přidali? odebrali?", "What would you make on Uniwiki differently? What are you missing?");
@@ -24,6 +28,9 @@ namespace Uniwiki.Client.Host.Services
         public string FileNotFoundPage_Title => GetTranslation("Soubor nenalezen!", "File not found!");
         public string NoStudyGroupsInUniversity =>GetTranslation("Zatím zde nejsou žádné fakulty.", "There are no faculties yet.");
         public string ProfilePage_CannotUploadPictureYet => GetTranslation("Profilovou fotku zatím nahrát nelze.", "Its not possible to upload the profile picture yet.");
+
+        public string Toast_ErrorWhileUploadingFile(string fileName) => GetTranslation($"Vyskytl se problém během načítání souboru { fileName }", $"There was a problem while uploading the file {fileName}");
+
         public string ProfilePage_UploadProfilePicture => GetTranslation("Nahrát fotku", "Upload a picture");
         public string SearchBox_DefaultPlaceholderText => GetTranslation("Můžete začít zobrazením všech předmětů z vaší fakulty.", "You can start by showing all courses from your faculty.");
         public string SearchBox_ChooseStudyGroup => GetTranslation("Vybrat fakultu", "Select your faculty");
@@ -244,5 +251,11 @@ namespace Uniwiki.Client.Host.Services
 
         public string ErrorPage_GoBack =>
             GetTranslation("Zpět na Uniwiki", "Back to Uniwiki");
+
+        public string Toast_Info => GetTranslation("Info", "Info");
+
+        public string Toast_Error => GetTranslation("Error", "Error");
+        public string Toast_Warning => GetTranslation("Upozornění", "Warning");
+        public string Toast_Success => GetTranslation("Úspěch", "Success");
     }
 }

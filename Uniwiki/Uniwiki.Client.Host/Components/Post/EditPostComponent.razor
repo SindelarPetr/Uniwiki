@@ -149,13 +149,13 @@
 		if (_fileUploads.Any(f => f.Name == uploadFile.Name && f.Type == uploadFile.Type && f.Size == uploadFile.Size && f.LastModified == uploadFile.LastModified)
 		|| Request.PostFiles.Any(f => f.OriginalName == uploadFile.Name && f.Size == uploadFile.Size))
 		{
-			ToastService.ShowInfo(TextService.EditPost_FileAlreadySelected(uploadFile.Name));
+			ToastService.ShowInfo(TextService.EditPost_FileAlreadySelected(uploadFile.Name), TextService.Toast_Info);
 			return;
 		}
 
 		if (uploadFile.Size > Constants.MaxFileSizeInBytes)
 		{
-			ToastService.ShowInfo(TextService.EditPost_FileTooBig(uploadFile.Name, uploadFile.Size));
+			ToastService.ShowWarning(TextService.EditPost_FileTooBig(uploadFile.Name, uploadFile.Size), TextService.Toast_Warning);
 			return;
 		}
 

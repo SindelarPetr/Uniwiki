@@ -29,7 +29,7 @@ namespace Uniwiki.Client.Host.Services
                     if (_localLoginService.IsAuthenticated)
                     {
                         await _localLoginService.LocalLogout();
-                        _toastService.ShowInfo(_textService.Toast_AppDidAutomaticLogout);
+                        _toastService.ShowInfo(_textService.Toast_AppDidAutomaticLogout, _textService.Toast_Info);
                     }
                     break;
                 case ErrorFix.WrongVersion:

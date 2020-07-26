@@ -288,7 +288,7 @@ namespace Uniwiki.Server.Application.Services
 
         public async Task<RequestContext> RegisterUser(string email, string name, string surname, string password, bool isAdmin = false)
         {
-            var userDto = (await _registerServerAction.ExecuteActionAsync(new RegisterRequestDto(email, name, surname, password, password), _anonymousContext)).UserProfile;
+            var userDto = (await _registerServerAction.ExecuteActionAsync(new RegisterRequestDto(email, name, surname, password, password, true), _anonymousContext)).UserProfile;
             var user = _profileRepository.FindById(userDto.Id);
 
             if (isAdmin)

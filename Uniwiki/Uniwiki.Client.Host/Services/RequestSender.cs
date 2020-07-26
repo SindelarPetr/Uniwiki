@@ -53,7 +53,7 @@ namespace Uniwiki.Client.Host.Services
             }
             catch (Exception e)
             {
-                _toastService.ShowError($"Vyskytl se problém během načítání souboru { file.Name }"); // TODO: Translate
+                _toastService.ShowError(_textService.Toast_ErrorWhileUploadingFile(file.Name), _textService.Toast_Error);
                 throw;
             }
 
@@ -96,13 +96,13 @@ namespace Uniwiki.Client.Host.Services
                 catch (HttpRequestException ex)
                 {
                     var message = ex.Message;
-                    _toastService.ShowError(_textService.Error_ConnectionError);
+                    _toastService.ShowError(_textService.Error_ConnectionError, _textService.Toast_Error);
                     throw new ConnectionException();
                 }
 
                 if (!httpResponse.IsSuccessStatusCode && (int)httpResponse.StatusCode >= 500 && (int)httpResponse.StatusCode <= 599)
                 {
-                    _toastService.ShowError(_textService.Error_ErrorOnServer);
+                    _toastService.ShowError(_textService.Error_ErrorOnServer, _textService.Toast_Error);
                     throw new ServerErrorException();
                 }
 
@@ -125,14 +125,14 @@ namespace Uniwiki.Client.Host.Services
                 // Display the received error and throw an exception
                 if (dataForClient.Error != null)
                 {
-                    _toastService.ShowError(dataForClient.Error.Message);
+                    _toastService.ShowError(dataForClient.Error.Message, _textService.Toast_Error);
                     throw new RequestRejectedException(dataForClient.Error.Message);
                 }
 
                 if (dataForClient.Response == null)
                 {
                     var message = "There is a bug on the server! Didnt get any response nor error back :(.";
-                    _toastService.ShowError(message);
+                    _toastService.ShowError(message, _textService.Toast_Error);
                     throw new RequestRejectedException(message);
                 }
 

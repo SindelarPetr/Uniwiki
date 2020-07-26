@@ -32,7 +32,7 @@
 			<div class="input-group-prepend">
 				<span class="input-group-text"><i class="fas fa-user"></i></span>
 			</div>
-			<InputText class="form-control" type="text" id="inputName" placeholder="@TextService.RegisterPage_Name" aria-describedby="inputGroupPrepend" @bind-Value="Request.Name" maxlength="@Constants.Validations.UserNameMaxLength"/>
+			<InputText class="form-control" type="text" id="inputName" placeholder="@TextService.RegisterPage_Name" aria-describedby="inputGroupPrepend" @bind-Value="Request.Name" maxlength="@Constants.Validations.UserNameMaxLength" />
 		</div>
 		<ValidationMessage For="@(() => Request.Name)" />
 		@* /Name *@
@@ -43,7 +43,7 @@
 			<div class="input-group-prepend">
 				<span class="input-group-text"><i class="fas fa-signature"></i></span>
 			</div>
-			<InputText type="text" class="form-control" id="inputSurname" placeholder="@TextService.RegisterPage_Surname" aria-describedby="inputGroupPrepend" @bind-Value="Request.Surname" maxlength="@Constants.Validations.UserSurnameMaxLength"/>
+			<InputText type="text" class="form-control" id="inputSurname" placeholder="@TextService.RegisterPage_Surname" aria-describedby="inputGroupPrepend" @bind-Value="Request.Surname" maxlength="@Constants.Validations.UserSurnameMaxLength" />
 		</div>
 		<ValidationMessage For="@(() => Request.Surname)" />
 		@* /Surname *@
@@ -84,10 +84,20 @@
 		<ValidationMessage For="@(() => Request.PasswordAgain)" />
 		@* /Confirm password *@
 
+		@* Terms of use *@
+	<div class="custom-control custom-checkbox mt-3">
+		<InputCheckbox type="checkbox" class="custom-control-input" id="checkbox-terms-of-use" @bind-Value="Request.AgreeToTermsOfUse"/>
+		<label class="custom-control-label" for="checkbox-terms-of-use">@TextService.RegisterPage_AgreeOn </label>
+		<a href="@PageRoutes.TermsOfUsePage.BuildRoute()" target="_blank">@TextService.RegisterPage_TermsOfUse</a>
+		<ValidationMessage For="@(() => Request.AgreeToTermsOfUse)" />
+	</div>
+		@* /Terms of use *@
+
 		@* Submit *@
 		<BusyButtonComponent IsBusy="@_isBusy" Class="mt-3">
 			<span>@TextService.RegisterPage_Create</span>
 		</BusyButtonComponent>
+		@* /Submit *@
 	</EditForm>
 </div>
 <div class="card-footer text-muted">
@@ -116,7 +126,7 @@
 		if (LoginService.IsAuthenticated)
 			NavigationService.NavigateTo(PageRoutes.HomePage.BuildRoute());
 
-		Request = new RegisterRequestDto(StaticStateService.LoginPageEmail, string.Empty, string.Empty, string.Empty, string.Empty);
+		Request = new RegisterRequestDto(StaticStateService.LoginPageEmail, string.Empty, string.Empty, string.Empty, string.Empty, false);
 	}
 
 	private bool _isBusy;

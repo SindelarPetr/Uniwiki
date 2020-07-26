@@ -1,5 +1,6 @@
 ﻿using Blazored.Toast.Services;
 using Uniwiki.Client.Host.Services;
+using Uniwiki.Client.Host.Services.Abstractions;
 
 namespace Uniwiki.Client.Host.Extensions
 {
@@ -7,7 +8,7 @@ namespace Uniwiki.Client.Host.Extensions
     {
         public static void ShowLoginRequired(this IToastService toastService, TextService textService)
         {
-            toastService.ShowInfo(textService.Toast_YouNeedToLogIn);
+            toastService.ShowInfo(textService.Toast_YouNeedToLogIn, textService.Toast_Info);
         }
     }
 }

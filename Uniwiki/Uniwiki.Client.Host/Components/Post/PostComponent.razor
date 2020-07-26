@@ -171,7 +171,7 @@
 		// Check if user is logged in
 		if (!LoginService.IsAuthenticated)
 		{
-			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn, TextService.Toast_Info);
 			return;
 		}
 
@@ -191,7 +191,7 @@
 		// Check if user is logged in
 		if (!LoginService.IsAuthenticated)
 		{
-			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn, TextService.Toast_Info);
 			return;
 		}
 
@@ -211,7 +211,7 @@
 		// Check if user is logged in
 		if (!LoginService.IsAuthenticated)
 		{
-			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn, TextService.Toast_Info);
 			return;
 		}
 
@@ -229,7 +229,7 @@
 	{
 		if (!LoginService.IsAuthenticated)
 		{
-			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn, TextService.Toast_Info);
 			return;
 		}
 
@@ -281,7 +281,7 @@
 		// Check if user is authorized for it
 		if (!LoginService.IsAuthenticated)
 		{
-			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn);
+			ToastService.ShowInfo(TextService.Toast_YouNeedToLogIn, TextService.Toast_Info);
 			return;
 		}
 

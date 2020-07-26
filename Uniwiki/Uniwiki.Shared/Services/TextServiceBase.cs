@@ -1,4 +1,6 @@
 ﻿using Shared;
+using System;
+using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Shared.Services
 {
@@ -23,7 +25,9 @@ namespace Uniwiki.Shared.Services
         public string Validation_TypePasswordMatchingRequirements => GetTranslation("Heslo musí být alespoň 1 znak dlouhé.", "The password must have at least one letter.");
         public string Validation_OldAndNewPasswordsCantMatch => GetTranslation("Staré a nové heslo se nesmí shodovat.", "The old and the new password can not match.");
         public string Validation_PasswordIsNotRepeatedCorrectly => GetTranslation("Heslo není zopakováno správně.", "The password is not repeated correctly.");
-        public string Validation_NameLengthMustBeAtleastLong => GetTranslation("Jméno musí mít alespoň 2 znaky", "Your name must have at least 2 letters.");
+        public string Validation_NameLengthMustBeAtleastLong => GetTranslation("Jméno musí mít alespoň 2 znaky.", "Your name must have at least 2 letters.");
+
+        internal string Validation_YouNeedToAgreeToTermsOfUse => GetTranslation("Musíte souhlasit s podmínkami užití.", "You have to agree with the terms of use.");
         public string Validation_SurnameLengthMustBeAtleastLong => GetTranslation("Příjmení musí mít alespoň 2 znaky", "Your surename must have at least 2 letters.");
         public string Validation_NonEmpty => GetTranslation("Nesmí být prázdné", "Cannot be empty");
         public string Validation_InvalidValue => GetTranslation("Neplatná hodnota", "Invalid value");

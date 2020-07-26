@@ -104,7 +104,7 @@
 			// Prepare secret
 			if (!Guid.TryParse(Secret, out var secretGuid))
 			{
-				ToastService.ShowError(TextService.Error_UnableToResolveSecret);
+				ToastService.ShowError(TextService.Error_UnableToResolveSecret, TextService.Toast_Error);
 				return;
 			}
 

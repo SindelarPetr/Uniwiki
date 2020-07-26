@@ -118,7 +118,11 @@ namespace Uniwiki.Shared
             public static string BuildRoute() => RouteHelper.BuildRouteParts("/FileNotFoundError");
         }
 
-        
+        public static class TermsOfUsePage
+        {
+            public static string BuildRoute() => RouteHelper.BuildRouteParts("/TermsOfUse");
+        }
+
     }
 }
  

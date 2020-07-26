@@ -2,7 +2,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using Blazored.LocalStorage;
 using Blazored.Modal;
-using Blazored.Toast.Services;
+using Blazored.Toast;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
@@ -22,32 +22,32 @@ namespace Uniwiki.Client.Host
         {
             services.AddUniwikiSharedServices();
 
-            services.AddSingleton<IRequestSender, RequestSender>();
-            services.AddSingleton<ILoginService, LoginService>();
-            services.AddSingleton<ILocalLoginService, LocalLoginService>();
-            services.AddSingleton<ILocalAuthenticationStateProvider, LocalAuthenticationStateProvider>();
-            services.AddSingleton<AuthenticationStateProvider>(
+            services.AddScoped<IRequestSender, RequestSender>();
+            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<ILocalLoginService, LocalLoginService>();
+            services.AddScoped<ILocalAuthenticationStateProvider, LocalAuthenticationStateProvider>();
+            services.AddScoped<AuthenticationStateProvider>(
                 s => (LocalAuthenticationStateProvider)s.GetService<ILocalAuthenticationStateProvider>());
-            services.AddSingleton<INavigationService, NavigationService>();
+            services.AddScoped<INavigationService, NavigationService>();
             services.AddTransient<IPeriodicalTimer, PeriodicalTimer>();
-            services.AddSingleton<IJsInteropService, JsInteropService>();
-            services.AddSingleton<ILanguageManagerService, LanguageManagerService>();
-            services.AddSingleton<ILocalStorageManagerService, LocalStorageManagerService>();
-            services.AddSingleton<TextService>();
-            services.AddSingleton<TextServiceBase>(p => p.GetService<TextService>());
-            services.AddSingleton<IFixingService, FixingService>();
-            services.AddSingleton<IScrollService, ScrollService>();
-            services.AddSingleton<IStaticStateService, StaticStateService>();
-            services.AddSingleton<IApplicationHostEnvironment, ClientHostEnvironment>();
+            services.AddScoped<IJsInteropService, JsInteropService>();
+            services.AddScoped<ILanguageManagerService, LanguageManagerService>();
+            services.AddScoped<ILocalStorageManagerService, LocalStorageManagerService>();
+            services.AddScoped<TextService>();
+            services.AddScoped<TextServiceBase>(p => p.GetService<TextService>());
+            services.AddScoped<IFixingService, FixingService>();
+            services.AddScoped<IScrollService, ScrollService>();
+            services.AddScoped<IStaticStateService, StaticStateService>();
+            services.AddScoped<IApplicationHostEnvironment, ClientHostEnvironment>();
             services.AddTransient<IFileUploadQueueService, FileUploadQueueService>();
 
             services.AddSingleton(new HttpClient());
             services.AddOptions();
             services.AddAuthorizationCore();
-            services.AddSingleton<ILocalStorageService, LocalStorageService>(); // AddBlazoredLocalStorage();
+            services.AddBlazoredLocalStorage();
             services.AddBlazoredModal();
-            services.AddSingleton<IToastService, ToastService>(); // Cannot use AddBlazoredToast(), because it needs to be singleton (that one is scoped)
-            services.AddSingleton<IHttpService, HttpService>();
+            services.AddBlazoredToast();
+            services.AddScoped<IHttpService, HttpService>();
             
         }
     }
