@@ -6,6 +6,7 @@ using Shared;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.ServerActions;
 using Uniwiki.Server.Application.ServerActions.Authentication;
+using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories;
@@ -34,9 +35,10 @@ namespace Uniwiki.Server.Application.Services
         private readonly IEmailConfirmationSecretRepository _emailConfirmationSecretRepository;
         private readonly IProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
+        private readonly IEmailService _emailService;
         private readonly RequestContext _anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid().ToString(), Language.English, new System.Net.IPAddress(0x2414188));
 
-        public DataManipulationService(AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, IUniversityRepository universityRepository, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService)
+        public DataManipulationService(AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, IUniversityRepository universityRepository, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService, IEmailService emailService)
         {
             _addCourseServerAction = addCourseServerAction;
             _registerServerAction = registerServerAction;
@@ -52,10 +54,14 @@ namespace Uniwiki.Server.Application.Services
             _emailConfirmationSecretRepository = emailConfirmationSecretRepository;
             _profileRepository = profileRepository;
             _timeService = timeService;
+            _emailService = emailService;
         }
 
         public async Task InitializeFakeData()
         {
+            // Make sure no emails will be sent
+            _emailService.DisableSendingEmails();
+
             // Register users
             var lucieContext = await RegisterUser("a@a.cz", "Lucie", "Veselá", "aaaaaa", true);
             var ivanaContext = await RegisterUser("b@b.cz", "Ivana", "Nováková", "aaaaaa");

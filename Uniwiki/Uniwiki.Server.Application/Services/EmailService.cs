@@ -19,6 +19,8 @@ namespace Uniwiki.Server.Application.Services
         private readonly UniwikiConfiguration _uniwikiConfiguration;
         private readonly ILogger<EmailService> _logger;
         private readonly string _baseUrl;
+        public bool SendingEmailsDisabled { get; private set; }
+
         public EmailService(IHttpContextAccessor httpContextAccessor, IEmailTemplateService emailTemplateService, TextService textService, UniwikiConfiguration uniwikiConfiguration, ILogger<EmailService> logger)
         {
             _emailTemplateService = emailTemplateService;
@@ -26,8 +28,9 @@ namespace Uniwiki.Server.Application.Services
             _uniwikiConfiguration = uniwikiConfiguration;
             _logger = logger;
             _baseUrl = GetBaseUri(httpContextAccessor.HttpContext);
-
         }
+
+        public void DisableSendingEmails() => SendingEmailsDisabled = true;
 
         private string GetBaseUri(HttpContext context)
         {
@@ -49,7 +52,7 @@ namespace Uniwiki.Server.Application.Services
         private async Task SendEmail(string recipientEmail, string subject, string messageText, bool isHtml = true)
         {
             // Dont send emails if the address of Uniwiki is unknown
-            if(string.IsNullOrWhiteSpace(_baseUrl))
+            if(string.IsNullOrWhiteSpace(_baseUrl) || SendingEmailsDisabled)
                 return;
 
             // Get the configuration
