@@ -66,6 +66,10 @@ namespace Uniwiki.Server.Application.Services
 
         public string EmailRestorePassword_ContactUs => GetTranslation("Případně nás neváhejte kontaktovat přes", "Do not hesitate to contact us via");
 
+        public string ResendConfirmation_ProfileIsAlreadyConfirmed(string email) => GetTranslation(
+            $"Email {email} byl již potvrzen.", 
+            $"The email {email} was already confirmed.");
+
         public string Error_YourEmailWasNotYetConfirmed(string email) => GetTranslation(
             $"Váš účet nebyl aktivován. Aktivujte jej přes odkaz v emailu {email}. Případně opakujte registraci.",
             $"Your email was not confirmed yet. Confirm it through a link in your email {email}. Register again eventually.");

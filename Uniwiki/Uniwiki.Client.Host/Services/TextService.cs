@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using System;
 using Uniwiki.Shared;
 using Uniwiki.Shared.Services;
 
@@ -87,9 +88,13 @@ namespace Uniwiki.Client.Host.Services
         public string ChangePasswordPage_NewPasswordAgain => GetTranslation("Nové heslo znovu", "The new password again");
         public string ChangePasswordPage_ChangePassword => GetTranslation("Změnit heslo", "Change your password");
         public string ConfirmEmailPage_Title => GetTranslation("Potvrďte email", "Confirm your email");
-        public string ConfirmEmailPage_EmailSentMessage => GetTranslation($"Potvrďte Váš email kliknutím na odkaz odeslaný na ",
-            $"Confirm your email by clicking on the link sent to ");
-        public string ConfirmEmailPage_EmailNotReceivedMessage => GetTranslation("Pokud vám nepřišel, tak si nejprve zkontrolujte spam.", "Check your spam firstly, if the email was not delivered.");
+        public string ConfirmEmailPage_EmailSentMessage => GetTranslation(
+            $"Odeslali jsme Vám potvrzovací email na ",
+            $"We sent a confirmation email to ");
+        public MarkupString ConfirmEmailPage_EmailNotReceivedMessage => 
+            new MarkupString(GetTranslation(
+                "Často spadne zpráva do <strong>SPAMU</strong>, tak jej raději zkontrolujte.", 
+                "Check your <strong>SPAM</strong> firstly, if the email was not delivered."));
         public string ConfirmEmailPage_SelectAnotherEmail => GetTranslation("Zadat jiný email", "Use another email");
         public string ConfirmEmailPage_ReportProblem => GetTranslation("Nahlásit problém", "Report a problem");
         public string ConfirmEmailPage_SendEmailAgain => GetTranslation("Odeslat email znovu", "Send the email again");

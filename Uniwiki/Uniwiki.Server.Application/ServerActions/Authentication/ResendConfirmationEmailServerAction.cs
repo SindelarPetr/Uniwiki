@@ -47,6 +47,10 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             // Get profile
             var profile = _profileRepository.GetProfileByEmail(email);
 
+            // Throw error if the user is already confirmed
+            if (profile.IsConfirmed)
+                throw new RequestException(_textService.ResendConfirmation_ProfileIsAlreadyConfirmed);
+
             // Send the new email confirmation secret
             await _emailConfirmationSenderService.SendConfirmationEmail(profile);
 

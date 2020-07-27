@@ -38,8 +38,6 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             if (!secret.IsValid)
                 throw new RequestException(_textService.Error_EmailConfirmationFailed);
 
-            // If the
-
             // Confirm the email
             _emailConfirmationSecretRepository.ConfirmEmail(secret);
 
