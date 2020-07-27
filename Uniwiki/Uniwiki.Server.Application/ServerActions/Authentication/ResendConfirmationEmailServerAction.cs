@@ -49,7 +49,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
 
             // Throw error if the user is already confirmed
             if (profile.IsConfirmed)
-                throw new RequestException(_textService.ResendConfirmation_ProfileIsAlreadyConfirmed);
+                throw new RequestException(_textService.ResendConfirmation_ProfileIsAlreadyConfirmed(profile.Email));
 
             // Send the new email confirmation secret
             await _emailConfirmationSenderService.SendConfirmationEmail(profile);
