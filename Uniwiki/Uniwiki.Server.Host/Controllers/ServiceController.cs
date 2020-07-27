@@ -99,7 +99,7 @@ namespace Uniwiki.Server.Host.Controllers
             {
                 try
                 {
-                    using var stream = new FileStream(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    var stream = new FileStream(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                     return File(stream, System.Net.Mime.MediaTypeNames.Text.Plain, logFileName);
                 }
                 catch (Exception ex)
@@ -134,7 +134,7 @@ namespace Uniwiki.Server.Host.Controllers
             {
                 try
                 {
-                    var lines = 500;
+                    var lines = 1000;
                     var header = $"The last {lines} (or less) lines of the log named: '{ logFileName }'.{Environment.NewLine}";
                     var lastLines = ReadLastLines(lines, logFilePath);
 
