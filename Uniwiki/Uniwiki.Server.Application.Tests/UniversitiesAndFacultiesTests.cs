@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Server.Appliaction.ServerActions;
 using Shared;
 using Shared.Exceptions;
 using Shared.Services.Abstractions;
+using Shared.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +35,7 @@ namespace Uniwiki.Server.Application.Tests
             ServiceCollection services = new ServiceCollection();
             services.AddLogging();
             services.AddUniwikiServerApplicationServices();
+            services.AddSingleton<IHostingEnvironment, FakeHostingEnvironment>();
 
             // Fake time service
             var timeService = new FakeTimeService(new DateTime(2020, 06, 30, 14, 47, 56));

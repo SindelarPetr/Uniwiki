@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,6 +18,7 @@ using Shared.Dtos;
 using Shared.Exceptions;
 using Shared.RequestResponse;
 using Shared.Services.Abstractions;
+using Shared.Tests;
 using Uniwiki.Client.Host;
 using Uniwiki.Client.Host.Components.FileUploader;
 using Uniwiki.Client.Host.Components.SearchBox;
@@ -56,6 +58,7 @@ namespace Uniwiki.Tests
             services.AddLogging();
             services.AddUniwikiClientHostServices();
             services.AddHostServices();
+            services.AddSingleton<IHostingEnvironment, FakeHostingEnvironment>();
 
             services.AddScoped<IEmailService, FakeEmailService>();
             services.AddSingleton<ITimeService, FakeTimeService>();
@@ -94,7 +97,7 @@ namespace Uniwiki.Tests
             var surename = "sindelar";
 
             // --- Act ---
-            var registerRequestDto = new RegisterRequestDto(email, name, surename, password, password);
+            var registerRequestDto = new RegisterRequestDto(email, name, surename, password, password, true);
             var registerPage = CreateRegisterPage(provider, registerRequestDto);
             await registerPage.Register();
             var registerSecret = _emailService.RegisterSecrets[0];
@@ -174,7 +177,7 @@ namespace Uniwiki.Tests
             await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(provider, new CreateNewPasswordRequestDto("www", Guid.Empty, "wwww"),someSecret.ToString()).CreateNewPassword());
 
             // Register user 1
-            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register();
+            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1, true)).Register();
             var registerSecret1 = _emailService.RegisterSecrets.Last();
 
             // Try login without confirming the email
@@ -191,13 +194,13 @@ namespace Uniwiki.Tests
             await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(provider, new CreateNewPasswordRequestDto("www", Guid.NewGuid(), "wwww"), someSecret.ToString()).CreateNewPassword());
 
             // Register user 1 once more (before he confirms the email, before its time for resending the email)
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1, true)).Register());
 
             // Move time
             _timeService.SetNow(_timeService.Now.Add(Constants.ResendRegistrationEmailMinTime.Add(TimeSpan.FromSeconds(5))));
 
             // Try to register again
-            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register();
+            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1, true)).Register();
             var registerSecret1b = _emailService.RegisterSecrets.Last();
 
             // Try to confirm the email of user 1 with his old confirmation email
@@ -207,7 +210,7 @@ namespace Uniwiki.Tests
             await CreateEmailConfirmedPage(provider, registerSecret1b.ToString(), email1).ConfirmEmail();
 
             // Try to register the user
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1)).Register());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1, surename1, password1, password1, true)).Register());
 
             // Login the user 1
             await CreateLoginPage(provider, new LoginRequestDto(email1, password1, new CourseDto[0])).Login();
@@ -594,6 +597,16 @@ namespace Uniwiki.Tests
         }
 
         public ValueTask Download(in string data, in string fileName)
+        {
+            return new ValueTask();
+        }
+
+        public ValueTask StartFileUpload(in string id, string dataForServer)
+        {
+            return new ValueTask();
+        }
+
+        public ValueTask AbortFileUpload(in string id)
         {
             return new ValueTask();
         }

@@ -19,12 +19,16 @@ using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;
 using Uniwiki.Shared.Tests.FakeServices;
 using Shared.Services.Abstractions;
+using Microsoft.AspNetCore.Hosting;
+using Shared.Tests;
 
 namespace Uniwiki.Server.Application.Tests
 {
+
     [TestClass]
     public class AuthenticationTests
     {
+
         [TestMethod]
         public async Task RunAuthenticationComplexTest()
         {
@@ -32,6 +36,7 @@ namespace Uniwiki.Server.Application.Tests
             ServiceCollection services = new ServiceCollection();
             services.AddLogging();
             services.AddUniwikiServerApplicationServices();
+            services.AddSingleton<IHostingEnvironment, FakeHostingEnvironment>();
             
             // Fake time service
             var timeService = new FakeTimeService(new DateTime(2020, 06, 30, 14, 47, 56));
@@ -58,17 +63,17 @@ namespace Uniwiki.Server.Application.Tests
             // --------- Act + Assert
 
             // TEST: Register the user
-            var userDto1 = (await registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Some", "Testuser", user1Password, user1Password), anonymousContext)).UserProfile;
+            var userDto1 = (await registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Some", "Testuser", user1Password, user1Password, true), anonymousContext)).UserProfile;
             var confirmationSecret1 = emailService.RegisterSecrets.Last();
             Assert.IsNotNull(confirmationSecret1, "Confirmation email has to be sent.");
 
             // TEST: Repeated registration with the same email results in an exception
-            await Assert.ThrowsExceptionAsync<RequestException>(() => registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Somsse", "Testussser", user1Password, user1Password), anonymousContext));
+            await Assert.ThrowsExceptionAsync<RequestException>(() => registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Somsse", "Testussser", user1Password, user1Password, true), anonymousContext));
 
 
             // TEST: Repeated registration with the same email after some time results in resending the confirmation secret
             timeService.MoveTime(Constants.ResendRegistrationEmailMinTime.Add(TimeSpan.FromSeconds(5))); // Move time
-            var userDto2 = (await registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Some", "Testuser", user1Password, user1Password), anonymousContext)).UserProfile;
+            var userDto2 = (await registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Some", "Testuser", user1Password, user1Password, true), anonymousContext)).UserProfile;
             var confirmationSecret2 = emailService.RegisterSecrets.Last();
             Assert.IsNotNull(confirmationSecret2, "Confirmation email has to be sent.");
 
@@ -79,7 +84,7 @@ namespace Uniwiki.Server.Application.Tests
 
             // TEST: User can ask for a new confirmation email after some time
             timeService.MoveTime(Constants.ResendRegistrationEmailMinTime.Add(TimeSpan.FromSeconds(5))); // Move time
-            var userDto3 = (await registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Some", "Testuser", user1Password, user1Password), anonymousContext)).UserProfile;
+            var userDto3 = (await registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Some", "Testuser", user1Password, user1Password, true), anonymousContext)).UserProfile;
             var confirmationSecret3 = emailService.RegisterSecrets.Last();
             Assert.IsNotNull(confirmationSecret3, "Confirmation email has to be sent.");
 
@@ -126,7 +131,7 @@ namespace Uniwiki.Server.Application.Tests
                 new ChangePasswordRequestDto("WrongOldPassword", user1NewPassword, user1NewPassword), user1Context));
 
             // TEST: The user shouldnt be able to register with the used email
-            await Assert.ThrowsExceptionAsync<RequestException>(() => registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Somsse", "Testussser", user1Password, user1Password), anonymousContext));
+            await Assert.ThrowsExceptionAsync<RequestException>(() => registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Somsse", "Testussser", user1Password, user1Password, true), anonymousContext));
 
             // TODO: TEST: The user token should be able to extend its expiration automatically
 

@@ -28,5 +28,10 @@ namespace Uniwiki.Shared.Tests.FakeServices
             RegisterSecrets.Add(secret);
             return Task.CompletedTask;
         }
+
+        public void DisableSendingEmails()
+        {
+            
+        }
     }
 }

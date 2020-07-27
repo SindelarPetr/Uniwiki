@@ -49,7 +49,9 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             {
                 throw new RequestException(_textService.Error_EmailIsAlreadyUsed(request.Email));
             }
-            else
+            
+            // Register user if he is not registered yet
+            if(profile == null)
             {
                 // Create url for the new profile
                 string url = _stringStandardizationService.CreateUrl(request.Name + request.Surname,

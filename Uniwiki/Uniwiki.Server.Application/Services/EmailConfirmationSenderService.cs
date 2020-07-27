@@ -41,7 +41,7 @@ namespace Uniwiki.Server.Application.Services
             // Invalidate all old secret(s)
             _emailConfirmationSecretRepository.InvalidateSecrets(profile);
 
-            // Generate verify email secret
+            // Generate email confirmation secret
             var emailConfirmationSecret = _emailConfirmationSecretRepository.GenerateEmailConfirmationSecret(profile, _timeService.Now);
 
             // Send the message to email
