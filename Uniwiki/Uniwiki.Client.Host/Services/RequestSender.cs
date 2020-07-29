@@ -105,6 +105,9 @@ namespace Uniwiki.Client.Host.Services
             }
             catch (Exception ex) // Connection error
             {
+                if (ex is RequestRejectedException requestRejectedException)
+                    throw requestRejectedException;
+
                 var message = ex.Message;
                 _toastService.ShowError(_textService.Error_ConnectionError, _textService.Toast_Error);
                 Console.WriteLine(ex);
