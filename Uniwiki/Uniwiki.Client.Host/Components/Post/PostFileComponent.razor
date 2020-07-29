@@ -6,7 +6,7 @@
 	<EditForm class="mb-2" Model="File">
 		<MyFluentValidator></MyFluentValidator>
 		<div class="d-flex">
-			<OnInputTextComponent class="form-control d-flex btn-block text-left" type="text" @bind-Value="File.OriginalName" maxlength="@Constants.Validations.FileNameMaxLength" />
+			<OnInputTextComponent class="form-control d-flex btn-block text-left" type="text" @bind-Value="File.OriginalName" maxlength="@Constants.Validations.FileNameMaxLength" name="@File.Id"/>
 			<button class="btn btn-danger ml-2" type="button" @onclick="HandleRemoveFile">
 				<i class="fas fa-trash"></i>
 			</button>
@@ -29,7 +29,7 @@
 		{
 			<div class="d-flex mb-4">
 				<ValidationMessage style="margin-right: 10px" class="mr-3" For="@(() => File.OriginalName)" />
-				<span>Originally <a class="m-0 p-0 text-primary" type="button" @onclick="() => File.OriginalName = _originalName">@_originalName</a></span>
+				<span>@TextService.OriginalFileName <a class="m-0 p-0 text-primary" type="button" @onclick="() => File.OriginalName = _originalName">@_originalName</a></span>
 			</div>
 		}
 	</EditForm>

@@ -9,6 +9,8 @@ namespace Uniwiki.Client.Host.Services
     // We dont want to abstract this one - translating would then be too much time consuming
     internal class TextService : TextServiceBase
     {
+
+        public string OriginalFileName => GetTranslation("Původně ", "Originally ");
         public string RegisterPage_AgreeOn => GetTranslation("Souhlasím s ", "I agree with ");
         public string RegisterPage_TermsOfUse => GetTranslation("podmínkami použití", "the terms of use");
         public string ConfirmEmailPage_EmailSentAgain => GetTranslation("Potvrzovací email byl znovu odeslán", "The confirmation email has been sent again.");

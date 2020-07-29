@@ -10,16 +10,22 @@
 
 	<EditForm OnValidSubmit="@HandleValidSubmitAddCourse" Model="@AddCourseRequestDto">
 		<MyFluentValidator></MyFluentValidator>
+
+		@* Course name *@
 		<div class="form-group">
 			<label for="addCourse_Name">@TextService.SearchBox_CourseName</label>
 			<OnInputTextComponent id="addCourse_Name" class="form-control" type="text" placeholder="@TextService.EgCourseName" @bind-Value="AddCourseRequestDto.CourseName" maxlength="@Constants.Validations.CourseNameMaxLength" />
-			<ValidationMessage For="@(() => AddCourseRequestDto.CourseName)" />
+			<ValidationMessage For="@(() => AddCourseRequestDto.CourseName)" name="courseName"/>
 		</div>
+
+		@* Course code *@
 		<div class="form-group">
 			<label for="addCourse_Code">@TextService.SearchBox_CourseCode</label>
-			<InputText id="addCourse_Code" class="form-control" type="text" placeholder="@TextService.EgCourseCode" @bind-Value="AddCourseRequestDto.CourseCode" maxlength="@Constants.Validations.CourseCodeMaxLength" />
+			<InputText id="addCourse_Code" class="form-control" type="text" placeholder="@TextService.EgCourseCode" @bind-Value="AddCourseRequestDto.CourseCode" maxlength="@Constants.Validations.CourseCodeMaxLength" name="courseCode"/>
 			<ValidationMessage For="@(() => AddCourseRequestDto.CourseCode)" />
 		</div>
+
+		@* Faculty *@
 		<div class="form-group">
 			<label for="addCourse_StudyGroup">@TextService.Faculty</label>
 			<div class="mb-3">

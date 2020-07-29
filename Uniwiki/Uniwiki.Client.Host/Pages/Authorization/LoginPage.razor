@@ -30,13 +30,13 @@
 
 		@* Email *@
 		<label for="inputEmail"><strong>@@</strong> @TextService.Email</label>
-		<OnInputTextComponent class="form-control" type="email" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" />
+		<OnInputTextComponent class="form-control" type="email" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" name="email"/>
 		<ValidationMessage For="@(() => Request.Email)" />
 
 		@* Password *@
 		<label class="mt-3" for="inputPassword"><i class="fas fa-key"></i> @TextService.Password</label>
 		<PasswordVisibilityComponent PasswordVisibilityUtility="_passwordVisibilityUtility">
-			<OnInputTextComponent type="@_passwordVisibilityUtility.InputType" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" />
+			<OnInputTextComponent type="@_passwordVisibilityUtility.InputType" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" name="password"/>
 		</PasswordVisibilityComponent>
 
 		<ValidationMessage For="@(() => Request.Password)" />
