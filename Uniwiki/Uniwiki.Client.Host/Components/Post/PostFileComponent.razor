@@ -29,7 +29,7 @@
 		{
 			<div class="d-flex mb-4">
 				<ValidationMessage style="margin-right: 10px" class="mr-3" For="@(() => File.OriginalName)" />
-				<span>@TextService.OriginalFileName <a class="m-0 p-0 text-primary" type="button" @onclick="() => File.OriginalName = _originalName">@_originalName</a></span>
+				<span>@TextService.OriginalFileName <a class="m-0 p-0 text-primary dont-break-out" type="button" @onclick="() => File.OriginalName = _originalName">@_originalName</a></span>
 			</div>
 		}
 	</EditForm>
