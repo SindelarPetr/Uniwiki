@@ -6,7 +6,12 @@
 }
 
 <div class="form-inline mr-2 mt-2">
-	<input class="form-control border-secondary @(string.IsNullOrWhiteSpace(_inputSelectedPostType) ? string.Empty : "bg-primary text-white") selection-text" type="text" maxlength="@Constants.Validations.PostTypeMaxLength" placeholder="@TextService.CoursePage_SearchType" @oninput="HandleInputPostType" value="@_inputSelectedPostType">
+	<div class="input-group">
+		<input class="form-control border-secondary @(InputSelected ? "bg-primary text-white" : string.Empty) selection-text" type="text" maxlength="@Constants.Validations.PostTypeMaxLength" placeholder="@TextService.CoursePage_SearchType" @oninput="HandleInputPostType" value="@_inputSelectedPostType" @onfocus="HandleInputOnFocus">
+		<div class="input-group-append">
+			<button class="btn btn-secondary @(string.IsNullOrWhiteSpace(_inputSelectedPostType) ? "disabled" : string.Empty)" type="button" @onclick="HandleClearInput"><i class="fas fa-times"></i></button>
+		</div>
+	</div>
 </div>
 
 @code {
@@ -16,6 +21,8 @@
 
 	private string? _buttonSelectedPostType;
 	private string? _inputSelectedPostType;
+
+	private bool InputSelected => !string.IsNullOrWhiteSpace(_inputSelectedPostType) && string.IsNullOrWhiteSpace(_buttonSelectedPostType);
 
 	protected override void OnParametersSet()
 	{
@@ -29,12 +36,12 @@
 
 	private async Task HandleButtonPostType(string postType)
 	{
-		// Check if it is unselected
-		if(_buttonSelectedPostType == postType)
+		// If it is already selected, then unselect it
+		if (_buttonSelectedPostType == postType)
 		{
 			// Unselect post type
 			_buttonSelectedPostType = null;
-			_inputSelectedPostType = null;
+			// _inputSelectedPostType = null;
 
 			// Notify about the change
 			await SelectedPostTypeChanged.InvokeAsync(null);
@@ -43,7 +50,7 @@
 		{
 			// Select post type
 			_buttonSelectedPostType = postType;
-			_inputSelectedPostType = null;
+			// _inputSelectedPostType = null;
 
 			// Notify about the change
 			await SelectedPostTypeChanged.InvokeAsync(postType);
@@ -53,12 +60,46 @@
 
 	private async Task HandleInputPostType(ChangeEventArgs args)
 	{
+		// Get the selected post type
 		var postType = (string)args.Value;
 
-		_inputSelectedPostType = postType;
+		// Remove any selected
 		_buttonSelectedPostType = null;
+		_inputSelectedPostType = postType;
 
 		// Notify about the change
 		await SelectedPostTypeChanged.InvokeAsync(postType);
+	}
+
+	private async Task HandleInputOnFocus()
+	{
+		// If there is some text in the input field, we set the post type to that text.
+		if (!String.IsNullOrWhiteSpace(_inputSelectedPostType))
+		{
+			// Unselect the button
+			_buttonSelectedPostType = null;
+
+			// Notify about the change
+			await SelectedPostTypeChanged.InvokeAsync(_inputSelectedPostType);
+		}
+	}
+
+	private Task HandleClearInput()
+	{
+		// If the value in the input is empty, dont do anything
+		if (string.IsNullOrWhiteSpace(_inputSelectedPostType))
+			return Task.CompletedTask;
+
+		// Remove the text
+		_inputSelectedPostType = null;
+
+		// If there is no selected button
+		if (string.IsNullOrWhiteSpace(_buttonSelectedPostType))
+		{
+			// then notify the change
+			return SelectedPostTypeChanged.InvokeAsync(_inputSelectedPostType);
+		}
+
+		return Task.CompletedTask;
 	}
 }
