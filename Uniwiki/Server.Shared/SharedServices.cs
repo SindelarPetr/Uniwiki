@@ -13,6 +13,7 @@ namespace Shared
         {
             services.AddSingleton<ITimeService, TimeService>();
             services.AddSingleton<IStringStandardizationService, StringStandardizationService>();
+            services.AddSingleton<IFileHelperService, FileHelperService>();
         }
     }
 }

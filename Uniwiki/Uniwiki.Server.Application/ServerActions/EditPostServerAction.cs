@@ -25,11 +25,11 @@ namespace Uniwiki.Server.Application.ServerActions
                 post.Text,
                 post.PostType ?? "null",
                 post.Files.Length,
-                post.Files.Select(f => f.OriginalName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"),
+                post.Files.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"),
                 request.Text,
                 request.PostType,
                 request.PostFiles.Count(),
-                request.PostFiles.Select(f => f.OriginalName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"));
+                request.PostFiles.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"));
         }
 
         private readonly IPostRepository _postRepository;
@@ -61,7 +61,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var profile = _profileRepository.FindById(context.User.Id);
 
             // Find all files from the request in DB
-            var filesForSearch = request.PostFiles.Select(f => (f.Id, f.OriginalName));
+            var filesForSearch = request.PostFiles.Select(f => (f.Id, f.NameWithoutExtension));
 
             // Check if the post belongs to the right user
             if (post.Author.Id != context.User.Id)

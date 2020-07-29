@@ -3,10 +3,17 @@
 
 @if (IsEditable)
 {
-	<EditForm class="mb-2" Model="File">
+	<EditForm class="mb-2" EditContext="_editContext">
 		<MyFluentValidator></MyFluentValidator>
 		<div class="d-flex">
-			<OnInputTextComponent class="form-control d-flex btn-block text-left" type="text" @bind-Value="File.OriginalName" maxlength="@Constants.Validations.FileNameMaxLength" name="@File.Id"/>
+
+			<div class="input-group">
+				<OnInputTextComponent class="form-control d-flex btn-block text-left" type="text" @bind-Value="File.NameWithoutExtension" maxlength="@Constants.Validations.FileNameMaxLength" name="@File.Id" />
+				<div class="input-group-append">
+					<span class="input-group-text" id="basic-addon2">@File.Extension</span>
+				</div>
+			</div>
+
 			<button class="btn btn-danger ml-2" type="button" @onclick="HandleRemoveFile">
 				<i class="fas fa-trash"></i>
 			</button>
@@ -25,19 +32,19 @@
 				}
 			</button>
 		</div>
-		@if (File.OriginalName != _originalName)
-		{
-			<div class="d-flex mb-4">
-				<ValidationMessage style="margin-right: 10px" class="mr-3" For="@(() => File.OriginalName)" />
-				<span>@TextService.OriginalFileName <a class="m-0 p-0 text-primary dont-break-out" type="button" @onclick="() => File.OriginalName = _originalName">@_originalName</a></span>
-			</div>
-		}
-	</EditForm>
+			@if (File.NameWithoutExtension != _originalNameWithoutExtension)
+			{
+				<div class="d-flex mb-4 mt-1">
+					<ValidationMessage style="margin-right: 10px" class="mr-3" For="@(() => File.NameWithoutExtension)" />
+					<span>@TextService.OriginalFileName <a class="m-0 p-0 text-primary dont-break-out" type="button" @onclick="HandleRevertName">@_originalNameWithoutExtension</a></span>
+				</div>
+			}
+</EditForm>
 }
 else
 {
 	<button class="btn btn-secondary d-flex btn-block mb-2 @(PeriodicalTimer.IsRunning ? "disabled" : string.Empty)" type="button" @onclick="HandleDownload">
-		<span class="mr-2 dont-break-out">@File.OriginalName</span>
+		<span class="mr-2 dont-break-out">@File.NameWithoutExtension</span>
 		@if (PeriodicalTimer.IsRunning)
 		{
 			<span class="mr-2">(@PeriodicalTimer.PeriodsLeft s)</span>
@@ -60,15 +67,19 @@ else
 
 	private bool IsEditable => OnRemove != null;
 
-	private string? _originalName;
+	private string? _originalNameWithoutExtension;
+
+	private EditContext _editContext;
 
 	protected override void OnParametersSet()
 	{
 		base.OnParametersSet();
 
+		_editContext = new EditContext(File);
+
 		// Preserve the original file name
-		if(_originalName == null)
-			_originalName = File.OriginalName;
+		if(_originalNameWithoutExtension == null)
+			_originalNameWithoutExtension = File.NameWithoutExtension;
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -90,7 +101,7 @@ else
 
 		PeriodicalTimer.Start(TimeSpan.FromSeconds(1), Constants.DownloadAgainTime.Seconds, HandleTimerTick);
 
-		var url = ApiRoutes.FileController.GetPostFile(File.Id, LoginService.LoginToken.SecondaryTokenId, File.OriginalName, TextService.Language);
+		var url = ApiRoutes.FileController.GetPostFile(File.Id, LoginService.LoginToken.SecondaryTokenId, File.OriginalFullName, TextService.Language);
 
 		NavigationService.NavigateTo(url, true);
 	}
@@ -103,7 +114,13 @@ else
 	private async Task HandleRemoveFile()
 	{
 		// Ask if user is sure
-		if (await ModalService.Confirm(TextService.Modal_ConfirmPostFileRemoval(File.OriginalName)))
+		if (await ModalService.Confirm(TextService.Modal_ConfirmPostFileRemoval(File.OriginalFullName)))
 			await OnRemove(File);
+	}
+
+	private async Task HandleRevertName()
+	{
+		File.NameWithoutExtension = _originalNameWithoutExtension;
+		_editContext.Validate();
 	}
 }

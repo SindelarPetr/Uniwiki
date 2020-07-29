@@ -20,10 +20,10 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories
             _textService = textService;
         }
 
-        public PostFileModel CreatePostFile(Guid id, string path, string originalName, ProfileModel profile, Guid courseId, DateTime creationTime, long size)
+        public PostFileModel CreatePostFile(Guid id, string path, string fileName, string extension, ProfileModel profile, Guid courseId, DateTime creationTime, long size)
         {
             // Create the new file
-            var postFile = new PostFileModel(id, path, originalName, false, profile, courseId, creationTime, size);
+            var postFile = new PostFileModel(id, path, fileName, extension, false, profile, courseId, creationTime, size);
 
             // Save it to DB
             _dataService.PostFiles.Add(postFile);

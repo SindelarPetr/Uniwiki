@@ -56,7 +56,7 @@ namespace Uniwiki.Server.Application.ServerActions
 
             FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
-            return Task.FromResult(new GetPostFileResponse(fileStream, file.OriginalName));
+            return Task.FromResult(new GetPostFileResponse(fileStream, file.OriginalFullName));
         }
     }
 }

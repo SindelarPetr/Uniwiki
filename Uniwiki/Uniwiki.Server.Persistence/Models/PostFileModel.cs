@@ -6,7 +6,9 @@ namespace Uniwiki.Server.Persistence.Models
     {
         public Guid Id { get; }
         public string Path { get; }
-        public string OriginalName { get; private set; }
+        public string OriginalFullName => $"{NameWithoutExtension}{Extension}";
+        public string NameWithoutExtension { get; private set; }
+        public string Extension { get; private set; }
         public bool IsSaved { get; private set; }
         public ProfileModel Profile { get; }
         public Guid CourseId { get; }
@@ -35,11 +37,12 @@ namespace Uniwiki.Server.Persistence.Models
             }
         }
 
-        public PostFileModel(Guid id, string path, string originalName, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size)
+        public PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size)
         {
             Id = id;
             Path = path;
-            OriginalName = originalName;
+            NameWithoutExtension = nameWithoutExtension;
+            Extension = extension;
             IsSaved = isSaved;
             Profile = profile;
             CourseId = courseId;
@@ -54,7 +57,7 @@ namespace Uniwiki.Server.Persistence.Models
 
         public void SetFileName(string newFileName)
         {
-            OriginalName = newFileName;
+            NameWithoutExtension = newFileName;
         }
     }
 }

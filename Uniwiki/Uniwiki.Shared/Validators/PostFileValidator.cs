@@ -11,7 +11,7 @@ namespace Uniwiki.Shared.Validators
     {
         public PostFileValidator(TextServiceBase textService)
         {
-            RuleFor(f => f.OriginalName).Cascade(CascadeMode.StopOnFirstFailure)
+            RuleFor(f => f.NameWithoutExtension).Cascade(CascadeMode.StopOnFirstFailure)
                 .MinMaxLengthWithMessages(textService, 1, Constants.Validations.FileNameMaxLength)
                 .Must(f => f.All(ch =>
                     Char.IsLetterOrDigit(ch) || Constants.Validations.AllowedFileSpecialCharacters.Contains(ch)))

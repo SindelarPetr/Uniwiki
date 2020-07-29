@@ -22,16 +22,18 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly ITimeService _timeService;
         private readonly IUploadFileService _uploadFileService;
         private readonly ILogger<UploadPostFileServerAction> _logger;
+        private readonly IFileHelperService _fileHelperService;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public UploadPostFileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger) : base(serviceProvider)
+        public UploadPostFileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postFileRepository = postFileRepository;
             _timeService = timeService;
             _uploadFileService = uploadFileService;
             _logger = logger;
+            _fileHelperService = fileHelperService;
         }
 
         protected override async Task<UploadPostFileResponseDto> ExecuteAsync(UploadPostFileRequestDto request, RequestContext context)
@@ -58,6 +60,9 @@ namespace Uniwiki.Server.Application.ServerActions
             // Get the original name of the file
             var originalName = file.FileName;
 
+            // Get the file name and extension
+            var (fileName, extension) = _fileHelperService.GetFileNameAndExtension(originalName);
+
             // Get the creation time of the file
             var creationTime = _timeService.Now;
 
@@ -65,7 +70,7 @@ namespace Uniwiki.Server.Application.ServerActions
             _logger.LogInformation("Writing the file record to the DB: FileId: '{FileId}', FileName: '{FileName}', Size: {Size}", id, originalName, file.Length);
 
             // Create a new file record in the DB
-            var postFileModel = _postFileRepository.CreatePostFile(id, path, originalName, profile, request.CourseId, creationTime, file.Length);
+            var postFileModel = _postFileRepository.CreatePostFile(id, path, fileName, extension, profile, request.CourseId, creationTime, file.Length);
 
             // Log information about the file
             _logger.LogInformation("Copying the file to the file system: FileId: '{FileId}'", id);

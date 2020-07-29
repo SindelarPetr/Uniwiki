@@ -17,7 +17,7 @@ namespace Uniwiki.Server.Application.Extensions
             => new CourseDto(course.Id, course.FullName, course.Code, course.Url, course.StudyGroup.ToDto(), course.StudyGroup.University.ToDto());
 
         public static PostFileDto ToDto(this PostFileModel postFile) 
-            => new PostFileDto(postFile.Id, postFile.OriginalName, postFile.IsSaved, postFile.Size);
+            => new PostFileDto(postFile.Id, postFile.NameWithoutExtension, postFile.Extension, postFile.IsSaved, postFile.Size);
 
         public static ProfileDto ToDto(this ProfileModel profile) 
             => new ProfileDto(profile.Id, profile.FirstName, profile.FamilyName, profile.FullName, profile.ProfilePictureSrc, profile.CreationDate, profile.Url, profile.Email, profile.FeedbackProvided);

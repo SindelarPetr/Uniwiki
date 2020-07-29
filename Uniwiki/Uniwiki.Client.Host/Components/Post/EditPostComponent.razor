@@ -147,7 +147,7 @@
 	{
 		// Of the file is not unique, then dont take it
 		if (_fileUploads.Any(f => f.Name == uploadFile.Name && f.Type == uploadFile.Type && f.Size == uploadFile.Size && f.LastModified == uploadFile.LastModified)
-		|| Request.PostFiles.Any(f => f.OriginalName == uploadFile.Name && f.Size == uploadFile.Size))
+		|| Request.PostFiles.Any(f => f.OriginalFullName == uploadFile.Name && f.Size == uploadFile.Size))
 		{
 			ToastService.ShowInfo(TextService.EditPost_FileAlreadySelected(uploadFile.Name), TextService.Toast_Info);
 			return;
@@ -188,7 +188,6 @@
 				// Save the file to post files
 				Request.PostFiles.Add(response.Response.PostFile);
 				_fileUploads.Remove(uploadFile);
-				Console.WriteLine("Adding post file: " + response.Response.PostFile.OriginalName);
 
 				StateHasChanged();
 			}
