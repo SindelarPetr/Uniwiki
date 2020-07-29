@@ -40,7 +40,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var course = _courseRepository.FindById(request.CourseId);
 
             // Get files for the post
-            var files = request.PostFiles.Select(f => (f.Id, f.OriginalFullName));
+            var files = request.PostFiles.Select(f => (f.Id, f.NameWithoutExtension));
 
             // Get domain files
             var postFiles = _postFileRepository.FindPostFilesAndUpdateNames(files, profile);
