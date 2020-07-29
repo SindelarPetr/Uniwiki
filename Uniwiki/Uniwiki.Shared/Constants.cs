@@ -34,7 +34,7 @@ namespace Uniwiki.Shared
         public const long MaxFileSizeInBytes = 50_000_000;
 #endif
 
-        public const Language DefaultLanguage = Language.Czech;
+        public const Language DefaultLanguage = Language.English;
 
         public const int MaxPostsToFetch = 15;
 
