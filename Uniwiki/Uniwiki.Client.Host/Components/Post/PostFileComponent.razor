@@ -3,10 +3,10 @@
 
 @if (IsEditable)
 {
-	<EditForm Model="File">
+	<EditForm class="mb-2" Model="File">
 		<MyFluentValidator></MyFluentValidator>
-		<div class="d-flex mb-2">
-			<InputText class="form-control d-flex btn-block text-left" type="text" @bind-Value="File.OriginalName" maxlength="@Constants.Validations.FileNameMaxLength" />
+		<div class="d-flex">
+			<OnInputTextComponent class="form-control d-flex btn-block text-left" type="text" @bind-Value="File.OriginalName" maxlength="@Constants.Validations.FileNameMaxLength" />
 			<button class="btn btn-danger ml-2" type="button" @onclick="HandleRemoveFile">
 				<i class="fas fa-trash"></i>
 			</button>
@@ -25,7 +25,13 @@
 				}
 			</button>
 		</div>
-		<ValidationMessage class="mb-2" For="@(() => File.OriginalName)" />
+		@if (File.OriginalName != _originalName)
+		{
+			<div class="d-flex mb-4">
+				<ValidationMessage style="margin-right: 10px" class="mr-3" For="@(() => File.OriginalName)" />
+				<span>Originally <a class="m-0 p-0 text-primary" type="button" @onclick="() => File.OriginalName = _originalName">@_originalName</a></span>
+			</div>
+		}
 	</EditForm>
 }
 else
@@ -53,6 +59,17 @@ else
 	[Parameter] public Func<PostFileDto, Task>? OnRemove { get; set; }
 
 	private bool IsEditable => OnRemove != null;
+
+	private string? _originalName;
+
+	protected override void OnParametersSet()
+	{
+		base.OnParametersSet();
+
+		// Preserve the original file name
+		if(_originalName == null)
+			_originalName = File.OriginalName;
+	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
