@@ -1,16 +1,13 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Uniwiki.Server.Host.Mvc
@@ -64,12 +61,11 @@ namespace Uniwiki.Server.Host.Mvc
                 //.UseContentRoot(Directory.GetCurrentDirectory()) // This line probably makes us troubles - maybe not?
                 .UseWebRoot(Path.Combine("wwwroot")) // Set the web root to d
                 .ConfigureAppConfiguration(ConfigureAppConfiguration)
-                .UseDefaultServiceProvider((context, options) => // TODO: Do the same in the Client
+                .UseDefaultServiceProvider((context, options) =>
                 {
                     options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
                 })
                 .UseSerilog() // Use serilog for logging
-                .UseSetting("https_port", "5001") // Fix HTTPS redirection
                 .UseStartup<MvcStartup>();
 
             return builder;
@@ -93,27 +89,7 @@ namespace Uniwiki.Server.Host.Mvc
                     configurationBuilder.AddUserSecrets(appAssembly, optional: true);
                 }
             }
-            configurationBuilder.AddEnvironmentVariables(); // TODO: Isnt it going to override my variables? (I think this loads the configuration from the launchsettings)
-
-            //if (args != null) // We dont have command line args I guess
-            //{
-            //    config.AddCommandLine(args);
-            //}
-        }
-    }
-
-    public class KestrelServerOptionsSetup : IConfigureOptions<KestrelServerOptions>
-    {
-        private IServiceProvider _services;
-
-        public KestrelServerOptionsSetup(IServiceProvider services)
-        {
-            _services = services;
-        }
-
-        public void Configure(KestrelServerOptions options)
-        {
-            options.ApplicationServices = _services;
+            configurationBuilder.AddEnvironmentVariables();
         }
     }
 }

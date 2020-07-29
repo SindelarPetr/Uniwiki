@@ -26,7 +26,7 @@ namespace Uniwiki.Server.Host.Services
             _logger.LogWarning(exception, "A Request Exception was thrown! Containing message: {ExceptionMessage}", exception.HumanMessage);
             var errorResponse = new ErrorResponseDto(exception.HumanMessage);
             var dataForClient = new DataForClient<IResponse>(errorResponse, exception.Fixes);
-            return controller.BadRequest(dataForClient);
+            return controller.Ok(dataForClient);
         }
 
         public ActionResult HandleException(Exception exception, ControllerBase controller)
@@ -34,7 +34,7 @@ namespace Uniwiki.Server.Host.Services
             _logger.LogWarning(exception, "A generic Exception was thrown! Containing message: {ExceptionMessage}", exception.Message);
             var errorResponse = new ErrorResponseDto(_textService.Error_ServerError);
             var dataForClient = new DataForClient<IResponse>(errorResponse, new FixResponseDto[0]);
-            return controller.BadRequest(dataForClient);
+            return controller.Ok(dataForClient);
         }
     }
 }

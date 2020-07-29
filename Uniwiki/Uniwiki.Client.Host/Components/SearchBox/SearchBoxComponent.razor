@@ -242,11 +242,10 @@
 		var request = new GetSearchResultsRequestDto(SearchText, StaticStateService.SelectedStudyGroup?.University.Id, StaticStateService.SelectedStudyGroup?.Id);
 		var response = await RequestSender.SendRequestAsync(request, () =>
 		{
-			if (order != _searchOrder)
-				return;
-
-			_searching = false;
 			StateHasChanged();
+
+			if (order == _searchOrder)
+				_searching = false;
 		});
 
 		// Do not do anything if the method is invoked multiple times
