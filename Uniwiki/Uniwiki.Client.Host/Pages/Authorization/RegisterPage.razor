@@ -5,9 +5,9 @@
 @inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
 
 
-	<div class="card-header h2 py-4 d-flex">
-		<BackButtonComponent /> <span class="mx-auto">@TextService.RegisterPage_Title</span><span class="mr-5"></span>
-	</div>
+<div class="card-header h2 py-4 d-flex">
+	<BackButtonComponent /> <span class="mx-auto">@TextService.RegisterPage_Title</span><span class="mr-5"></span>
+</div>
 <div class="card-body text-left p-3">
 
 	@*<button class="btn btn-dark btn-block d-flex mb-3">
@@ -28,69 +28,45 @@
 
 		@* Name *@
 		<label class="mt-3" for="inputName">@TextService.RegisterPage_Name</label>
-		<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-user"></i></span>
-			</div>
-			<InputText class="form-control" type="text" id="inputName" placeholder="@TextService.RegisterPage_Name" aria-describedby="inputGroupPrepend" @bind-Value="Request.Name" maxlength="@Constants.Validations.UserNameMaxLength" />
-		</div>
+		<InputText class="form-control" type="text" id="inputName" placeholder="@TextService.RegisterPage_Name" aria-describedby="inputGroupPrepend" @bind-Value="Request.Name" maxlength="@Constants.Validations.UserNameMaxLength" />
 		<ValidationMessage For="@(() => Request.Name)" />
 		@* /Name *@
 
 		@* Surname *@
 		<label class="mt-3" for="inputSurname">@TextService.RegisterPage_Surname</label>
-		<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-signature"></i></span>
-			</div>
-			<InputText type="text" class="form-control" id="inputSurname" placeholder="@TextService.RegisterPage_Surname" aria-describedby="inputGroupPrepend" @bind-Value="Request.Surname" maxlength="@Constants.Validations.UserSurnameMaxLength" />
-		</div>
+		<InputText type="text" class="form-control" id="inputSurname" placeholder="@TextService.RegisterPage_Surname" aria-describedby="inputGroupPrepend" @bind-Value="Request.Surname" maxlength="@Constants.Validations.UserSurnameMaxLength" />
 		<ValidationMessage For="@(() => Request.Surname)" />
 		@* /Surname *@
 
 		@* Email *@
-		<label class="mt-3" for="inputEmail">@TextService.Email</label>
-		<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text">
-					<span class="fas fa-at"></span>
-				</span>
-			</div>
-
-			<InputText type="text" class="@IsValidClassAttribute" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" />
-		</div>
+		<label class="mt-3" for="inputEmail"><strong>@@</strong> @TextService.Email</label>
+		<InputText type="text" class="@IsValidClassAttribute" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" />
 		<ValidationMessage For="@(() => Request.Email)" />
 		@* /Email *@
 
 		@* Password *@
-		<label class="mt-3" for="inputPassword">@TextService.Password</label>
-		<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-key"></i></span>
-			</div>
-			<InputText type="password" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" />
-		</div>
+		<label class="mt-3" for="inputPassword"><i class="fas fa-key"></i> @TextService.Password</label>
+		<PasswordVisibilityComponent PasswordVisibilityUtility="_passwordVisibilityUtility1">
+			<InputText type="@_passwordVisibilityUtility1.InputType" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" />
+		</PasswordVisibilityComponent>
 		<ValidationMessage For="@(() => Request.Password)" />
 		@* /Password *@
 
 		@* Confirm password *@
-		<label class="mt-3" for="inputPasswordAgain">@TextService.PasswordAgain</label>
-		<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-key"></i></span>
-			</div>
-			<InputText type="password" class="form-control" id="inputPasswordAgain" placeholder="@TextService.PasswordAgain" aria-describedby="inputGroupPrepend" @bind-Value="Request.PasswordAgain" />
-		</div>
+		<label class="mt-3" for="inputPasswordAgain"><i class="fas fa-key"></i> @TextService.PasswordAgain</label>
+		<PasswordVisibilityComponent PasswordVisibilityUtility="_passwordVisibilityUtility2">
+			<InputText type="@_passwordVisibilityUtility2.InputType" class="form-control" id="inputPasswordAgain" placeholder="@TextService.PasswordAgain" aria-describedby="inputGroupPrepend" @bind-Value="Request.PasswordAgain" />
+		</PasswordVisibilityComponent>
 		<ValidationMessage For="@(() => Request.PasswordAgain)" />
 		@* /Confirm password *@
 
 		@* Terms of use *@
-	<div class="custom-control custom-checkbox mt-3">
-		<InputCheckbox type="checkbox" class="custom-control-input" id="checkbox-terms-of-use" @bind-Value="Request.AgreeToTermsOfUse"/>
-		<label class="custom-control-label" for="checkbox-terms-of-use">@TextService.RegisterPage_AgreeOn </label>
-		<a href="@PageRoutes.TermsOfUsePage.BuildRoute()" target="_blank">@TextService.RegisterPage_TermsOfUse</a>
-		<ValidationMessage For="@(() => Request.AgreeToTermsOfUse)" />
-	</div>
+		<div class="custom-control custom-checkbox mt-3">
+			<InputCheckbox type="checkbox" class="custom-control-input" id="checkbox-terms-of-use" @bind-Value="Request.AgreeToTermsOfUse" />
+			<label class="custom-control-label" for="checkbox-terms-of-use">@TextService.RegisterPage_AgreeOn </label>
+			<a href="@PageRoutes.TermsOfUsePage.BuildRoute()" target="_blank">@TextService.RegisterPage_TermsOfUse</a>
+			<ValidationMessage For="@(() => Request.AgreeToTermsOfUse)" />
+		</div>
 		@* /Terms of use *@
 
 		@* Submit *@
@@ -118,6 +94,9 @@
 	private string _email = string.Empty;
 	private Task<bool?> _isEmailAvailableTask = Task.FromResult<bool?>(null);
 	private string IsValidClassAttribute => (_isEmailAvailableTask.IsCompletedSuccessfully && (_isEmailAvailableTask.Result.HasValue && _isEmailAvailableTask.Result.Value) ? "form-control is-valid" : "form-control");
+
+	private PasswordVisibilityUtility _passwordVisibilityUtility1 = new PasswordVisibilityUtility();
+	private PasswordVisibilityUtility _passwordVisibilityUtility2 = new PasswordVisibilityUtility();
 
 	protected override void OnInitialized()
 	{

@@ -21,10 +21,10 @@
 			<ValidationMessage For="@(() => AddCourseRequestDto.CourseCode)" />
 		</div>
 		<div class="form-group">
-			<label for="addCourse_StudyGroup">@TextService.StudyGroup</label>
+			<label for="addCourse_StudyGroup">@TextService.Faculty</label>
 			<div class="mb-3">
 				<button id="addCourse_StudyGroup" class="btn btn-secondary dont-break-out" type="button" @onclick="HandleOnSelectStudyGroup">
-					@(_selectedStudyGroup == null ? TextService.SelectStudyGroup : _selectedStudyGroup.LongName + " (" + _selectedStudyGroup.University.ShortName + ")")
+					@(_selectedStudyGroup == null ? TextService.SelectFaculty : _selectedStudyGroup.LongName + " (" + _selectedStudyGroup.University.ShortName + ")")
 				</button>
 			</div>
 			<ValidationMessage For="@(() => AddCourseRequestDto.StudyGroupId)" />
@@ -80,7 +80,7 @@
 
 	public async Task HandleOnSelectStudyGroup()
 	{
-		var modal = ModalService.Show<SelectStudyGroupModal>(TextService.SelectStudyGroup);
+		var modal = ModalService.Show<SelectStudyGroupModal>(TextService.SelectFaculty);
 		var result = await modal.Result;
 		if (!result.Cancelled)
 		{

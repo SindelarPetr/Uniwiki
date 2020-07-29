@@ -5,7 +5,7 @@
 @layout ThinFormLayout
 
 <div class="card-header h2 py-4 d-flex">
-	<BackButtonComponent/> <span class="mx-auto">@TextService.LoginPage_Title</span><span class="mr-5"></span>
+	<BackButtonComponent /> <span class="mx-auto">@TextService.LoginPage_Title</span><span class="mr-5"></span>
 </div>
 <div class="card-body text-left p-3">
 
@@ -27,22 +27,18 @@
 
 	<EditForm Model="@Request" OnValidSubmit="@Login">
 		<MyFluentValidator></MyFluentValidator>
-		<label for="inputEmail">@TextService.Email</label>
-		<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-at"></i></span>
-			</div>
-			<InputText class="form-control" type="text" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" />
-		</div>
+
+		@* Email *@
+		<label for="inputEmail"><strong>@@</strong> @TextService.Email</label>
+		<InputText class="form-control" type="text" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" />
 		<ValidationMessage For="@(() => Request.Email)" />
 
-		<label class="mt-3" for="inputPassword">@TextService.Password</label>
-		<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-key"></i></span>
-			</div>
-			<InputText type="password" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" />
-		</div>
+		@* Password *@
+		<label class="mt-3" for="inputPassword"><i class="fas fa-key"></i> @TextService.Password</label>
+		<PasswordVisibilityComponent PasswordVisibilityUtility="_passwordVisibilityUtility">
+			<InputText type="@_passwordVisibilityUtility.InputType" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" />
+		</PasswordVisibilityComponent>
+
 		<ValidationMessage For="@(() => Request.Password)" />
 		<BusyButtonComponent IsBusy="@_isBusy" Class="mt-3">
 			<span>@TextService.LogIn</span>
@@ -66,6 +62,10 @@
 	public LoginRequestDto Request { get; set; }
 
 	private bool _isBusy;
+
+	private bool _passwordVisible = false;
+
+	private PasswordVisibilityUtility _passwordVisibilityUtility = new PasswordVisibilityUtility();
 
 	protected override void OnInitialized()
 	{

@@ -1,5 +1,7 @@
 ﻿using Shared;
 using System;
+using System.Text.Encodings.Web;
+using System.Web;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Shared.Services
@@ -8,6 +10,7 @@ namespace Uniwiki.Shared.Services
     {
         public Language Language { get; private set; }
 
+        protected string Sanitize(string text) => HtmlEncoder.Default.Encode(text);
         public TextServiceBase()
         {
             Language = Constants.DefaultLanguage;
@@ -44,8 +47,8 @@ namespace Uniwiki.Shared.Services
             return GetTranslation($"Maximální délka je {maximumLength}.", $"Maximum length is {maximumLength}.");
         }
 
-        public string Validation_YouMustSelectStudyGroup =>
-            GetTranslation("Vyberte studinjí skupinu.", "You must select a study group.");
+        public string Validation_YouMustSelectFaculty =>
+            GetTranslation("Vyberte fakultu, do které patří ten předmět.", "You must select a faculty to which the course belongs.");
 
         public string Validation_FileNameContainsNonValidCharacters => GetTranslation("Název obsahuje nepovolené znaky.", "The name contains not allowed letters.");
     }

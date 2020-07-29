@@ -29,10 +29,10 @@ namespace Uniwiki.Server.Persistence.Services
         public string Error_CouldNotFindFile(string fileName) => _textServiceBase.GetTranslation($"Nepodařilo se nalézt soubor {fileName}, zkuste jej nahrát znovu.", $"Failed to find file {fileName}. Try to upload it again.");
 
         public string Error_EmailIsAlreadyTaken(string email) =>
-            _textServiceBase.GetTranslation($"Email {email} je již zabrán.", $"Email {email} is already taken.");
+            _textServiceBase.GetTranslation($"Email {email} je již zabrán.", $"The email {email} is already taken.");
 
         public string Error_NoUserWithProvidedEmail(string email) => _textServiceBase.GetTranslation(
-            $"Uživatel s emailem {email} nebyl nalezen.", $"User with email {email} has not been found.");
+            $"Uživatel s emailem {email} nebyl nalezen.", $"User with the email {email} has not been found.");
 
         public string Error_FilesNotFound(string[] notFoundNames)
         {

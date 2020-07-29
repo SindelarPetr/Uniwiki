@@ -8,6 +8,7 @@ using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Models.Authentication;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
+using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Application.Services
 {
@@ -57,8 +58,17 @@ namespace Uniwiki.Server.Application.Services
             if (!profile.IsConfirmed)
                 throw new RequestException(_textService.Error_YourEmailWasNotYetConfirmed(profile.Email));
 
+            // Get the creation time
+            var creationTime = _timeService.Now;
+
+            // Calculate the expiration of the token
+            var expiration = creationTime.Add(Constants.LoginTokenLife);
+
+            // Extend the expiration of the token for 3 years for now - to avoid renewals
+            var extendedExpiration = expiration.AddYears(3);
+
             // Issue the token
-            var token = _loginTokenRepository.IssueLoginToken(profile, _timeService.Now);
+            var token = _loginTokenRepository.IssueLoginToken(profile, creationTime, extendedExpiration);
 
             return token;
         }

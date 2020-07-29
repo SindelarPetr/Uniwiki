@@ -15,7 +15,7 @@ namespace Uniwiki.Shared.Validators
                 .MinMaxLengthWithMessages(textServiceBase, Constants.Validations.CourseCodeMinLength, Constants.Validations.CourseCodeMaxLength);
 
             RuleFor(f => f.StudyGroupId)
-                .NotEmpty().WithMessage(textServiceBase.Validation_YouMustSelectStudyGroup);
+                .NotEmpty().WithMessage(textServiceBase.Validation_YouMustSelectFaculty);
 
             RuleFor(f => f.CourseName)
                 .Cascade(CascadeMode.StopOnFirstFailure)

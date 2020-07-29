@@ -79,7 +79,7 @@ else
 
 		var parameters = new ModalParameters();
 		parameters.Add(nameof(AddStudyGroupModal.University), university);
-		var modal = ModalService.Show<AddStudyGroupModal>(TextService.AddStudyGroupModal_Title, parameters);
+		var modal = ModalService.Show<AddStudyGroupModal>(TextService.AddFacultyModal_Title, parameters);
 
 		var result = await modal.Result;
 

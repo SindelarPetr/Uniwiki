@@ -17,10 +17,9 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
             _dataStorage = dataStorage;
         }
 
-        public LoginTokenModel IssueLoginToken(ProfileModel profile, DateTime creationTime)
+        public LoginTokenModel IssueLoginToken(ProfileModel profile, DateTime creationTime, DateTime expiration)
         {
             // Issue a new token - pair it with the current user
-            var expiration = creationTime.Add(Constants.LoginTokenLife);
             var token = new LoginTokenModel(Guid.NewGuid(), profile, creationTime, expiration, Guid.NewGuid());
 
             // Persist the token

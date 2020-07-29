@@ -95,7 +95,7 @@
 		{
 			<div class="text-center text-muted">
 				<h5 class="mt-3">@TextService.SearchBox_DefaultPlaceholderText</h5>
-				<button class="btn btn-primary mt-3" type="button" @onclick="HandleFilterClicked">@TextService.SearchBox_ChooseStudyGroup</button>
+				<button class="btn btn-primary mt-3" type="button" @onclick="HandleFilterClicked">@TextService.SearchBox_ChooseFaculty</button>
 			</div>
 		}
 
@@ -291,7 +291,7 @@
 	public async Task HandleFilterClicked()
 	{
 		// Show modal window
-		var modal = ModalService.Show<SelectStudyGroupModal>(TextService.SelectStudyGroupModal_Title);
+		var modal = ModalService.Show<SelectStudyGroupModal>(TextService.SelectFacultyModal_Title);
 		var result = await modal.Result;
 
 		// Check if the modal is canceled
@@ -317,7 +317,7 @@
 			return;
 		}
 
-		var modal = ModalService.Show<AddStudyGroupModal>(TextService.AddStudyGroupModal_Title);
+		var modal = ModalService.Show<AddStudyGroupModal>(TextService.AddFacultyModal_Title);
 		var result = await modal.Result;
 
 		if (!result.Cancelled)

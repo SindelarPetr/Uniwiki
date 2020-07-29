@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System;
+using System.Text.Encodings.Web;
 using Uniwiki.Shared;
 using Uniwiki.Shared.Services;
 
@@ -13,7 +14,7 @@ namespace Uniwiki.Client.Host.Services
         public string ConfirmEmailPage_EmailSentAgain => GetTranslation("Potvrzovací email byl znovu odeslán", "The confirmation email has been sent again.");
         public string Message => GetTranslation("Text příspěvku", "Text");
         public string Files => GetTranslation("Soubory", "Files");
-        public string ProvideFeedbackText => GetTranslation("Co byste na Uniwiki změnili? přidali? odebrali?", "What would you make on Uniwiki differently? What are you missing?");
+        public string ProvideFeedbackText => GetTranslation("Jak můžeme Uniwiki zlepšit? ", "How can we improve Uniwiki?");
         public string Toast_ThanksForFeedback => GetTranslation("Děkujeme za zpětnou vazbu!", "Thank you for your feedback!");
         public string Submit => GetTranslation("Odeslat", "Submit");
         public string Modal_ProvideFeedback => GetTranslation("Napište nám zpětnou vazbu", "Write a feedback for us");
@@ -27,19 +28,21 @@ namespace Uniwiki.Client.Host.Services
         public string DownloadTimeErrorPage_Message => GetTranslation("Pokusili jste se stáhnout soubor znovu příliš rychle.", "You tried to download the file again too quickly.");
         public string DownloadTimeErrorPage_Title => GetTranslation("Příliš brzy", "Too early");
         public string FileNotFoundPage_Title => GetTranslation("Soubor nenalezen!", "File not found!");
-        public string NoStudyGroupsInUniversity =>GetTranslation("Zatím zde nejsou žádné fakulty.", "There are no faculties yet.");
+        public string NoFacultiesInUniversity => GetTranslation("Zatím zde nejsou žádné fakulty.", "There are no faculties yet.");
         public string ProfilePage_CannotUploadPictureYet => GetTranslation("Profilovou fotku zatím nahrát nelze.", "Its not possible to upload the profile picture yet.");
 
-        public string Toast_ErrorWhileUploadingFile(string fileName) => GetTranslation($"Vyskytl se problém během načítání souboru { fileName }", $"There was a problem while uploading the file {fileName}");
+        public string Toast_ErrorWhileUploadingFile(string fileName) => GetTranslation(
+            $"Vyskytl se problém během načítání souboru { Sanitize(fileName) }",
+            $"There was a problem while uploading the file {Sanitize(fileName)}");
 
         public string ProfilePage_UploadProfilePicture => GetTranslation("Nahrát fotku", "Upload a picture");
         public string SearchBox_DefaultPlaceholderText => GetTranslation("Můžete začít zobrazením všech předmětů z vaší fakulty.", "You can start by showing all courses from your faculty.");
-        public string SearchBox_ChooseStudyGroup => GetTranslation("Vybrat fakultu", "Select your faculty");
+        public string SearchBox_ChooseFaculty => GetTranslation("Vybrat fakultu", "Select your faculty");
         public string HomePage_SearchCourse => GetTranslation("Hledat předmět", "Search course");
         public string SearchBox_AddCourse => GetTranslation("Přidat předmět", "Add course");
         public string SearchBox_NoCoursesInGroup => GetTranslation("Na této fakultě nejsou zatím žádné předměty", "There are no courses in this faculty yet.");
         public string Modal_ConfirmPostRemoval => GetTranslation("Opravdu chcete odstranit příspěvek?", "Are you sure to remove the post?");
-        public string AddStudyGroupModal_Title => GetTranslation("Přidat fakultu", "Add a faculty");
+        public string AddFacultyModal_Title => GetTranslation("Přidat fakultu", "Add a faculty");
         public string SearchBox_SelectGroup => GetTranslation("Vybrat fakultu", "Select a faculty");
         public string Language_Language => GetTranslation("Jazyk", "Language");
         public string Language_English => GetTranslation("Angličtina", "English");
@@ -50,10 +53,10 @@ namespace Uniwiki.Client.Host.Services
         public string EditPost_EditPost => GetTranslation("Uložit změny", "Save changes");
         public string SearchBox_CourseCode => GetTranslation("Kód předmětu (nepovinný)", "Course code (optional)");
         public string SearchBox_CourseName => GetTranslation("Název předmětu", "Course name");
-        public string SearchBox_StudyGroupShortcut => GetTranslation("Zkratka fakulty", "Shortcut of the faculty");
-        public string SearchBox_StudyGroupName => GetTranslation("Název fakulty", "Faculty name");
+        public string SearchBox_FacultyShortcut => GetTranslation("Zkratka fakulty", "Shortcut of the faculty");
+        public string SearchBox_FacultyName => GetTranslation("Název fakulty", "Faculty name");
         public string Toast_CourseCreatedTitle => GetTranslation("Předmět vytvořen", "Course created");
-        public string Toast_StudyGroupCreatedTitle => GetTranslation("Fakulta vytvořena", "Faculty has been created");
+        public string Toast_FacultyCreatedTitle => GetTranslation("Fakulta vytvořena", "Faculty has been created");
         public string CoursePage_SearchType => GetTranslation("Jiná kategorie", "Other category");
         public string EmailConfirmedPage_TryAgain => GetTranslation("Zkusit znovu", "Try again");
         public string EmailConfirmedPage_FailMessage => GetTranslation("Nepodařilo se potvrdit email", "Could not confirm the email");
@@ -91,9 +94,9 @@ namespace Uniwiki.Client.Host.Services
         public string ConfirmEmailPage_EmailSentMessage => GetTranslation(
             $"Odeslali jsme Vám potvrzovací email na ",
             $"We sent a confirmation email to ");
-        public MarkupString ConfirmEmailPage_EmailNotReceivedMessage => 
+        public MarkupString ConfirmEmailPage_EmailNotReceivedMessage =>
             new MarkupString(GetTranslation(
-                "Často spadne zpráva do <strong>SPAMU</strong>, tak jej raději zkontrolujte.", 
+                "Často spadne zpráva do <strong>SPAMU</strong>, tak jej raději zkontrolujte.",
                 "Check your <strong>SPAM</strong> firstly, if the email was not delivered."));
         public string ConfirmEmailPage_SelectAnotherEmail => GetTranslation("Zadat jiný email", "Use another email");
         public string ConfirmEmailPage_ReportProblem => GetTranslation("Nahlásit problém", "Report a problem");
@@ -121,11 +124,12 @@ namespace Uniwiki.Client.Host.Services
         public string RestorePasswordPage_YourEmail => GetTranslation("Váš email", "Your email");
         public string RestorePasswordPage_RestorePassword => GetTranslation("Obnovit heslo", "Restore password");
         public string RestorePasswordRequestedPage_Title => GetTranslation("Změna zapomenutého hesla", "Change forgotten password");
-        public string RestorePasswordRequestedPage_EmailSentMessage(string email) => GetTranslation(
-            $"Na email {email} Vám byl odeslán odkaz pro vytvoření nového hesla. Pokud Vám mail nepřišel, tak nejprve zkontrolujte spam.",
-            $"The link to reset your password has been sent to your email {email}. In case the email was not delivered, check the email.");
+        public MarkupString RestorePasswordRequestedPage_EmailSentMessage(string email) => new MarkupString(GetTranslation(
+$"Na email <strong>{Sanitize(email)}</strong> Vám byl odeslán odkaz pro vytvoření nového hesla. Pokud Vám mail nepřišel, tak nejprve zkontrolujte <strong>SPAM</strong>.",
+$"The link to reset your password has been sent to your email <strong>{Sanitize(email)}</strong>. In case the email was not delivered, check the <strong>SPAM</strong>."));
+
         public string SearchBox_Courses => GetTranslation("Předměty", "Courses");
-        
+
         public string SearchBox_SearchCourse => GetTranslation("Hledat předmět...", "Search course...");
         public string ViaGoogle => GetTranslation("Přes Google", "Via Google");
         public string ViaFacebook => GetTranslation("Přes Facebook", "Via Facebook");
@@ -149,19 +153,13 @@ namespace Uniwiki.Client.Host.Services
         public string AddNewCourse => GetTranslation("Přidat předmět", "Add a new course");
         public string Create => GetTranslation("Vytvořit", "Create");
 
-        public string Toast_StudyGroupCreated(string studyGroupLongName, string studyGroupShortName)
-        {
-            return GetTranslation(
-                $"Fakulta {studyGroupLongName} ({studyGroupShortName}) byla úspěšně vytvořena.",
-                $"Faculty {studyGroupLongName} ({studyGroupShortName}) has been successfully created.");
-        }
+        public string Toast_FacultyCreated(string facultyLongName, string facultyShortName) => GetTranslation(
+                $"Fakulta {Sanitize(facultyLongName)} ({Sanitize(facultyShortName)}) byla úspěšně vytvořena.",
+                $"Faculty {Sanitize(facultyLongName)} ({Sanitize(facultyShortName)}) has been successfully created.");
 
-        public string Toast_CourseCreated(string courseLongName, string courseShortName)
-        {
-            courseShortName = string.IsNullOrWhiteSpace(courseShortName) ? string.Empty : ("(" + courseShortName + ") ");
-            return GetTranslation($"Předmět {courseLongName} {courseShortName}byl úspěšně přidán",
-                $"The course {courseLongName} {courseShortName}has been successfully created.");
-        }
+        public string Toast_CourseCreated(string courseLongName, string courseShortName) => GetTranslation(
+            $"Předmět { Sanitize(courseLongName) } { Sanitize(courseShortName) }byl úspěšně přidán",
+            $"The course { Sanitize(courseLongName) } { Sanitize(courseShortName) }has been successfully created.");
 
         public string SearchBox_NoResults()
         {
@@ -186,14 +184,13 @@ namespace Uniwiki.Client.Host.Services
 
         public string EditPost_FileAlreadySelected(string uploadFileName)
         {
-            return GetTranslation($"Soubor {uploadFileName} byl již vybrán.",
-                $"The file {uploadFileName} is already selected.");
+            return GetTranslation($"Soubor {Sanitize(uploadFileName)} byl již vybrán.",
+                $"The file {Sanitize(uploadFileName)} is already selected.");
         }
 
-        public string EditPost_FileTooBig(string fileName, long fileSize)
-        {
-            return GetTranslation($"Soubor {fileName} je příliš velký. Maximální velikost je { FileSize(Constants.MaxFileSizeInBytes) }. Váš soubor má {FileSize(fileSize)}", $"The provided file {fileName} is too big. Maximal size is { FileSize(Constants.MaxFileSizeInBytes) }. Provided file has more than {FileSize(fileSize)}");
-        }
+        public string EditPost_FileTooBig(string fileName, long fileSize) => GetTranslation(
+            $"Soubor {Sanitize(fileName)} je příliš velký. Maximální velikost je { FileSize(Constants.MaxFileSizeInBytes) }. Váš soubor má {FileSize(fileSize)}",
+            $"The provided file {Sanitize(fileName)} is too big. Maximal size is { FileSize(Constants.MaxFileSizeInBytes) }. Provided file has more than {FileSize(fileSize)}");
 
         public string EditPost_HasFailedFile => GetTranslation(
             "Některé soubory se nepovedlo nahrát. Zkuste je nahrát znovu nebo odstranit.",
@@ -215,9 +212,9 @@ namespace Uniwiki.Client.Host.Services
 
         public string EgGroupShortcut => GetTranslation("Např.: FIT", "E.g. FIT");
         public string University => GetTranslation("Univerzita", "University");
-        public string StudyGroup => GetTranslation("Fakulta", "Faculty");
+        public string Faculty => GetTranslation("Fakulta", "Faculty");
         public string Course => GetTranslation("Předmět", "Course");
-        public string SelectStudyGroup => GetTranslation("Vybrat fakultu", "Select faculty");
+        public string SelectFaculty => GetTranslation("Vybrat fakultu", "Select faculty");
         public string EgCourseName => GetTranslation("Např.: Ekonomie", "E. g. Economy");
         public string EgCourseCode => GetTranslation("Např.: Eko", "E. g. Eco");
         public string Yes => GetTranslation("Ano", "Yes");
@@ -244,10 +241,12 @@ namespace Uniwiki.Client.Host.Services
         public string PostFile_TryDownloadAgainInXSeconds(in int periodsLeft) =>
             GetTranslation($"(Znovu za {periodsLeft} s)", $"(Try again in {periodsLeft} s)");
 
-        public string Modal_ConfirmPostFileRemoval(string fileName) => GetTranslation($"Opravdu chcete odstranit soubor '{fileName}'", $"Are you sure to remove the file '{fileName}'");
+        public string Modal_ConfirmPostFileRemoval(string fileName) => GetTranslation(
+            $"Opravdu chcete odstranit soubor '{Sanitize(fileName)}'",
+            $"Are you sure to remove the file '{Sanitize(fileName)}'");
 
-        public string SelectStudyGroupModal_Title => 
-            GetTranslation("Vyberte vaši fakultu" , "Select your faculty");
+        public string SelectFacultyModal_Title =>
+            GetTranslation("Vyberte vaši fakultu", "Select your faculty");
 
         public string ErrorPage_Title =>
             GetTranslation("Error", "Error");

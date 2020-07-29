@@ -5,12 +5,12 @@
 <EditForm style="min-width: 300px" OnValidSubmit="@HandleValidSubmitAddStudyGroup" Model="@AddStudyGroupRequestDto">
 	<MyFluentValidator></MyFluentValidator>
 	<div class="form-group">
-		<label for="addGroup_Name">@TextService.SearchBox_StudyGroupName</label>
+		<label for="addGroup_Name">@TextService.SearchBox_FacultyName</label>
 		<InputText id="addGroup_Name" class="form-control" type="text" placeholder="@TextService.EgGroupName" @bind-Value="AddStudyGroupRequestDto.StudyGroupName" maxlength="@Constants.Validations.StudyGroupNameMaxLength" name="studygroupname"/>
 		<ValidationMessage For="@(() => AddStudyGroupRequestDto.StudyGroupName)" />
 	</div>
 	<div class="form-group">
-		<label for="addGroup_Shortcut">@TextService.SearchBox_StudyGroupShortcut</label>
+		<label for="addGroup_Shortcut">@TextService.SearchBox_FacultyShortcut</label>
 		<InputText id="addGroup_Shortcut" class="form-control" type="text" placeholder="@TextService.EgGroupShortcut" @bind-Value="AddStudyGroupRequestDto.StudyGroupShortcut" maxlength="@Constants.Validations.StudyGroupShortcutMaxLength" name="studygroupshortcut" />
 		<ValidationMessage For="@(() => AddStudyGroupRequestDto.StudyGroupShortcut)" />
 	</div>
