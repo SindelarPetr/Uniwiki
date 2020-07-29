@@ -10,22 +10,8 @@
 	<a class="btn btn-primary text-light btn-lg my-4 shadow-lg" style="min-width: 3rem; min-height: 3rem;" href="@PageRoutes.ChooseCoursePage.BuildRoute()"><i class="fas fa-search mr-3"></i>@TextService.HomePage_SearchCourse</a>
 	<div class="mt-3 font-weight-bold mb-5">@TextService.HomePage_SubTitle</div>
 
-	@*<button @onclick="Down">Boom</button>
-		<button @onclick="Down2">Boom with date</button>
-		<a href="/api/Health/Log" download>Boom link</a>*@
-	<button type="button" @onclick="@(() => { ToastService.ShowError("Yayyyy"); throw new Exception(); })">SHOW TOAST</button>
 </div>
 
 
 @code {
-
-	[Inject] IJsInteropService JsInteropService { get; set; }
-	[Inject] INavigationService NavigationService { get; set; }
-	[Inject] IToastService ToastService { get; set; }
-
-	async Task Down()
-	{
-		// NavigationService.NavigateTo("/api/Health/Log", true);
-		// await JsInteropService.Download("/api/Health/Log", "Log.json");
-	}
 }
