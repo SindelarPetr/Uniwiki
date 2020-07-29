@@ -10,5 +10,6 @@ namespace Shared.Services.Abstractions
         string RemoveAccents(string text);
         string StandardizeEmail(string email);
         string StandardizeName(string name);
+        string StandardizeNameAndSurname(string nameAndSurname);
     }
 }

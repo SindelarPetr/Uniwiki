@@ -73,11 +73,14 @@ namespace Shared.Services
             return OptimizeWhiteSpaces(name).FirstCharToUpper();
         }
 
-        public string RemoveNonEnglishLetters(string text, bool preserveWhiteSpace)
-        {
-            return text.Aggregate("", (acc, letter) => IsEnglishLetter(letter) || (preserveWhiteSpace && char.IsWhiteSpace(letter)) ? acc + letter : acc);
-        }
+        public string RemoveNonEnglishLetters(string text, bool preserveWhiteSpace) 
+            => text.Aggregate("", 
+                (acc, letter) => IsEnglishLetter(letter) || (preserveWhiteSpace && char.IsWhiteSpace(letter)) ? acc + letter : acc);
 
-        public bool IsEnglishLetter(char letter) => (letter >= 'A' && letter <= 'Z') || (letter >= 'a' && letter <= 'z');
+        public bool IsEnglishLetter(char letter) 
+            => (letter >= 'A' && letter <= 'Z') || (letter >= 'a' && letter <= 'z');
+
+        public string StandardizeNameAndSurname(string nameAndSurname) 
+            => OptimizeWhiteSpaces(nameAndSurname).Split(' ').Select(n => n.FirstCharToUpper()).Aggregate((a, b) => $"{a} {b}");
     }
 }
