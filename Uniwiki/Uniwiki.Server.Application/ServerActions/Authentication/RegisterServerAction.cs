@@ -54,14 +54,21 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             if(profile == null)
             {
                 // Create url for the new profile
-                string url = _stringStandardizationService.CreateUrl(request.Name + request.Surname,
+                string url = _stringStandardizationService.CreateUrl(request.NameAndSurname,
                     u => _profileRepository.TryGetProfileByUrl(u) == null);
 
                 // Get the hash from the password
                 var password = _hashService.HashPassword(request.Password);
 
+                // Get the name and surname
+                var names = request.NameAndSurname.Split( new[] { ' ' }, 2);
+
+                // Check if there is a name and surname (even though it should be already checked by a validator)
+                if (names.Length != 2)
+                    throw new RequestException(_textService.Validation_FillNameAndSurname);
+
                 // Create a new profile
-                profile = _profileRepository.Register(request.Email, request.Name, request.Surname, url, password.hashedPassword, password.salt, _timeService.Now);
+                profile = _profileRepository.Register(request.Email, names[0], names[1], url, password.hashedPassword, password.salt, _timeService.Now);
             }
 
             // Send the confirmation email

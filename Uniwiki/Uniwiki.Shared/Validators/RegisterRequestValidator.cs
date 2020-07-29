@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Shared.Standardizers;
 using Shared.Validators;
+using System;
 using Uniwiki.Shared.Extensions;
 using Uniwiki.Shared.RequestResponse.Authentication;
 using Uniwiki.Shared.Services;
@@ -11,11 +12,9 @@ namespace Uniwiki.Shared.Validators
     {
         public RegisterRequestValidator(TextServiceBase textService, IStandardizer<RegisterRequestDto> standardizer, Constants constants) : base(standardizer)
         {
-            RuleFor(f => f.Name).Cascade(CascadeMode.StopOnFirstFailure)
-                .MinMaxLengthWithMessages(textService, Constants.Validations.UserNameMinLength, Constants.Validations.UserNameMaxLength);
-
-            RuleFor(f => f.Surname).Cascade(CascadeMode.StopOnFirstFailure)
-                .MinMaxLengthWithMessages(textService, Constants.Validations.UserSurnameMinLength, Constants.Validations.UserSurnameMaxLength);
+            RuleFor(f => f.NameAndSurname).Cascade(CascadeMode.StopOnFirstFailure)
+                .Must(n => { Console.WriteLine($"VALIDATING: '{n}'") ;return n.Contains(" "); }).WithMessage(textService.Validation_FillNameAndSurname)
+                .MinMaxLengthWithMessages(textService, Constants.Validations.UserNameAndSurnameMinLength, Constants.Validations.UserNameAndSurnameMaxLength);
 
             RuleFor(f => f.Email).Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty().WithMessage(textService.Validation_TypeYourEmail)

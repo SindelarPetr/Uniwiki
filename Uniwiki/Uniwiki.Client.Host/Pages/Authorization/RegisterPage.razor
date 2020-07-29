@@ -26,28 +26,22 @@
 	<EditForm Model="@Request" OnValidSubmit="@Register">
 		<MyFluentValidator></MyFluentValidator>
 
-		@* Name *@
-		<label class="mt-3" for="inputName">@TextService.RegisterPage_Name</label>
-		<InputText class="form-control" type="text" id="inputName" placeholder="@TextService.RegisterPage_Name" aria-describedby="inputGroupPrepend" @bind-Value="Request.Name" maxlength="@Constants.Validations.UserNameMaxLength" />
-		<ValidationMessage For="@(() => Request.Name)" />
-		@* /Name *@
-
-		@* Surname *@
-		<label class="mt-3" for="inputSurname">@TextService.RegisterPage_Surname</label>
-		<InputText type="text" class="form-control" id="inputSurname" placeholder="@TextService.RegisterPage_Surname" aria-describedby="inputGroupPrepend" @bind-Value="Request.Surname" maxlength="@Constants.Validations.UserSurnameMaxLength" />
-		<ValidationMessage For="@(() => Request.Surname)" />
-		@* /Surname *@
+		@* Name and Surname *@
+		<label class="mt-3" for="inputName"><i class="fas fa-user"></i> @TextService.RegisterPage_NameAndSurname</label>
+		<OnInputTextComponent class="form-control" type="text" id="inputName" placeholder="@TextService.RegisterPage_NameAndSurname" aria-describedby="inputGroupPrepend" @bind-Value="Request.NameAndSurname" maxlength="@Constants.Validations.UserNameAndSurnameMaxLength" />
+		<ValidationMessage For="@(() => Request.NameAndSurname)" />
+		@* /Name and Surname *@
 
 		@* Email *@
 		<label class="mt-3" for="inputEmail"><strong>@@</strong> @TextService.Email</label>
-		<InputText type="text" class="@IsValidClassAttribute" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" />
+		<OnInputTextComponent type="email" class="@IsValidClassAttribute" id="inputEmail" placeholder="@TextService.Email" aria-describedby="inputGroupPrepend" @bind-Value="Request.Email" />
 		<ValidationMessage For="@(() => Request.Email)" />
 		@* /Email *@
 
 		@* Password *@
 		<label class="mt-3" for="inputPassword"><i class="fas fa-key"></i> @TextService.Password</label>
 		<PasswordVisibilityComponent PasswordVisibilityUtility="_passwordVisibilityUtility1">
-			<InputText type="@_passwordVisibilityUtility1.InputType" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" />
+			<OnInputTextComponent type="@_passwordVisibilityUtility1.InputType" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" />
 		</PasswordVisibilityComponent>
 		<ValidationMessage For="@(() => Request.Password)" />
 		@* /Password *@
@@ -55,7 +49,7 @@
 		@* Confirm password *@
 		<label class="mt-3" for="inputPasswordAgain"><i class="fas fa-key"></i> @TextService.PasswordAgain</label>
 		<PasswordVisibilityComponent PasswordVisibilityUtility="_passwordVisibilityUtility2">
-			<InputText type="@_passwordVisibilityUtility2.InputType" class="form-control" id="inputPasswordAgain" placeholder="@TextService.PasswordAgain" aria-describedby="inputGroupPrepend" @bind-Value="Request.PasswordAgain" />
+			<OnInputTextComponent type="@_passwordVisibilityUtility2.InputType" class="form-control" id="inputPasswordAgain" placeholder="@TextService.PasswordAgain" aria-describedby="inputGroupPrepend" @bind-Value="Request.PasswordAgain" />
 		</PasswordVisibilityComponent>
 		<ValidationMessage For="@(() => Request.PasswordAgain)" />
 		@* /Confirm password *@
@@ -105,7 +99,7 @@
 		if (LoginService.IsAuthenticated)
 			NavigationService.NavigateTo(PageRoutes.HomePage.BuildRoute());
 
-		Request = new RegisterRequestDto(StaticStateService.LoginPageEmail, string.Empty, string.Empty, string.Empty, string.Empty, false);
+		Request = new RegisterRequestDto(StaticStateService.LoginPageEmail, string.Empty, string.Empty, string.Empty, false);
 	}
 
 	private bool _isBusy;

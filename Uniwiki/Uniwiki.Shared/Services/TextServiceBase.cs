@@ -20,6 +20,8 @@ namespace Uniwiki.Shared.Services
 
         public string GetTranslation(in string czechText, in string englishText) => Language == Language.Czech ? czechText : englishText;
 
+        public string Validation_FillNameAndSurname => GetTranslation("Vyplňte jméno i příjmení.", "Fill in the name and surname.");
+
         public string Validation_TypeYourPassword => GetTranslation("Zadejte heslo.", "Type your password.");
         public string Validation_TypeYourOldPassword => GetTranslation("Zadejte Vaše staré heslo.", "Type your old password.");
         public string Validation_TypeYourNewPassword => GetTranslation("Zadejte Vaše nové heslo.", "Type your new password.");

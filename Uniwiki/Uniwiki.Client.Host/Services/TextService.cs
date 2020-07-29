@@ -117,7 +117,7 @@ namespace Uniwiki.Client.Host.Services
         public string PasswordChangedPage_Title => GetTranslation("Heslo úspěšně nastaveno", "The password has been successfully set.");
         public string PasswordChangedPage_BackToUniwiki => GetTranslation("Návrat na Uniwiki", "Back to Uniwiki");
         public string RegisterPage_Title => GetTranslation("Nový účet", "New account");
-        public string RegisterPage_Name => GetTranslation("Jméno", "Name");
+        public string RegisterPage_NameAndSurname => GetTranslation("Jméno a příjmení", "Name and surname");
         public string RegisterPage_Surname => GetTranslation("Příjmení", "Surname");
         public string RegisterPage_Create => GetTranslation("Vytvořit účet", "Create a new account");
         public string RestorePasswordPage_Title => GetTranslation("Zapomenuté heslo", "Forgot password");

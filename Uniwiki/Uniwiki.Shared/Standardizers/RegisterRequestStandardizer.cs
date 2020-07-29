@@ -1,5 +1,6 @@
 ﻿using Shared.Services.Abstractions;
 using Shared.Standardizers;
+using System;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Shared.Standardizers
@@ -15,10 +16,11 @@ namespace Uniwiki.Shared.Standardizers
 
         public RegisterRequestDto Standardize(RegisterRequestDto model)
         {
+            var nameAndSurname = _stringStandardizationService.StandardizeNameAndSurname(model.NameAndSurname);
+            Console.WriteLine($"Standardizing !!!!: '{ nameAndSurname }'");
             return new RegisterRequestDto(
                 _stringStandardizationService.StandardizeEmail(model.Email),
-                _stringStandardizationService.StandardizeName(model.Name),
-                _stringStandardizationService.StandardizeName(model.Surname),
+                nameAndSurname,
                 model.Password,
                 model.PasswordAgain,
                 model.AgreeToTermsOfUse

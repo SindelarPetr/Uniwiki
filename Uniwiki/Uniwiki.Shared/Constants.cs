@@ -62,10 +62,8 @@ namespace Uniwiki.Shared
             public const int FileNameMaxLength = 240;
             public const int PostTypeMaxLength = 25;
 
-            public const int UserNameMinLength = 2;
-            public const int UserNameMaxLength = 15;
-            public const int UserSurnameMinLength = 2;
-            public const int UserSurnameMaxLength = 20;
+            public const int UserNameAndSurnameMinLength = 3;
+            public const int UserNameAndSurnameMaxLength = 35;
         }
     }
 }
