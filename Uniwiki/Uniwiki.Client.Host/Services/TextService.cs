@@ -138,11 +138,11 @@ $"The link to reset your password has been sent to your email <strong>{Sanitize(
         public string PasswordAgain => GetTranslation("Heslo znovu", "Password again");
         public string LogIn => GetTranslation("Přihlásit se", "Log in");
         public string AddFiles => GetTranslation("Přidat soubory", "Add files");
-        public string PassedTime_Years(int years) => GetTranslation($"{years} r", $"{years} y");
-        public string PassedTime_Weeks(int weeks) => GetTranslation($"{weeks} t", $"{weeks} w");
-        public string PassedTime_Days(int days) => GetTranslation($"{days} d", $"{days} d");
-        public string PassedTime_Hours(int hours) => GetTranslation($"{hours} h", $"{hours} h");
-        public string PassedTime_Minutes(int minutes) => GetTranslation($"{minutes} min", $"{minutes} min");
+        public string PassedTime_Years(int years) => GetTranslation($"Před {years} r", $"{years} y ago");
+        public string PassedTime_Weeks(int weeks) => GetTranslation($"Před {weeks} t", $"{weeks} w ago");
+        public string PassedTime_Days(int days) => GetTranslation($"Před {days} d", $"{days} d ago");
+        public string PassedTime_Hours(int hours) => GetTranslation($"Před {hours} h", $"{hours} h ago");
+        public string PassedTime_Minutes(int minutes) => GetTranslation($"Před {minutes} min", $"{minutes} min ago");
         public string PassedTime_Now => GetTranslation($"Právě teď", $"Just now");
         public string Toast_AppDidAutomaticLogout => GetTranslation($"Došlo k automatickému odhlášení.", $"You have been automatically logged out.");
         public string ToAddNewPost => GetTranslation("pro přidání nového příspěvku.", "to add a new post.");
