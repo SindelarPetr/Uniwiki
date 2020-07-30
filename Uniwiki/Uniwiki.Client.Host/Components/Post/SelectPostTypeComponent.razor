@@ -9,7 +9,7 @@
 	<div class="input-group">
 		<input class="form-control border-secondary @(InputSelected ? "bg-primary text-white" : string.Empty) selection-text" type="text" maxlength="@Constants.Validations.PostTypeMaxLength" placeholder="@TextService.CoursePage_SearchType" @oninput="HandleInputPostType" value="@_inputSelectedPostType" @onfocus="HandleInputOnFocus">
 		<div class="input-group-append">
-			<button class="btn btn-secondary @(string.IsNullOrWhiteSpace(_inputSelectedPostType) ? "disabled" : string.Empty)" type="button" @onclick="HandleClearInput"><i class="fas fa-times"></i></button>
+			<button class="btn btn-@(InputSelected ? "primary" : "secondary") @(string.IsNullOrWhiteSpace(_inputSelectedPostType) ? "disabled" : string.Empty)" type="button" @onclick="HandleClearInput"><i class="fas fa-times"></i></button>
 		</div>
 	</div>
 </div>
