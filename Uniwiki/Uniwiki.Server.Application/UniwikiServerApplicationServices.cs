@@ -34,6 +34,7 @@ namespace Uniwiki.Server.Application
             services.AddScoped<ILoginService, LoginService>();
             services.AddSingleton<IApplicationHostEnvironment, ServerHostEnvironment>();
             services.AddScoped<IEmailConfirmationSenderService, EmailConfirmationSenderService>();
+            services.AddScoped<IRecentCoursesService, RecentCoursesService>();
 
             AddServerActions(services);
         }

@@ -23,14 +23,16 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         private readonly ICourseRepository _courseRepository;
         private readonly ITimeService _timeService;
         private readonly ILoginService _loginService;
+        private readonly IRecentCoursesService _recentCoursesService;
 
-        public LoginServerAction(IServiceProvider serviceProvider, TextService textService, ICourseVisitRepository courseVisitRepository, ICourseRepository courseRepository, ITimeService timeService, ILoginService loginService) : base(serviceProvider)
+        public LoginServerAction(IServiceProvider serviceProvider, TextService textService, ICourseVisitRepository courseVisitRepository, ICourseRepository courseRepository, ITimeService timeService, ILoginService loginService, IRecentCoursesService recentCoursesService) : base(serviceProvider)
         {
             _textService = textService;
             _courseVisitRepository = courseVisitRepository;
             _courseRepository = courseRepository;
             _timeService = timeService;
             _loginService = loginService;
+            _recentCoursesService = recentCoursesService;
         }
 
         protected override Task<LoginResponseDto> ExecuteAsync(LoginRequestDto request, RequestContext context)
@@ -38,11 +40,8 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             // Issue the token
             var token = _loginService.LoginUser(request.Email, request.Password);
 
-            // Get recent courses
-            var recentCourses = _courseRepository.TryGetCourses(request.RecentCourses.Select(c => (c.Url, c.StudyGroup.Url, c.University.Url)));
-
             // Set the recent courses
-            _courseVisitRepository.AddRecentCourseVisits(recentCourses, token.Profile, _timeService.Now);
+            _recentCoursesService.SetAsRecentCourses(request.RecentCourses, token.Profile);
 
             // Create response
             var response = new LoginResponseDto(token.ToDto(), token.Profile.ToDto());

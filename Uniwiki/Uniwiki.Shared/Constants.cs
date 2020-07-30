@@ -24,7 +24,7 @@ namespace Uniwiki.Shared
 
         public const string FacebookLink = "https://www.facebook.com/UniwikiOfficial";
 
-        public const int NumberOrRecentCourses = 6;
+        public const int NumberOrRecentCourses = 4;
 
         public const string FileUploadDataField = "Data";
 

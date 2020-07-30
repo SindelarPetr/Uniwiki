@@ -13,8 +13,9 @@ namespace Uniwiki.Shared.ModelDtos
         public string NameIdentifier { get; set; }
         public string Email { get; set; }
         public bool FeedbackProvided { get; set; }
+        public StudyGroupDto? HomeFaculty { get; }
 
-        public ProfileDto(Guid id, string firstName, string familyName, string fullName, string profilePictureSrc, DateTime creationDate, string nameIdentifier, string email, bool feedbackProvided)
+        public ProfileDto(Guid id, string firstName, string familyName, string fullName, string profilePictureSrc, DateTime creationDate, string nameIdentifier, string email, bool feedbackProvided, StudyGroupDto? homeFaculty)
         {
             Id = id;
             FirstName = firstName;
@@ -25,6 +26,7 @@ namespace Uniwiki.Shared.ModelDtos
             NameIdentifier = nameIdentifier;
             Email = email;
             FeedbackProvided = feedbackProvided;
+            HomeFaculty = homeFaculty;
         }
     }
 }

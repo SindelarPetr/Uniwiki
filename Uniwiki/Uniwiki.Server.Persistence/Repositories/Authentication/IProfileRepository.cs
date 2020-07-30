@@ -6,7 +6,7 @@ namespace Uniwiki.Server.Persistence.Repositories.Authentication
 {
     public interface IProfileRepository
     {
-        ProfileModel Register(string email, string name, string surname, string url, string password, byte[] passwordSalt, DateTime registrationTime);
+        ProfileModel Register(string email, string name, string surname, string url, string password, byte[] passwordSalt, DateTime registrationTime, StudyGroupModel? homeFaculty);
         ProfileModel GetProfileByUrl(string url);
         ProfileModel GetProfileByEmail(string email);
         ProfileModel TryGetProfileByEmail(string email);

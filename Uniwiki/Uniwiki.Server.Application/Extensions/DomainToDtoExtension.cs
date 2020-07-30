@@ -20,7 +20,7 @@ namespace Uniwiki.Server.Application.Extensions
             => new PostFileDto(postFile.Id, postFile.NameWithoutExtension, postFile.Extension, postFile.IsSaved, postFile.Size);
 
         public static ProfileDto ToDto(this ProfileModel profile) 
-            => new ProfileDto(profile.Id, profile.FirstName, profile.FamilyName, profile.FullName, profile.ProfilePictureSrc, profile.CreationDate, profile.Url, profile.Email, profile.FeedbackProvided);
+            => new ProfileDto(profile.Id, profile.FirstName, profile.FamilyName, profile.FullName, profile.ProfilePictureSrc, profile.CreationDate, profile.Url, profile.Email, profile.FeedbackProvided, profile.HomeFaculty?.ToDto());
 
         public static UniversityDto ToDto(this UniversityModel university) 
             => new UniversityDto(university.Id, university.FullName, university.ShortName, university.ShortName.Neutralize());

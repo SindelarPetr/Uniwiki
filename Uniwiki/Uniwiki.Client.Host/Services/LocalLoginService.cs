@@ -11,22 +11,25 @@ namespace Uniwiki.Client.Host.Services
         private readonly ILocalAuthenticationStateProvider _localAuthenticationStateProvider;
         private readonly ILocalStorageManagerService _localStorageManagerService;
         private readonly ITimeService _timeService;
+        private readonly IStaticStateService _staticStateService;
 
         public bool IsAuthenticated => User != null && LoginToken != null;
         public ProfileDto? User { get; private set; }
         public LoginTokenDto? LoginToken { get; private set; }
 
-        public LocalLoginService(ILocalAuthenticationStateProvider localAuthenticationStateProvider, ILocalStorageManagerService localStorageManagerService, ITimeService timeService)
+        public LocalLoginService(ILocalAuthenticationStateProvider localAuthenticationStateProvider, ILocalStorageManagerService localStorageManagerService, ITimeService timeService, IStaticStateService staticStateService)
         {
             _localAuthenticationStateProvider = localAuthenticationStateProvider;
             _localStorageManagerService = localStorageManagerService;
             _timeService = timeService;
+            _staticStateService = staticStateService;
         }
 
         public async Task InitializeLogin()
         {
             var loginToken = await _localStorageManagerService.GetLoginToken();
             var loginProfile = await _localStorageManagerService.GetLoginProfile();
+            _staticStateService.SetSelectedStudyGroup(loginProfile?.HomeFaculty);
 
             if (loginToken == null || loginProfile == null || loginToken.Expiration.AddMinutes(10) < _timeService.Now)
                 return;
@@ -50,6 +53,9 @@ namespace Uniwiki.Client.Host.Services
             // Save credentials to local storage
             await _localStorageManagerService.SetLoginProfile(user);
             await _localStorageManagerService.SetLoginToken(loginToken);
+
+            // Set static state
+            _staticStateService.SetSelectedStudyGroup(user.HomeFaculty);
 
             // Notify the rest of the app about authentication
             _localAuthenticationStateProvider.SetAsLoggedIn(loginToken.PrimaryTokenId);

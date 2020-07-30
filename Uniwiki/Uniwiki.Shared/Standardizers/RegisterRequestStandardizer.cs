@@ -23,7 +23,9 @@ namespace Uniwiki.Shared.Standardizers
                 nameAndSurname,
                 model.Password,
                 model.PasswordAgain,
-                model.AgreeToTermsOfUse
+                model.AgreeToTermsOfUse,
+                model.HomeFacultyId,
+                model.RecentCourses
                 );
         }
     }

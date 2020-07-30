@@ -1,5 +1,7 @@
 ﻿using Shared.RequestResponse;
+using System;
 using Uniwiki.Shared.Attributes;
+using Uniwiki.Shared.ModelDtos;
 
 namespace Uniwiki.Shared.RequestResponse.Authentication
 {
@@ -14,13 +16,18 @@ namespace Uniwiki.Shared.RequestResponse.Authentication
 
         public bool AgreeToTermsOfUse { get; set; }
 
-        public RegisterRequestDto(string email, string nameAndSurname, string password, string passwordAgain, bool agreeToTermsOfUse)
+        public Guid? HomeFacultyId { get; set; }
+        public CourseDto[] RecentCourses { get; }
+
+        public RegisterRequestDto(string email, string nameAndSurname, string password, string passwordAgain, bool agreeToTermsOfUse, Guid? homeFacultyId, CourseDto[] recentCourses)
         {
             Email = email;
             NameAndSurname = nameAndSurname;
             Password = password;
             PasswordAgain = passwordAgain;
             AgreeToTermsOfUse = agreeToTermsOfUse;
+            HomeFacultyId = homeFacultyId;
+            RecentCourses = recentCourses;
         }
     }
 }

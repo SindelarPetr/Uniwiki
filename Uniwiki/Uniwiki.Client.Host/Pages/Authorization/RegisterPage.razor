@@ -28,9 +28,20 @@
 
 		@* Name and Surname *@
 		<label class="mt-3" for="inputName"><i class="fas fa-user"></i> @TextService.RegisterPage_NameAndSurname</label>
-		<OnInputTextComponent class="form-control" type="text" id="inputName" placeholder="@TextService.RegisterPage_NameAndSurname" aria-describedby="inputGroupPrepend" @bind-Value="Request.NameAndSurname" maxlength="@Constants.Validations.UserNameAndSurnameMaxLength" name="nameAndSurname"/>
+		<OnInputTextComponent class="form-control" type="text" id="inputName" placeholder="@TextService.RegisterPage_NameAndSurname" aria-describedby="inputGroupPrepend" @bind-Value="Request.NameAndSurname" maxlength="@Constants.Validations.UserNameAndSurnameMaxLength" name="nameAndSurname" />
 		<ValidationMessage For="@(() => Request.NameAndSurname)" />
 		@* /Name and Surname *@
+
+		@* Faculty *@
+		<label class="mt-3" for="inputFaculty"><i class="fas fa-university"></i> @TextService.WhereDoYouStudy</label>
+		<div class="d-flex">
+			<button class="btn btn-secondary btn-block flex-grow-1" type="button" id="inputFaculty" @onclick="HandleSelectFaulty">@(SelectedFaculty == null ? TextService.SelectUniversityAndFaculty : SelectedFaculty.University.ShortName + "-" + SelectedFaculty.LongName)</button>
+			@if (SelectedFaculty != null)
+			{
+				<button class="btn btn-secondary ml-2" type="button" @onclick="HandleResetSelectedFaculty"><i class="fas fa-times"></i></button>
+			}
+		</div>
+		@* /Faculty *@
 
 		@* Email *@
 		<label class="mt-3" for="inputEmail"><strong>@@</strong> @TextService.Email</label>
@@ -41,7 +52,7 @@
 		@* Password *@
 		<label class="mt-3" for="inputPassword"><i class="fas fa-key"></i> @TextService.Password</label>
 		<PasswordVisibilityComponent PasswordVisibilityUtility="_passwordVisibilityUtility1">
-			<OnInputTextComponent type="@_passwordVisibilityUtility1.InputType" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" name="password"/>
+			<OnInputTextComponent type="@_passwordVisibilityUtility1.InputType" class="form-control" id="inputPassword" placeholder="@TextService.Password" aria-describedby="inputGroupPrepend" @bind-Value="Request.Password" name="password" />
 		</PasswordVisibilityComponent>
 		<ValidationMessage For="@(() => Request.Password)" />
 		@* /Password *@
@@ -82,6 +93,8 @@
 	[Inject] private INavigationService NavigationService { get; set; }
 	[Inject] private ILoginService LoginService { get; set; }
 	[Inject] private IStaticStateService StaticStateService { get; set; }
+	[Inject] private IModalService ModalService { get; set; }
+	[Inject] private ILocalStorageManagerService LocalStorageManagerService { get; set; }
 
 	public RegisterRequestDto Request { get; set; }
 
@@ -92,14 +105,35 @@
 	private PasswordVisibilityUtility _passwordVisibilityUtility1 = new PasswordVisibilityUtility();
 	private PasswordVisibilityUtility _passwordVisibilityUtility2 = new PasswordVisibilityUtility();
 
+	private StudyGroupDto? _selecedFaculty;
+	private StudyGroupDto? SelectedFaculty
+	{
+		get => _selecedFaculty;
+		set
+		{
+			_selecedFaculty = value;
+			Request.HomeFacultyId = value?.Id;
+		}
+	}
+
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
 		if (LoginService.IsAuthenticated)
 			NavigationService.NavigateTo(PageRoutes.HomePage.BuildRoute());
+	}
 
-		Request = new RegisterRequestDto(StaticStateService.LoginPageEmail, string.Empty, string.Empty, string.Empty, false);
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		// Get the recent courses
+		var recentCourses = await LocalStorageManagerService.GetRecentCourses();
+
+		Request = new RegisterRequestDto(StaticStateService.LoginPageEmail, string.Empty, string.Empty, string.Empty, false, null, recentCourses);
+
+		SelectedFaculty = StaticStateService.SelectedStudyGroup;
 	}
 
 	private bool _isBusy;
@@ -130,5 +164,21 @@
 		NavigationService.NavigateTo(PageRoutes.ConfirmEmailPage.BuildRoute(response.UserProfile.Email));
 	}
 
+	public async Task HandleSelectFaulty()
+	{
+		// Show the dialog
+		var dialog = ModalService.Show<SelectStudyGroupModal>(TextService.SelectFacultyModal_Title);
 
+		// Wait for the user to select his faculty
+		var dialogResult = await dialog.Result;
+
+		// If success
+		if (!dialogResult.Cancelled)
+		{
+			// Then save the selected faculty
+			SelectedFaculty = dialogResult.Data as StudyGroupDto;
+		}
+	}
+
+	public void HandleResetSelectedFaculty() => SelectedFaculty = null;
 }

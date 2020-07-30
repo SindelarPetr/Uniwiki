@@ -19,7 +19,7 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
             _textService = textService;
         }
 
-        public ProfileModel Register(string email, string name, string surname, string url, string password, byte[] passwordSalt, DateTime registrationTime)
+        public ProfileModel Register(string email, string name, string surname, string url, string password, byte[] passwordSalt, DateTime registrationTime, StudyGroupModel? homeFaculty)
         {
             if (_dataStorage.Profiles.Any(p => p.Email == email))
                 throw new RequestException(_textService.Error_EmailIsAlreadyTaken(email));
@@ -42,6 +42,7 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
                 registrationTime, 
                 false, 
                 AuthenticationLevel.PrimaryToken, 
+                homeFaculty,
                 recentCourses,
                 feedbacks);
 

@@ -2,6 +2,7 @@
 using System;
 using System.Text.Encodings.Web;
 using Uniwiki.Shared;
+using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.Services;
 
 namespace Uniwiki.Client.Host.Services
@@ -9,7 +10,11 @@ namespace Uniwiki.Client.Host.Services
     // We dont want to abstract this one - translating would then be too much time consuming
     internal class TextService : TextServiceBase
     {
-
+        public string SearchBox_SearchingOnlyAtFaculty(StudyGroupDto faculty) => GetTranslation(
+            $"(Hledáte pouze na { faculty.University.ShortName } { faculty.LongName })", 
+            $"(Searching only at { faculty.University.ShortName } { faculty.LongName })");
+        public string WhereDoYouStudy => GetTranslation("Kde studujete?", "Where do you study?");
+        public string SelectUniversityAndFaculty => GetTranslation("Vybrat univerzitu a fakultu", "Select my university and faculty");
         public string OriginalFileName => GetTranslation("Původně ", "Originally ");
         public string RegisterPage_AgreeOn => GetTranslation("Souhlasím s ", "I agree with ");
         public string RegisterPage_TermsOfUse => GetTranslation("podmínkami použití", "the terms of use");
@@ -42,10 +47,10 @@ namespace Uniwiki.Client.Host.Services
         public string SearchBox_ChooseFaculty => GetTranslation("Vybrat fakultu", "Select your faculty");
         public string HomePage_SearchCourse => GetTranslation("Hledat předmět", "Search course");
         public string SearchBox_AddCourse => GetTranslation("Přidat předmět", "Add course");
-        public string SearchBox_NoCoursesInGroup => GetTranslation("Na této fakultě nejsou zatím žádné předměty", "There are no courses in this faculty yet.");
+        public string SearchBox_NoCoursesInGroupYet => GetTranslation("Na této fakultě nejsou zatím žádné předměty", "There are no courses in this faculty yet.");
         public string Modal_ConfirmPostRemoval => GetTranslation("Opravdu chcete odstranit příspěvek?", "Are you sure to remove the post?");
         public string AddFacultyModal_Title => GetTranslation("Přidat fakultu", "Add a faculty");
-        public string SearchBox_SelectGroup => GetTranslation("Vybrat fakultu", "Select a faculty");
+        public string SearchBox_SelectGroup => GetTranslation("Předměty z fakulty", "Courses from a faculty");
         public string Language_Language => GetTranslation("Jazyk", "Language");
         public string Language_English => GetTranslation("Angličtina", "English");
         public string Edit => GetTranslation("Upravit", "Edit");

@@ -19,7 +19,11 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories
 
         public IEnumerable<CourseModel> GetRecentCourses(StudyGroupModel? studyGroup, ProfileModel profile)
         {
-            return profile.RecentCourses.Where(c => c.StudyGroup == studyGroup || studyGroup == null).Reverse().Take(Constants.NumberOrRecentCourses).Reverse();
+            return profile.RecentCourses
+                //.Where(c => c.StudyGroup == studyGroup || studyGroup == null)
+                .Reverse()
+                .Take(Constants.NumberOrRecentCourses)
+                .Reverse();
         }
 
         public void AddCourseVisit(CourseModel course, ProfileModel profile, DateTime visitTime)
