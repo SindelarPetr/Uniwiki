@@ -26,7 +26,7 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly IFileHelperService _fileHelperService;
         private readonly TextService _textService;
 
-        protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
+        protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
         public UploadPostFileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService, TextService textService) : base(serviceProvider)
         {
