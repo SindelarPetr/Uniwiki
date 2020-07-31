@@ -105,7 +105,7 @@ namespace Uniwiki.Client.Host.Services
             }
             catch (RequestException ex)
             {
-                _toastService.ShowError(ex.Message, _textService.Toast_Error);
+                _toastService.ShowError(ex.HumanMessage, _textService.Toast_Error);
                 throw ex;
 
             }
