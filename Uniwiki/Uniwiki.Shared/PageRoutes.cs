@@ -60,7 +60,7 @@ namespace Uniwiki.Shared
         public static class EmailConfirmedPage
         {
             private static string EmailParameter = "Email";
-            public static string BuildRoute(string secret, string email) => RouteHelper.BuildRoutePartsWithParameters(new NameValueCollection {{ EmailParameter, email}}, BaseRoute, secret);
+            public static string BuildRoute(string secret, string email) => RouteHelper.BuildRoutePartsWithParameters(new NameValueCollection { { EmailParameter, email } }, BaseRoute, secret);
             public const string BaseRoute = "EmailConfirmed";
 
             public static string? TryGetEmail(string url)
@@ -106,9 +106,10 @@ namespace Uniwiki.Shared
 
         public static class CreateNewPasswordPage
         {
+            public static string BuildRoute(string secret) 
+                => RouteHelper.BuildRouteParts(BaseRoute, secret);
+            private const string BaseRoute = "CreateNewPassword";
 
-            private static string EmailParameter = "Email";
-            public static string BuildRoute(string email) => RouteHelper.BuildRoutePartsWithParameters(new NameValueCollection { { EmailParameter, email } }, "CreateNewPassword");
         }
 
         public static class AddCoursePage
@@ -139,4 +140,3 @@ namespace Uniwiki.Shared
 
     }
 }
- 

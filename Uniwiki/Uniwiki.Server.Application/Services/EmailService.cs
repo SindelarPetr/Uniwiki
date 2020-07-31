@@ -93,8 +93,7 @@ namespace Uniwiki.Server.Application.Services
         public Task SendRestorePasswordEmail(string recipientEmail, Guid secret)
         {
             var subject = _textService.Email_RestorePasswordSubject;
-            var link =
-                $"{_baseUrl}/{ PageRoutes.CreateNewPasswordPage.BuildRoute(secret.ToString()) }";
+            var link = $"{_baseUrl}/{ PageRoutes.CreateNewPasswordPage.BuildRoute(secret.ToString()) }";
             var message = _emailTemplateService.GetRestorePasswordText(link);
             
             return SendEmail(recipientEmail, subject, message, true);
