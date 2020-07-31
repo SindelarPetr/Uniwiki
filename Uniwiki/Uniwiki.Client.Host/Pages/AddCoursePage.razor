@@ -27,7 +27,7 @@
 
 		@* Faculty *@
 		<div class="form-group">
-			<label for="addCourse_StudyGroup">@TextService.Faculty</label>
+			<label for="addCourse_StudyGroup">@TextService.AddCoursePage_WhichFaculty</label>
 			<div class="mb-3">
 				<button id="addCourse_StudyGroup" class="btn btn-secondary dont-break-out" type="button" @onclick="HandleOnSelectStudyGroup">
 					@(_selectedStudyGroup == null ? TextService.SelectFaculty : _selectedStudyGroup.LongName + " (" + _selectedStudyGroup.University.ShortName + ")")

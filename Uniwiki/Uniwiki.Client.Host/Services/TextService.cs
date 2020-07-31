@@ -10,6 +10,7 @@ namespace Uniwiki.Client.Host.Services
     // We dont want to abstract this one - translating would then be too much time consuming
     internal class TextService : TextServiceBase
     {
+        public string AddCoursePage_WhichFaculty => GetTranslation("Na jakou univerzitu a fakultu má být předmět zařazen?", "At which university and faculty is the course taught?");
         public string RegisterPage_YouCanChangeItOnProfile => GetTranslation("(Můžete změnit později na vaší profilové stránce)", "(You can change it later on your profile page)");
         public string SearchBox_SearchingOnlyAtFaculty(StudyGroupDto faculty) => GetTranslation(
             $"(Hledáte pouze na { faculty.University.ShortName } { faculty.LongName })", 
