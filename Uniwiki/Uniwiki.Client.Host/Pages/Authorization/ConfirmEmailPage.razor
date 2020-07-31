@@ -49,9 +49,11 @@
 
 		base.OnInitialized();
 
+		// Redirect if the user is already logged in
 		if (LoginService.IsAuthenticated)
 			NavigationService.NavigateTo(PageRoutes.HomePage.BuildRoute());
 
+		// Get the email from URL
 		Email = PageRoutes.ConfirmEmailPage.TryGetEmail(NavigationService.CurrentUrl) ?? string.Empty;
 	}
 
