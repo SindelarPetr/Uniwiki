@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Blazored.Toast.Services;
 using Newtonsoft.Json;
 using Shared.Dtos;
+using Shared.Exceptions;
 using Shared.RequestResponse;
 using Uniwiki.Client.Host.Exceptions;
 using Uniwiki.Client.Host.Services.Abstractions;
@@ -80,15 +81,14 @@ namespace Uniwiki.Client.Host.Services
                 // Display the received error and throw an exception
                 if (deserializedResponse.Error != null)
                 {
-                    _toastService.ShowError(deserializedResponse.Error.Message, _textService.Toast_Error);
-                    throw new RequestRejectedException(deserializedResponse.Error.Message);
+                    throw new RequestException(deserializedResponse.Error.Message);
                 }
 
+                // Check if the reponse was completely empty
                 if (deserializedResponse.Response == null)
                 {
                     var message = "There is a bug on the server! Didnt get any response nor error back :(.";
-                    _toastService.ShowError(message, _textService.Toast_Error);
-                    throw new RequestRejectedException(message);
+                    throw new RequestException(message);
                 }
 
                 return deserializedResponse.Response;
@@ -103,11 +103,14 @@ namespace Uniwiki.Client.Host.Services
                 _toastService.ShowError(_textService.Error_ErrorOnServer, _textService.Toast_Error);
                 throw new ServerErrorException();
             }
+            catch (RequestException ex)
+            {
+                _toastService.ShowError(ex.Message, _textService.Toast_Error);
+                throw ex;
+
+            }
             catch (Exception ex) // Connection error
             {
-                if (ex is RequestRejectedException requestRejectedException)
-                    throw requestRejectedException;
-
                 var message = ex.Message;
                 _toastService.ShowError(_textService.Error_ConnectionError, _textService.Toast_Error);
                 Console.WriteLine(ex);

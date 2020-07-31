@@ -183,7 +183,7 @@
 				var response = JsonConvert.DeserializeObject<DataForClient<UploadPostFileResponseDto>>(dataForClient);
 
 				if (response?.Response?.PostFile == null || response.Error != null)
-					throw new RequestRejectedException("Could not upload file: " + uploadFile.Name + "\nGot text: " + dataForClient);
+					throw new RequestException("Could not upload file: " + uploadFile.Name + "\nGot text: " + dataForClient);
 
 				// Save the file to post files
 				Request.PostFiles.Add(response.Response.PostFile);

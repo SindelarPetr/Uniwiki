@@ -1,4 +1,4 @@
-﻿@page "/ConfirmEmail/{Email}"
+﻿@page "/ConfirmEmail"
 @inherits UniwikiComponentBase
 @implements IDisposable
 @using Uniwiki.Shared.RequestResponse.Authentication
@@ -51,6 +51,8 @@
 
 		if (LoginService.IsAuthenticated)
 			NavigationService.NavigateTo(PageRoutes.HomePage.BuildRoute());
+
+		Email = PageRoutes.ConfirmEmailPage.TryGetEmail(NavigationService.CurrentUrl) ?? string.Empty;
 	}
 
 	public async Task ResendEmail()

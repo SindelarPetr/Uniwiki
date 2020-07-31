@@ -212,6 +212,7 @@ $"The link to reset your password has been sent to your email <strong>{Sanitize(
             $"Maximum {FileSize(Constants.MaxFileSizeInBytes)}");
 
         public string Remove => GetTranslation("Odstranit", "Remove");
+        public string Change => GetTranslation("Změnit", "Change");
         public string Language_Czech => GetTranslation("Čeština", "Czech");
         public string UniversitiesAndGroups => GetTranslation("Univerzity a fakulty", "Universities and faculties");
         public string Add => GetTranslation("Přidat", "Add");

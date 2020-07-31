@@ -97,7 +97,7 @@ namespace Uniwiki.Tests
             var surename = "sindelar";
 
             // --- Act ---
-            var registerRequestDto = new RegisterRequestDto(email, name + " " + surename, password, password, true);
+            var registerRequestDto = new RegisterRequestDto(email, name + " " + surename, password, password, true, null, new CourseDto[0]);
             var registerPage = CreateRegisterPage(provider, registerRequestDto);
             await registerPage.Register();
             var registerSecret = _emailService.RegisterSecrets[0];
@@ -177,7 +177,7 @@ namespace Uniwiki.Tests
             await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(provider, new CreateNewPasswordRequestDto("www", Guid.Empty, "wwww"),someSecret.ToString()).CreateNewPassword());
 
             // Register user 1
-            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1 + " " + surename1, password1, password1, true)).Register();
+            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1 + " " + surename1, password1, password1, true, null, new CourseDto[0])).Register();
             var registerSecret1 = _emailService.RegisterSecrets.Last();
 
             // Try login without confirming the email
@@ -194,13 +194,13 @@ namespace Uniwiki.Tests
             await Assert.ThrowsExceptionAsync<RequestException>(() => CreateCreateNewPasswordPage(provider, new CreateNewPasswordRequestDto("www", Guid.NewGuid(), "wwww"), someSecret.ToString()).CreateNewPassword());
 
             // Register user 1 once more (before he confirms the email, before its time for resending the email)
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1 + " " + surename1, password1, password1, true)).Register());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1 + " " + surename1, password1, password1, true, null, new CourseDto[0])).Register());
 
             // Move time
             _timeService.SetNow(_timeService.Now.Add(Constants.ResendRegistrationEmailMinTime.Add(TimeSpan.FromSeconds(5))));
 
             // Try to register again
-            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1 + " " + surename1, password1, password1, true)).Register();
+            await CreateRegisterPage(provider, new RegisterRequestDto(email1, name1 + " " + surename1, password1, password1, true, null, new CourseDto[0])).Register();
             var registerSecret1b = _emailService.RegisterSecrets.Last();
 
             // Try to confirm the email of user 1 with his old confirmation email
@@ -210,7 +210,7 @@ namespace Uniwiki.Tests
             await CreateEmailConfirmedPage(provider, registerSecret1b.ToString(), email1).ConfirmEmail();
 
             // Try to register the user
-            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1 + " " + surename1, password1, password1, true)).Register());
+            await Assert.ThrowsExceptionAsync<RequestException>(() => CreateRegisterPage(provider, new RegisterRequestDto(email1, name1 + " " + surename1, password1, password1, true, null, new CourseDto[0])).Register());
 
             // Login the user 1
             await CreateLoginPage(provider, new LoginRequestDto(email1, password1, new CourseDto[0])).Login();

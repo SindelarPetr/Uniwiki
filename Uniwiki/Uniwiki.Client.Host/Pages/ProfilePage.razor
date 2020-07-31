@@ -54,8 +54,8 @@
 						@if (_pageData.Authenticated)
 						{
 							<div class="text-right">
-								<button class="btn btn-link p-0 m-0 ml-2" type="button" @onclick="HandleSelectMyUniversityAndFaculty">změnit</button>
-								<button class="btn btn-link p-0 m-0 ml-2" type="button" @onclick="HandleRemoveMyUniversityAndFaculty">odstranit</button>
+								<button class="btn btn-link p-0 m-0 ml-2" type="button" @onclick="HandleSelectMyUniversityAndFaculty">@TextService.Change</button>
+								<button class="btn btn-link p-0 m-0 ml-2" type="button" @onclick="HandleRemoveMyUniversityAndFaculty">@TextService.Remove</button>
 							</div>
 						}
 					}
