@@ -54,6 +54,7 @@ namespace Uniwiki.Server.Application.ServerActions
             // Get path for the file
             var filePath = Path.Combine(_uploadFileService.PostFilesDirectoryPath, request.FileId.ToString());
 
+            // Open the file stream
             FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
             return Task.FromResult(new GetPostFileResponse(fileStream, file.OriginalFullName));

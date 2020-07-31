@@ -1,10 +1,10 @@
 ﻿using Server.Appliaction.ServerActions;
-using Shared.RequestResponse;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Uniwiki.Server.Application.RequestResponse;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
 
@@ -40,43 +40,6 @@ namespace Uniwiki.Server.Application.ServerActions
             var response = new GetFeedbackSummaryResponseDto(averageRating, feedbacksCount, lastFeedbacks, textOnlyFeedbacksCount, ratingOnlyFeedbacksCount, textAndRatingFeedbacksCount, textAndRatingFeedbacksCountPercentage, ratingOnlyFeedbacksCountPercentage, textOnlyFeedbacksCountPercentage);
 
             return Task.FromResult(response);
-        }
-    }
-
-    public class GetFeedbackSummaryRequestDto : RequestBase<GetFeedbackSummaryResponseDto>
-    {
-
-        public GetFeedbackSummaryRequestDto(int feedbacksCount)
-        {
-            FeedbacksCount = feedbacksCount;
-        }
-
-        public int FeedbacksCount { get; }
-    }
-
-    public class GetFeedbackSummaryResponseDto : ResponseBase
-    {
-        public double? AverageRating { get; }
-        public int FeedbackCount { get; }
-        public string[] Feedbacks { get; }
-        public int TextOnlyFeedbacksCount { get; }
-        public int RatingOnlyFeedbacksCount { get; }
-        public int TextAndRatingFeedbacksCount { get; }
-        public double TextAndRatingFeedbacksCountPercentage { get; }
-        public double RatingOnlyFeedbacksCountPercentage { get; }
-        public double TextOnlyFeedbacksCountPercentage { get; }
-
-        public GetFeedbackSummaryResponseDto(double? averageRating, int ratingsCount, string[] feedbacks, int textOnlyFeedbacksCount, int ratingOnlyFeedbacksCount, int textAndRatingFeedbacksCount, double textAndRatingFeedbacksCountPercentage, double ratingOnlyFeedbacksCountPercentage, double textOnlyFeedbacksCountPercentage)
-        {
-            AverageRating = averageRating;
-            FeedbackCount = ratingsCount;
-            Feedbacks = feedbacks;
-            TextOnlyFeedbacksCount = textOnlyFeedbacksCount;
-            RatingOnlyFeedbacksCount = ratingOnlyFeedbacksCount;
-            TextAndRatingFeedbacksCount = textAndRatingFeedbacksCount;
-            TextAndRatingFeedbacksCountPercentage = textAndRatingFeedbacksCountPercentage;
-            RatingOnlyFeedbacksCountPercentage = ratingOnlyFeedbacksCountPercentage;
-            TextOnlyFeedbacksCountPercentage = textOnlyFeedbacksCountPercentage;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
+using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
@@ -13,12 +14,15 @@ namespace Uniwiki.Server.Application.ServerActions
     {
         private readonly IPostRepository _postRepository;
         private readonly IProfileRepository _profileRepository;
+        private readonly TextService _textService;
+
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public RemovePostServerAction(IServiceProvider serviceProvider, IPostRepository postRepository, IProfileRepository profileRepository) : base(serviceProvider)
+        public RemovePostServerAction(IServiceProvider serviceProvider, IPostRepository postRepository, IProfileRepository profileRepository, TextService textService) : base(serviceProvider)
         {
             _postRepository = postRepository;
             _profileRepository = profileRepository;
+            _textService = textService;
         }
 
         protected override Task<RemovePostResponseDto> ExecuteAsync(RemovePostRequestDto request, RequestContext context)
@@ -32,7 +36,7 @@ namespace Uniwiki.Server.Application.ServerActions
             // Verify if the post belongs to the user, who is removing it, or that the user is admin
             if (profile != post.Author && profile.AuthenticationLevel != AuthenticationLevel.Admin)
             {
-                throw new RequestException("Its not possible to remove a post not belonging to the authorized author.");
+                throw new RequestException(_textService.RemovePost_CannotRemoveNonOwnersPost);
             }
 
             // Remove the post

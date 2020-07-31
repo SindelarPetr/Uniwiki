@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
 using Uniwiki.Server.Application.Extensions;
+using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
@@ -14,12 +15,15 @@ namespace Uniwiki.Server.Application.ServerActions
     {
         private readonly IProfileRepository _profileRepository;
         private readonly IPostCommentRepository _postCommentRepository;
+        private readonly TextService _textService;
+
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public EditCommentServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostCommentRepository postCommentRepository) : base(serviceProvider)
+        public EditCommentServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostCommentRepository postCommentRepository, TextService textService) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postCommentRepository = postCommentRepository;
+            _textService = textService;
         }
 
         protected override Task<EditCommentResponseDto> ExecuteAsync(EditCommentRequestDto request, RequestContext context)
@@ -32,7 +36,7 @@ namespace Uniwiki.Server.Application.ServerActions
 
             // Check if the user is editting his own comment
             if(profile != comment.Profile)
-                throw new RequestException("You cannot remove someone else's comment!");
+                throw new RequestException(_textService.EditComment_YouCannotRemoveSomeoneElsesComment);
 
             // Edit the comment
             var edittedComment = _postCommentRepository.EditComment(comment, request.Text);

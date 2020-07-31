@@ -7,6 +7,7 @@ using Server.Appliaction.Services.Abstractions;
 using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
+using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Server.Persistence.Repositories.Authentication;
@@ -23,10 +24,11 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly IUploadFileService _uploadFileService;
         private readonly ILogger<UploadPostFileServerAction> _logger;
         private readonly IFileHelperService _fileHelperService;
+        private readonly TextService _textService;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public UploadPostFileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService) : base(serviceProvider)
+        public UploadPostFileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService, TextService textService) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postFileRepository = postFileRepository;
@@ -34,6 +36,7 @@ namespace Uniwiki.Server.Application.ServerActions
             _uploadFileService = uploadFileService;
             _logger = logger;
             _fileHelperService = fileHelperService;
+            _textService = textService;
         }
 
         protected override async Task<UploadPostFileResponseDto> ExecuteAsync(UploadPostFileRequestDto request, RequestContext context)
@@ -44,7 +47,7 @@ namespace Uniwiki.Server.Application.ServerActions
             // Get the file
             var file = _uploadFileService.GetFile();
 
-            // Create id (which is a name as well) for the file
+            // Create id for the file (which we use as the name for it as well)
             Guid id = Guid.NewGuid();
 
             // Create path for saving the file
@@ -87,7 +90,7 @@ namespace Uniwiki.Server.Application.ServerActions
             {
                 // Log the exception
                 _logger.LogWarning(0, exception, "Could not upload the file: FileId: '{FileId}', FileName: '{FileName}'", id, originalName);
-                throw new RequestException($"Was not able to upload the file {originalName}, the storage on the server is probably full. We recommend you to contact the support.");
+                throw new RequestException(_textService.UploadPostFile(fileName));
             }
 
             // Set the file as saved

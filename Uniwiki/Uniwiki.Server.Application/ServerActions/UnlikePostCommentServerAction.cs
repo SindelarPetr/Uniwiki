@@ -23,13 +23,14 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<UnlikePostCommentResponseDto> ExecuteAsync(UnlikePostCommentRequestDto request, RequestContext context)
         {
-            var profile = _profileRepository.FindById(context.User.Id);
-
+            // Get the comment
             var comment = _postCommentRepository.FindById(request.PostCommentId);
 
-            _postCommentRepository.UnlikeComment(comment, profile);
+            // Unlike it
+            _postCommentRepository.UnlikeComment(comment, context.User);
 
-            var response = new UnlikePostCommentResponseDto(comment.Post.ToDto(profile));
+            // Create response
+            var response = new UnlikePostCommentResponseDto(comment.Post.ToDto(context.User));
 
             return Task.FromResult(response);
         }

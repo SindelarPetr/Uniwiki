@@ -22,8 +22,10 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<IsEmailAvailableResponseDto> ExecuteAsync(IsEmailAvailableRequestDto request, RequestContext requestContext)
         {
+            // Check the availibility of the email
             var isAvailable = _profileRepository.TryGetProfileByEmail(request.Email) == null;
 
+            // Create the response
             var response = new IsEmailAvailableResponseDto(isAvailable);
 
             return Task.FromResult(response);

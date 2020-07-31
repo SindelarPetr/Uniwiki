@@ -60,11 +60,17 @@ namespace Uniwiki.Server.Application.Services
 
         public string EmailRestorePassword_Text => GetTranslation("Každému se to čas od času stane :-)", "It happens to everyone from time to time :-)");
 
+        public string UploadPostFile(string fileName) => GetTranslation($"Nemohli jsme uložit soubor { fileName }. Úložiště je pravděpodobně zaplněné. Doporučujeme vám kontaktovat nás na Facebooku.", $"Was not able to upload the file { fileName }, the storage on the server is probably full. We recommend you to contact the support.");
+
         public string EmailRestorePassword_ButtonRestorePassword => GetTranslation("Vytvořit nové heslo", "Create a new password");
 
         public string EmailRestorePassword_DisplayingProblems => GetTranslation("Pokud se Vám nezobrazuje email správně, můžete zkusit tento link", "If the email is not displayed properly, you can try clicking the following link ");
 
         public string EmailRestorePassword_ContactUs => GetTranslation("Případně nás neváhejte kontaktovat přes", "Do not hesitate to contact us via");
+
+        public string EditComment_YouCannotRemoveSomeoneElsesComment => GetTranslation("Nemůžete odstranit cizí komentář!", "You cannot remove someone else's comment!");
+
+        public string RemovePost_CannotRemoveNonOwnersPost => GetTranslation("Nemůžete odstranit cizí komentář", "Its not possible to remove someone else's post.");
 
         public string ResendConfirmation_ProfileIsAlreadyConfirmed(string email) => GetTranslation(
             $"Email {email} byl již potvrzen.", 
