@@ -10,6 +10,7 @@ namespace Uniwiki.Client.Host.Services
     // We dont want to abstract this one - translating would then be too much time consuming
     internal class TextService : TextServiceBase
     {
+        public string RegisterPage_YouCanChangeItOnProfile => GetTranslation("(Můžete změnit později na vaší profilové stránce)", "(You can change it later on your profile page)");
         public string SearchBox_SearchingOnlyAtFaculty(StudyGroupDto faculty) => GetTranslation(
             $"(Hledáte pouze na { faculty.University.ShortName } { faculty.LongName })", 
             $"(Searching only at { faculty.University.ShortName } { faculty.LongName })");
@@ -268,5 +269,7 @@ $"The link to reset your password has been sent to your email <strong>{Sanitize(
         public string Toast_Error => GetTranslation("Error", "Error");
         public string Toast_Warning => GetTranslation("Upozornění", "Warning");
         public string Toast_Success => GetTranslation("Úspěch", "Success");
+
+        public string ProfilePage_ConfirmRemoveHomeUniversityAndFaculty => GetTranslation("Opravdu chcete odebrat vaši univerzitu a fakultu?", "Are you sure to remove your university and faculty");
     }
 }

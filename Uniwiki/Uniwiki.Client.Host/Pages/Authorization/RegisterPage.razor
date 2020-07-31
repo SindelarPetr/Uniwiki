@@ -33,7 +33,7 @@
 		@* /Name and Surname *@
 
 		@* Faculty *@
-		<label class="mt-3" for="inputFaculty"><i class="fas fa-university"></i> @TextService.WhereDoYouStudy</label>
+		<label class="mt-3" for="inputFaculty"><i class="fas fa-university"></i> @TextService.WhereDoYouStudy <small>@TextService.RegisterPage_YouCanChangeItOnProfile</small></label>
 		<div class="d-flex">
 			<button class="btn btn-secondary btn-block flex-grow-1" type="button" id="inputFaculty" @onclick="HandleSelectFaulty">@(SelectedFaculty == null ? TextService.SelectUniversityAndFaculty : SelectedFaculty.University.ShortName + "-" + SelectedFaculty.LongName)</button>
 			@if (SelectedFaculty != null)

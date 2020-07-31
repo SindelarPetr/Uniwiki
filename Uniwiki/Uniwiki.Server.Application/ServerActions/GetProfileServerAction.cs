@@ -13,15 +13,23 @@ namespace Uniwiki.Server.Application.ServerActions
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
         private readonly IProfileRepository _profileRepository;
 
-        public GetProfileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository):base(serviceProvider)
+        public GetProfileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
         }
 
         protected override Task<GetProfileResponse> ExecuteAsync(GetProfileRequest request, RequestContext context)
         {
+            // Get the wanted profile
             var profile = _profileRepository.GetProfileByUrl(request.NameIdentifier);
-            return Task.FromResult(new GetProfileResponse(profile.ToDto()));
+
+            // Determine if the requesting user matches the authenticated user
+            var isAuthenticated = context.User?.Id == profile.Id;
+
+            // Create the response 
+            var response = new GetProfileResponse(profile.ToDto(), isAuthenticated);
+
+            return Task.FromResult(response);
         }
     }
 }

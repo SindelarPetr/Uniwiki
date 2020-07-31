@@ -82,5 +82,10 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories.Authentication
         {
             profile.SetAuthenticationLevel(AuthenticationLevel.Admin);
         }
+
+        public void EditHomeFaculty(ProfileModel user, StudyGroupModel? homeFaculty)
+        {
+            user.SetHomeFaculty(homeFaculty);
+        }
     }
 }

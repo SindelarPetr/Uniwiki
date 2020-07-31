@@ -7,7 +7,7 @@
 		<BackButtonComponent />
 	</div>
 
-	@if (_isLoading)
+	@if (_pageData == null)
 	{
 		<div class="d-flex justify-content-center w-100 h-100 align-items-center">
 			<div class="spinner-border text-primary" role="status">
@@ -18,22 +18,57 @@
 	else
 	{
 		<div class="d-flex justify-content-center align-items-center flex-column">
-			<img src="@_profileImageSrc"
+			<img src="@_pageData.Profile.ProfilePictureSrc"
 				 alt="Profile picture"
 				 class="rounded-circle border shadow"
 				 style="width: 12rem; height: 12rem; object-fit: cover" />
-			@if (_signedUser)
+			@if (_pageData.Authenticated)
 			{
 				@*<button class="btn btn-link mt-3" type="button" onclick="alert('@TextService.ProfilePage_CannotUploadPictureYet')">@TextService.ProfilePage_UploadProfilePicture</button>*@
 			}
 			<div class="text-center">
-				<h1 class="display-4 mt-4">@_name @_surname</h1>
+				<h1 class="display-4 mt-4">@_pageData.Profile.FullName</h1>
 
-				@if (_signedUser)
+				@if (_edittingHomeFaculty)
 				{
+					@if (_pageData.Authenticated)
+					{
+						<div class="spinner-border text-primary" role="status">
+							<span class="sr-only">@TextService.Spinner_Loading...</span>
+						</div>
+					}
+				}
+				else
+				{
+					@if (_pageData.Profile.HomeFaculty == null)
+					{
+						@if (_pageData.Authenticated)
+						{
+							<h5 class="my-3">Where do you study?</h5>
+							<button class="btn btn-primary btn-block" type="button" @onclick="HandleSelectMyUniversityAndFaculty">Select my university and faculty</button>
+						}
+					}
+					else
+					{
+						<p class="mb-0">Studying at <strong>@_pageData.Profile.HomeFaculty.University.ShortName @_pageData.Profile.HomeFaculty.LongName</strong></p>
+						@if (_pageData.Authenticated)
+						{
+							<div class="text-right">
+								<button class="btn btn-link p-0 m-0 ml-2" type="button" @onclick="HandleSelectMyUniversityAndFaculty">změnit</button>
+								<button class="btn btn-link p-0 m-0 ml-2" type="button" @onclick="HandleRemoveMyUniversityAndFaculty">odstranit</button>
+							</div>
+						}
+					}
+				}
+
+
+				@if (_pageData.Authenticated)
+				{
+					<hr />
 					<button class="btn btn-link text-muted btn-block ml-0 p-0" type="button" @onclick="Logout">@TextService.Button_SignOut</button>
 					<a class="mt-3 btn btn-link text-muted btn-block" href="@PageRoutes.ChangePasswordPage.BuildRoute()">@TextService.Button_ChangePassword</a>
 				}
+
 			</div>
 		</div>
 	}

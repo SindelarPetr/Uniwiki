@@ -14,5 +14,6 @@ namespace Uniwiki.Server.Persistence.Repositories.Authentication
         ProfileModel FindById(Guid id);
         ProfileModel TryGetProfileByUrl(string url);
         public void SetAdmin(ProfileModel profile);
+        void EditHomeFaculty(ProfileModel user, StudyGroupModel? homeFaculty);
     }
 }

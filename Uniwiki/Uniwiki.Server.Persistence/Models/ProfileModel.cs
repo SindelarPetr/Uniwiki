@@ -59,5 +59,10 @@ namespace Uniwiki.Server.Persistence.Models
         {
             AuthenticationLevel = authenticationLevel;
         }
+
+        internal void SetHomeFaculty(StudyGroupModel? homeFaculty)
+        {
+            HomeFaculty = homeFaculty;
+        }
     }
 }

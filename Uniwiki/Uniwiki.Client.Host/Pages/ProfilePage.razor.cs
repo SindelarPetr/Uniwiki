@@ -1,8 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
+using Uniwiki.Client.Host.Extensions;
+using Uniwiki.Client.Host.Modals;
 using Uniwiki.Client.Host.Services;
 using Uniwiki.Client.Host.Services.Abstractions;
 using Uniwiki.Shared;
+using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Client.Host.Pages
@@ -12,41 +17,28 @@ namespace Uniwiki.Client.Host.Pages
         [Inject] private IRequestSender RequestSender { get; set; }
         [Inject] private ILoginService LoginService { get; set; }
         [Inject] private INavigationService NavigationService { get; set; }
+        [Inject] private ILocalLoginService LocalLoginService { get; set; }
+        [Inject] private IModalService ModalService { get; set; }
+        [Inject] private IStaticStateService StaticStateService { get; set; }
+
         [Parameter] public string Url { get; set; }
 
-        private bool _signedUser;
-        private bool _isLoading;
-        private string _name;
-        private string _surname;
-        private string _profileImageSrc;
+        private GetProfileResponse _pageData;
+
+        private bool _edittingHomeFaculty;
+
         protected override async Task OnParametersSetAsync()
         {
-            _isLoading = true;
             await base.OnParametersSetAsync();
 
-            _signedUser = LoginService.IsAuthenticated && Url == LoginService.User.NameIdentifier;
+            _pageData = await RequestSender.SendRequestAsync(new GetProfileRequest(Url));
 
-            if (_signedUser)
+            // Update the authenticated profile
+            if (_pageData.Authenticated)
             {
-                _name = LoginService.User.FirstName;
-                _surname = LoginService.User.FamilyName;
-                _profileImageSrc = LoginService.User.ProfilePictureSrc;
+               await LocalLoginService.UpdateUser(_pageData.Profile);
             }
-            else
-            {
-                var response = await RequestSender.SendRequestAsync(new GetProfileRequest(Url), () =>
-                    {
-                        _isLoading = false;
-                        StateHasChanged();
-                    });
-                _name = response.Profile.FirstName;
-                _surname = response.Profile.FamilyName;
-                _profileImageSrc = response.Profile.ProfilePictureSrc;
-            }
-
-            _isLoading = false;
         }
-
 
         public async Task Logout()
         {
@@ -55,5 +47,54 @@ namespace Uniwiki.Client.Host.Pages
             NavigationService.NavigateTo(PageRoutes.LoginPage.BuildRoute());
         }
 
+        public async Task HandleSelectMyUniversityAndFaculty()
+        {
+            // Show the dialog with the faculties
+            var modal = ModalService.Show<SelectStudyGroupModal>(TextService.SelectFacultyModal_Title);
+
+            // Wait for the result
+            var result = await modal.Result;
+
+            // if the user cancelled the dialog, dont do anything
+            if (result.Cancelled)
+                return;
+
+            // Get the selected faculty
+            var selectedFaculty = (StudyGroupDto)result.Data;
+
+            await EditHomeFaculty(selectedFaculty.Id);
+        }
+
+        public async Task HandleRemoveMyUniversityAndFaculty()
+        {
+            // Show confirmation dialog
+            var confirmed = await ModalService.Confirm(TextService.ProfilePage_ConfirmRemoveHomeUniversityAndFaculty);
+
+            if (!confirmed)
+                return;
+
+            await EditHomeFaculty(null);
+        }
+
+        private async Task EditHomeFaculty(Guid? homeFacultyId)
+        {
+            _edittingHomeFaculty = true;
+            StateHasChanged();
+
+            // Create the request
+            var request = new EditHomeFacultyRequestDto(homeFacultyId);
+
+            // Send the request
+            var response = await RequestSender.SendRequestAsync(request, () => _edittingHomeFaculty = false);
+
+            // Update the profile
+            await LocalLoginService.UpdateUser(response.Profile);
+
+            // Display the updated user
+            _pageData.Profile = response.Profile;
+
+            // Save the new home university to the static state
+            StaticStateService.SetSelectedStudyGroup(response.Profile.HomeFaculty);
+        }
     }
 }
