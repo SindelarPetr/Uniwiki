@@ -1,7 +1,6 @@
 ﻿using System;
-using Uniwiki.Server.Persistence.Models;
 
-namespace Uniwiki.Server.Persistence.InMemory.Services
+namespace Uniwiki.Server.Persistence.Models
 {
     public class CourseVisitModel
     {
