@@ -8,11 +8,11 @@ using Uniwiki.Server.Persistence.Repositories;
 
 namespace Uniwiki.Server.Persistence.InMemory.Repositories
 {
-    class FeedbackRepository : IFeedbackRepository
+    class FeedbackInMemoryRepository : IFeedbackRepository
     {
         private readonly DataService _dataService;
 
-        public FeedbackRepository(DataService dataService)
+        public FeedbackInMemoryRepository(DataService dataService)
         {
             _dataService = dataService;
         }

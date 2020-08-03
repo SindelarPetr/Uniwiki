@@ -8,11 +8,11 @@ using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.InMemory.Repositories
 {
-    internal class CourseVisitRepository : ICourseVisitRepository
+    internal class CourseVisitInMemoryRepository : ICourseVisitRepository
     {
         private readonly DataService _dataService;
 
-        public CourseVisitRepository(DataService dataService)
+        public CourseVisitInMemoryRepository(DataService dataService)
         {
             _dataService = dataService;
         }

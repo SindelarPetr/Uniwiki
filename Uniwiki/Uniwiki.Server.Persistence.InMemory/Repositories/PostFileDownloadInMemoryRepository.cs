@@ -14,11 +14,11 @@ using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.InMemory.Repositories
 {
-    internal class PostFileDownloadRepository : IPostFileDownloadRepository
+    internal class PostFileDownloadInMemoryRepository : IPostFileDownloadRepository
     {
         private readonly DataService _dataService;
 
-        public PostFileDownloadRepository(DataService dataService)
+        public PostFileDownloadInMemoryRepository(DataService dataService)
         {
             _dataService = dataService;
         }
