@@ -23,10 +23,10 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories
             _dataService = dataService;
         }
 
-        public PostFileDownload AddDownload(LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
+        public PostFileDownloadModel AddDownload(LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
         {
             // Create the download
-            var postFileDownload = new PostFileDownload(token, fileDownloaded, downloadTime);
+            var postFileDownload = new PostFileDownloadModel(token, fileDownloaded, downloadTime);
 
             // Add the download to the DB
             _dataService._postFileDownloads.Add(postFileDownload);
@@ -34,7 +34,7 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories
             return postFileDownload;
         }
 
-        public PostFileDownload? TryGetLatestDownload(LoginTokenModel token, PostFileModel fileDownloaded)
+        public PostFileDownloadModel? TryGetLatestDownload(LoginTokenModel token, PostFileModel fileDownloaded)
         {
             return _dataService.PostFileDownloads.LastOrDefault(d => d.Token == token && d.FileDownloaded == fileDownloaded);
         }

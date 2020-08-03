@@ -2,15 +2,20 @@
 
 namespace Uniwiki.Server.Persistence.Models.Authentication
 {
-    public sealed class NewPasswordSecretModel
+    public class NewPasswordSecretModel
     {
-        public ProfileModel Profile { get; }
-        public Guid Secret { get; }
-        public DateTime CreationTime { get; }
-        public DateTime ExpirationTime { get; }
-        public bool IsValid { get; private set; }
+        public ProfileModel Profile { get; protected set; }
+        public Guid Secret { get; protected set; }
+        public DateTime CreationTime { get; protected set; }
+        public DateTime ExpirationTime { get; protected set; }
+        public bool IsValid { get; protected set; }
 
-        public NewPasswordSecretModel(ProfileModel profile, Guid secret, DateTime creationTime, DateTime expirationTime, bool isValid)
+        internal NewPasswordSecretModel()
+        {
+
+        }
+
+        internal NewPasswordSecretModel(ProfileModel profile, Guid secret, DateTime creationTime, DateTime expirationTime, bool isValid)
         {
             Profile = profile;
             Secret = secret;

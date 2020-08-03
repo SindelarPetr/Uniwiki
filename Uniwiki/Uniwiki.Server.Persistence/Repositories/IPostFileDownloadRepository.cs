@@ -8,7 +8,7 @@ namespace Uniwiki.Server.Persistence.Repositories
 {
     public interface IPostFileDownloadRepository
     {
-        PostFileDownload AddDownload(LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime);
-        PostFileDownload? TryGetLatestDownload(LoginTokenModel token, PostFileModel fileDownloaded);
+        PostFileDownloadModel AddDownload(LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime);
+        PostFileDownloadModel? TryGetLatestDownload(LoginTokenModel token, PostFileModel fileDownloaded);
     }
 }

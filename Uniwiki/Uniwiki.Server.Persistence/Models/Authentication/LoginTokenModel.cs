@@ -2,13 +2,18 @@
 
 namespace Uniwiki.Server.Persistence.Models.Authentication
 {
-    public sealed class LoginTokenModel
+    public class LoginTokenModel
     {
-        public Guid PrimaryTokenId { get; }
-        public ProfileModel Profile { get; }
-        public DateTime CreationTime { get; }
-        public DateTime Expiration { get; }
-        public Guid SecondaryTokenId { get; }
+        public Guid PrimaryTokenId { get; protected set; }
+        public ProfileModel Profile { get; protected set; }
+        public DateTime CreationTime { get; protected set; }
+        public DateTime Expiration { get; protected set; }
+        public Guid SecondaryTokenId { get; protected set; }
+
+        public LoginTokenModel()
+        {
+
+        }
 
         public LoginTokenModel(Guid primaryTokenId, ProfileModel profile, DateTime creationTime, DateTime expiration, Guid secondaryTokenId)
         {

@@ -9,7 +9,12 @@ namespace Uniwiki.Server.Persistence.Models
         public DateTime LikeTime { get; }
         public bool IsRemoved { get; set; }
 
-        public PostCommentLikeModel(PostCommentModel comment, ProfileModel profile, DateTime likeTime, bool isRemoved = false)
+        internal PostCommentLikeModel()
+        {
+
+        }
+
+        internal PostCommentLikeModel(PostCommentModel comment, ProfileModel profile, DateTime likeTime, bool isRemoved = false)
         {
             Comment = comment;
             Profile = profile;
@@ -17,7 +22,7 @@ namespace Uniwiki.Server.Persistence.Models
             IsRemoved = isRemoved;
         }
 
-        public void Remove()
+        internal void Remove()
         {
             IsRemoved = true;
         }

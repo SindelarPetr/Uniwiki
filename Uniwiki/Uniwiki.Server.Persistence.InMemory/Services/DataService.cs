@@ -28,8 +28,8 @@ namespace Uniwiki.Server.Persistence.InMemory.Services
         public IEnumerable<PostCommentLikeModel> PostCommentLikes => _postCommentLikes.Where(c => !c.IsRemoved);
         public List<PostCommentLikeModel> _postCommentLikes = new List<PostCommentLikeModel>();
 
-        public IEnumerable<PostFileDownload> PostFileDownloads => _postFileDownloads.OrderBy(d => d.DownloadTime);
-        public List<PostFileDownload> _postFileDownloads = new List<PostFileDownload>();
+        public IEnumerable<PostFileDownloadModel> PostFileDownloads => _postFileDownloads.OrderBy(d => d.DownloadTime);
+        public List<PostFileDownloadModel> _postFileDownloads = new List<PostFileDownloadModel>();
 
         public List<FeedbackModel> Feedbacks = new List<FeedbackModel>();
 

@@ -8,25 +8,31 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class ProfileModel
     {
-        public Guid Id { get; }
-        public string Email { get; }
-        public string Password { get; private set; } // Setter for changing password
-        public byte[] PasswordSalt { get; private set; } // Setter for changing password
-        public DateTime CreationDate { get; }
-        public bool IsConfirmed { get; private set; } // Setter for confirming
-        public AuthenticationLevel AuthenticationLevel { get; private set; }
-        public StudyGroupModel? HomeFaculty { get; private set; }
+        public Guid Id { get; protected set; }
+        public string Email { get; protected set; }
+        public string Password { get; protected set; }
+        public byte[] PasswordSalt { get; protected set; }
+        public DateTime CreationDate { get; protected set; }
+        public bool IsConfirmed { get; protected set; }
+        public AuthenticationLevel AuthenticationLevel { get; protected set; }
+        public StudyGroupModel? HomeFaculty { get; protected set; }
 
         public string FullName => FirstName + " " + FamilyName;
-        public string FirstName { get; }
-        public string FamilyName { get; }
-        public string Url { get; set; }
-        public string ProfilePictureSrc { get; }
-        public IEnumerable<CourseModel> RecentCourses { get; }
-        public IEnumerable<FeedbackModel> Feedbacks { get; }
+        public string FirstName { get; protected set; }
+        public string FamilyName { get; protected set; }
+        public string Url { get; protected set; }
+        public string ProfilePictureSrc { get; protected set; }
+        public IEnumerable<CourseModel> RecentCourses { get; protected set; }
+        public IEnumerable<FeedbackModel> Feedbacks { get; protected set; }
         public bool FeedbackProvided => Feedbacks.Any();
 
-        public ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty, IEnumerable<CourseModel> recentCourses, IEnumerable<FeedbackModel>  feedbacks) 
+        // For Entity framework
+        internal ProfileModel()
+        {
+
+        }
+
+        internal ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty, IEnumerable<CourseModel> recentCourses, IEnumerable<FeedbackModel>  feedbacks) 
         {
             Id = id;
             Email = email;

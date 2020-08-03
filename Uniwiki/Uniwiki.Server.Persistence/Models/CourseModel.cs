@@ -5,16 +5,20 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class CourseModel
     {
-        public string Code { get; }
-        public string FullName { get; }
-        public StudyGroupModel StudyGroup { get; }
-        public ProfileModel Author { get; }
-        public string Url { get; private set; }
-        public Guid Id { get; }
-        public IEnumerable<PostModel> Posts { get;}
-        public IEnumerable<string?> PostTypes { get; } 
+        public string Code { get; protected set; }
+        public string FullName { get; protected set; }
+        public StudyGroupModel StudyGroup { get; protected set; }
+        public ProfileModel Author { get; protected set; }
+        public string Url { get; protected set; }
+        public Guid Id { get; protected set; }
+        public IEnumerable<PostModel> Posts { get; protected set; }
 
-        internal CourseModel(Guid id, string code, string fullname, StudyGroupModel studyGroup, ProfileModel author, string url, IEnumerable<PostModel> posts, IEnumerable<string?> postTypes)
+        internal CourseModel()
+        {
+
+        }
+
+        internal CourseModel(Guid id, string code, string fullname, StudyGroupModel studyGroup, ProfileModel author, string url, IEnumerable<PostModel> posts)
         {
             Id = id;
             Code = code;
@@ -23,7 +27,6 @@ namespace Uniwiki.Server.Persistence.Models
             Author = author;
             Url = url;
             Posts = posts;
-            PostTypes = postTypes;
         }
     }
 }

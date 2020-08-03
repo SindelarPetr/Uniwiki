@@ -6,13 +6,18 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class FeedbackModel
     {
-        public ProfileModel? User { get; }
-        public int? Rating { get; }
-        public string Text { get; }
-        public string IpAddress { get; }
-        public DateTime CreationTime { get; }
-        
-        public FeedbackModel(ProfileModel? user, int? rating, string text, string ipAddress, DateTime creationTime)
+        public ProfileModel? User { get; protected set; }
+        public int? Rating { get; protected set; }
+        public string Text { get; protected set; }
+        public string IpAddress { get; protected set; }
+        public DateTime CreationTime { get; protected set; }
+
+        internal FeedbackModel()
+        {
+
+        }
+
+        internal FeedbackModel(ProfileModel? user, int? rating, string text, string ipAddress, DateTime creationTime)
         {
             User = user;
             Rating = rating;

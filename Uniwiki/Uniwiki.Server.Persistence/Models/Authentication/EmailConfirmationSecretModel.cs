@@ -2,14 +2,19 @@
 
 namespace Uniwiki.Server.Persistence.Models.Authentication
 {
-    public sealed class EmailConfirmationSecretModel
+    public class EmailConfirmationSecretModel
     {
-        public ProfileModel Profile { get; }
-        public Guid Secret { get; }
-        public DateTime CreationTime { get; }
-        public bool IsValid { get; private set; }
+        public ProfileModel Profile { get; protected set; }
+        public Guid Secret { get; protected set; }
+        public DateTime CreationTime { get; protected set; }
+        public bool IsValid { get; protected set; }
 
-        public EmailConfirmationSecretModel(ProfileModel profile, Guid secret, DateTime creationTime, bool isValid)
+        internal EmailConfirmationSecretModel()
+        {
+
+        }
+
+        internal EmailConfirmationSecretModel(ProfileModel profile, Guid secret, DateTime creationTime, bool isValid)
         {
             Profile = profile;
             Secret = secret;
@@ -17,7 +22,7 @@ namespace Uniwiki.Server.Persistence.Models.Authentication
             IsValid = isValid;
         }
 
-        public void Invalidate()
+        internal void Invalidate()
         {
             IsValid = false;
         }

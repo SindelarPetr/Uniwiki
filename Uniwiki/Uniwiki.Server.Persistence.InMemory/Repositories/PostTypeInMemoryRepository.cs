@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Shared;
 using Shared.Exceptions;
 using Uniwiki.Server.Persistence.InMemory.Services;
 using Uniwiki.Server.Persistence.Models;
@@ -26,11 +27,14 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories
 
         public IEnumerable<string> GetPostTypesForNewPost(CourseModel course)
         {
-            var postTypes = course.PostTypes.Where(pt => pt != null).OrderBy(t => t);
+            var postTypes = _dataService.Posts
+                .Select(p => p.PostType)
+                .Concat(course.StudyGroup.PrimaryLanguage == Language.Czech ? _dataService._defaultPostTypesCz : _dataService._defaultPostTypesEn)
+                .Distinct()
+                .Where(pt => pt != null)
+                .OrderBy(t => t);
 
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
             return postTypes;
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
         }
     }
 }

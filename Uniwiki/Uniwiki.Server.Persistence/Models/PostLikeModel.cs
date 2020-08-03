@@ -4,12 +4,17 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class PostLikeModel
     {
-        public PostModel Post { get; }
-        public ProfileModel Profile { get; }
-        public DateTime DateTime { get; }
-        public bool IsRemoved { get; private set; }
+        public PostModel Post { get; protected set; }
+        public ProfileModel Profile { get; protected set; }
+        public DateTime DateTime { get; protected set; }
+        public bool IsRemoved { get; protected set; }
 
-        public PostLikeModel(PostModel post, ProfileModel profile, DateTime dateTime, bool isRemoved = false)
+        internal PostLikeModel()
+        {
+
+        }
+
+        internal PostLikeModel(PostModel post, ProfileModel profile, DateTime dateTime, bool isRemoved = false)
         {
             Post = post;
             Profile = profile;
@@ -17,6 +22,6 @@ namespace Uniwiki.Server.Persistence.Models
             IsRemoved = isRemoved;
         }
 
-        public void Removed() => IsRemoved = true;
+        internal void Removed() => IsRemoved = true;
     }
 }

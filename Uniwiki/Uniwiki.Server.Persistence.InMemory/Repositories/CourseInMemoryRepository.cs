@@ -68,11 +68,8 @@ namespace Uniwiki.Server.Persistence.InMemory.Repositories
             // Get posts
             var posts = _dataService.Posts.Where(p => p.Course.Id == id);
 
-            // Get post types
-            var postTypes = posts.Select(p => p.PostType).Concat(studyGroup.PrimaryLanguage == Language.Czech ? _dataService._defaultPostTypesCz : _dataService._defaultPostTypesEn).Distinct();
-
             // Create the course
-            var course = new CourseModel(id, code, fullname, studyGroup, author, url, posts, postTypes);
+            var course = new CourseModel(id, code, fullname, studyGroup, author, url, posts);
             
             // Save the course to DB
             _dataService._courses.Add(course);

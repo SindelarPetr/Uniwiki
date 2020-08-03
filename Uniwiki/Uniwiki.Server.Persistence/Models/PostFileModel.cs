@@ -4,16 +4,16 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class PostFileModel
     {
-        public Guid Id { get; }
-        public string Path { get; }
+        public Guid Id { get; protected set; }
+        public string Path { get; protected set; }
         public string OriginalFullName => $"{NameWithoutExtension}{Extension}";
-        public string NameWithoutExtension { get; private set; }
-        public string Extension { get; private set; }
-        public bool IsSaved { get; private set; }
-        public ProfileModel Profile { get; }
-        public Guid CourseId { get; }
-        public DateTime CreationTime { get; }
-        public long Size { get; }
+        public string NameWithoutExtension { get; protected set; }
+        public string Extension { get; protected set; }
+        public bool IsSaved { get; protected set; }
+        public ProfileModel Profile { get; protected set; }
+        public Guid CourseId { get; protected set; }
+        public DateTime CreationTime { get; protected set; }
+        public long Size { get; protected set; }
 
         private static FileType GetFileTypeFromExtension(string extension)
         {
@@ -37,7 +37,12 @@ namespace Uniwiki.Server.Persistence.Models
             }
         }
 
-        public PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size)
+        internal PostFileModel()
+        {
+
+        }
+
+        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size)
         {
             Id = id;
             Path = path;
@@ -50,12 +55,12 @@ namespace Uniwiki.Server.Persistence.Models
             Size = size;
         }
 
-        public void FileSaved()
+        internal void FileSaved()
         {
             IsSaved = true;
         }
 
-        public void SetFileName(string newFileName)
+        internal void SetFileName(string newFileName)
         {
             NameWithoutExtension = newFileName;
         }
