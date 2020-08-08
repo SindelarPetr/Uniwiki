@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Shared.Extensions;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.Models.Authentication;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;

@@ -9,8 +9,7 @@ using Uniwiki.Server.Application.ServerActions.Authentication;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.Repositories;
-using Uniwiki.Server.Persistence.Repositories.Authentication;
+using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;
@@ -301,7 +300,7 @@ namespace Uniwiki.Server.Application.Services
                 _profileRepository.SetAdmin(user);
 
             var emailSecret = _emailConfirmationSecretRepository.TryGetValidEmailConfirmationSecret(user);
-            await _confirmEmailServerAction.ExecuteActionAsync(new ConfirmEmailRequestDto(emailSecret.Secret),
+            await _confirmEmailServerAction.ExecuteActionAsync(new ConfirmEmailRequestDto(emailSecret.Id),
                 _anonymousContext);
             var loginTokenDto = (await _loginServerAction.ExecuteActionAsync(new LoginRequestDto(email, password, new CourseDto[0]), _anonymousContext)).LoginToken;
             var token = _loginTokenRepository.TryFindById(loginTokenDto.PrimaryTokenId, _timeService.Now);

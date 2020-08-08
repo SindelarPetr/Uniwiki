@@ -12,7 +12,6 @@ using Uniwiki.Server.Application.ServerActions.Authentication;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Repositories.Authentication;
 using Uniwiki.Shared;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;

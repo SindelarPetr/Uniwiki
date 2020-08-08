@@ -5,7 +5,7 @@ using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Repositories.Authentication;
+using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Server.Application.ServerActions.Authentication
@@ -40,7 +40,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
                 throw new RequestException(_textService.Error_CouldNotRefreshPassword);
 
             // Get profile for the provided secret
-            var profile = _newPasswordSecretRepository.GetProfileForNewPasswordSecret(secret.Secret);
+            var profile = _newPasswordSecretRepository.GetProfileForNewPasswordSecret(secret.Id);
 
             // Hash the password
             var password = _hashService.HashPassword(request.NewPassword);

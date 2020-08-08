@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Repositories;
+using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions

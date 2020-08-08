@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.Repositories.Authentication;
+using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Application.Services
@@ -45,7 +45,7 @@ namespace Uniwiki.Server.Application.Services
             var emailConfirmationSecret = _emailConfirmationSecretRepository.GenerateEmailConfirmationSecret(profile, _timeService.Now);
 
             // Send the message to email
-            await _emailService.SendRegisterEmail(profile.Email, emailConfirmationSecret.Secret);
+            await _emailService.SendRegisterEmail(profile.Email, emailConfirmationSecret.Id);
 
             // Save the email secret to the DB. We have to do it after the email was sent - if it will fail it throws exception and the secret will not be saved.
             _emailConfirmationSecretRepository.SaveEmailConfirmationSecret(emailConfirmationSecret);

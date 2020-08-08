@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Persistence;
+using Uniwiki.Server.Persistence.Repositories;
+using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Server.Persistence.Services;
 
 [assembly: InternalsVisibleTo("Uniwiki.Tests")]
@@ -14,6 +16,22 @@ namespace Uniwiki.Server.Persistence
         {
             services.AddServerPersistence();
             services.AddScoped<TextService>();
+            services.AddScoped<UniwikiContext>();
+
+            services.AddScoped<IEmailConfirmationSecretRepository, EmailConfirmationSecretRepository>();
+            services.AddScoped<ILoginTokenRepository, LoginTokenRepository>();
+            services.AddScoped<INewPasswordSecretRepository, NewPasswordSecretRepository>();
+            services.AddScoped<IProfileRepository, ProfileRepository>();
+            services.AddScoped<ICourseRepository, CourseRepository>();
+            services.AddScoped<IPostCommentRepository, PostCommentRepository>();
+            services.AddScoped<IPostFileRepository, PostFileRepository>();
+            services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<IPostTypeRepository, PostTypeRepository>();
+            services.AddScoped<IStudyGroupRepository, StudyGroupRepository>();
+            services.AddScoped<IUniversityRepository, UniversityRepository>();
+            services.AddScoped<ICourseVisitRepository, CourseVisitRepository>();
+            services.AddScoped<IPostFileDownloadRepository, PostFileDownloadRepository>();
+            services.AddScoped<IFeedbackRepository, FeedbackRepository>();
         }
     }
 }

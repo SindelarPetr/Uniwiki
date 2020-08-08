@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.Repositories;
+using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.ModelDtos;
 
 namespace Uniwiki.Server.Application.Services

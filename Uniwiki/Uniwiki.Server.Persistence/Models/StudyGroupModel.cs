@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using Shared;
+using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class StudyGroupModel
+    public class StudyGroupModel : IRemovableModel, IIdModel<Guid>
     {
         public UniversityModel University { get; protected set; }
         public string ShortName { get; protected set; }
         public string LongName { get; protected set; }
         public string Url { get; protected set; }
         public ProfileModel Profile { get; protected set; }
-        public Guid Id { get; protected set; }
         public IEnumerable<CourseModel> Courses { get; protected set; }
+        public Language PrimaryLanguage { get; }
+        bool IRemovableModel.IsRemoved { get; set; }
+        public Guid Id { get; protected set; }
 
         internal StudyGroupModel()
         {
@@ -20,7 +23,7 @@ namespace Uniwiki.Server.Persistence.Models
         }
 
         internal StudyGroupModel(Guid id, UniversityModel university, string shortName, string longName, string url,
-            ProfileModel profile, Language primaryLanguage, IEnumerable<CourseModel> courses)
+            ProfileModel profile, Language primaryLanguage, IEnumerable<CourseModel> courses, bool isRemoved)
         {
             Id = id;
             University = university;
@@ -30,8 +33,7 @@ namespace Uniwiki.Server.Persistence.Models
             Profile = profile;
             PrimaryLanguage = primaryLanguage;
             Courses = courses;
+            ((IRemovableModel)this).IsRemoved = isRemoved;
         }
-
-        public Language PrimaryLanguage { get; }
     }
 }

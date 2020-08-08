@@ -6,8 +6,7 @@ using System.Text;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.Models.Authentication;
-using Uniwiki.Server.Persistence.Repositories.Authentication;
+using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Application.Services

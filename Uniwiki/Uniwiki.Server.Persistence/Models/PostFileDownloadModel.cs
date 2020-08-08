@@ -1,24 +1,28 @@
 ﻿using System;
-using Uniwiki.Server.Persistence.Models.Authentication;
+using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class PostFileDownloadModel
+    public class PostFileDownloadModel : IIdModel<Guid>, IRemovableModel
     {
         public LoginTokenModel Token { get; protected set; }
         public PostFileModel FileDownloaded { get; protected set; }
         public DateTime DownloadTime { get; protected set; }
+        public Guid Id { get; protected set; }
+
+        bool IRemovableModel.IsRemoved { get; set; }
+
+        internal PostFileDownloadModel(Guid id, LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
+        {
+            Id = id;
+            Token = token;
+            FileDownloaded = fileDownloaded;
+            DownloadTime = downloadTime;
+        }
 
         internal PostFileDownloadModel()
         {
 
-        }
-
-        internal PostFileDownloadModel(LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
-        {
-            Token = token;
-            FileDownloaded = fileDownloaded;
-            DownloadTime = downloadTime;
         }
     }
 }

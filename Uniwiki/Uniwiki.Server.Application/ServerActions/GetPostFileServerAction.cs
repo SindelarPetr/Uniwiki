@@ -7,7 +7,7 @@ using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Repositories;
+using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared;
 using Uniwiki.Shared.RequestResponse;
 

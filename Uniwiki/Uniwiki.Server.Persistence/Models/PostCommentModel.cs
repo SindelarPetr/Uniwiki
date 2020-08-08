@@ -1,24 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class PostCommentModel
+    public class PostCommentModel : IRemovableModel, IIdModel<Guid>
     {
-        public Guid Id { get; protected set; }
         public PostModel Post { get; protected set; }
         public ProfileModel Profile { get; protected set; }
         public string Text { get; protected set; }
         public DateTime CreationTime { get; protected set; }
-        public bool IsRemoved { get; protected set; }
         public IEnumerable<PostCommentLikeModel> Likes { get; protected set; }
+        public Guid Id { get; protected set; }
+
+        bool IRemovableModel.IsRemoved { get; set; }
 
         internal PostCommentModel()
         {
 
         }
 
-        internal PostCommentModel(Guid id, ProfileModel profile, PostModel post, string text, DateTime creationTime, IEnumerable<PostCommentLikeModel> likes, bool isRemoved = false)
+        internal PostCommentModel(Guid id, ProfileModel profile, PostModel post, string text, DateTime creationTime, IEnumerable<PostCommentLikeModel> likes, bool isRemoved)
         {
             Id = id;
             Post = post;
@@ -26,10 +28,8 @@ namespace Uniwiki.Server.Persistence.Models
             Text = text;
             CreationTime = creationTime;
             Likes = likes;
-            IsRemoved = isRemoved;
+            ((IRemovableModel)this).IsRemoved = isRemoved;
         }
-
-        internal void Remove() => IsRemoved = true;
 
         internal void Edit(string text) => Text = text;
     }

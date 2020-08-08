@@ -33,7 +33,7 @@ namespace Uniwiki.Client.Host.Services
         public string AddCourse => GetTranslation("Přidat předmět", "Add course");
         public string SelectYourFaculty => GetTranslation("Vyberte vaši fakultu", "Select your faculty");
         public string DownloadErrorPage_Message => GetTranslation("Tento soubor se nám bohužel nepodařilo stáhnout :(.", "We somehow were not able to download this file :(.");
-        public string DownloadTimeErrorPage_GoBack => GetTranslation("Návrat na Uniwiki", "Back to Uniwiki"); // TODO: Finish
+        public string DownloadTimeErrorPage_GoBack => GetTranslation("Návrat na Uniwiki", "Back to Uniwiki");
         public string DownloadTimeErrorPage_Message => GetTranslation("Pokusili jste se stáhnout soubor znovu příliš rychle.", "You tried to download the file again too quickly.");
         public string DownloadTimeErrorPage_Title => GetTranslation("Příliš brzy", "Too early");
         public string FileNotFoundPage_Title => GetTranslation("Soubor nenalezen!", "File not found!");

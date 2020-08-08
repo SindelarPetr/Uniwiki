@@ -1,10 +1,10 @@
 ﻿using System;
+using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class PostFileModel
+    public class PostFileModel : IIdModel<Guid>, IRemovableModel
     {
-        public Guid Id { get; protected set; }
         public string Path { get; protected set; }
         public string OriginalFullName => $"{NameWithoutExtension}{Extension}";
         public string NameWithoutExtension { get; protected set; }
@@ -14,6 +14,9 @@ namespace Uniwiki.Server.Persistence.Models
         public Guid CourseId { get; protected set; }
         public DateTime CreationTime { get; protected set; }
         public long Size { get; protected set; }
+        bool IRemovableModel.IsRemoved { get; set; }
+
+        public Guid Id { get; protected set; }
 
         private static FileType GetFileTypeFromExtension(string extension)
         {
@@ -37,12 +40,8 @@ namespace Uniwiki.Server.Persistence.Models
             }
         }
 
-        internal PostFileModel()
-        {
 
-        }
-
-        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size)
+        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size, bool isRemoved)
         {
             Id = id;
             Path = path;
@@ -53,6 +52,12 @@ namespace Uniwiki.Server.Persistence.Models
             CourseId = courseId;
             CreationTime = creationTime;
             Size = size;
+            ((IRemovableModel)this).IsRemoved = isRemoved;
+        }
+
+        internal PostFileModel()
+        {
+
         }
 
         internal void FileSaved()

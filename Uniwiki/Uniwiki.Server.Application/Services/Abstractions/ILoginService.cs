@@ -1,5 +1,4 @@
 ﻿using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.Models.Authentication;
 
 namespace Uniwiki.Server.Application.Services.Abstractions
 {

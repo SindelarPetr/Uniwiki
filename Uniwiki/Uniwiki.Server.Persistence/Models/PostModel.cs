@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class PostModel
+    public class PostModel : IIdModel<Guid>, IRemovableModel
     {
-        public Guid Id { get; protected set; }
         public string? PostType { get; protected set; }
         public ProfileModel Author { get; protected set; }
         public string Text { get; protected set; }
@@ -17,15 +17,16 @@ namespace Uniwiki.Server.Persistence.Models
 
         public IEnumerable<PostLikeModel> Likes { get; protected set; }
         public IEnumerable<PostCommentModel> Comments { get; protected set; }
+        bool IRemovableModel.IsRemoved { get; set; }
 
-        public bool IsRemoved { get; protected set; }
+        public Guid Id { get; protected set; }
 
         internal PostModel()
         {
 
         }
 
-        internal PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> files, IEnumerable<PostCommentModel> comments, IEnumerable<PostLikeModel> likes, bool isRemoved = false)
+        internal PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> files, IEnumerable<PostCommentModel> comments, IEnumerable<PostLikeModel> likes, bool isRemoved)
         {
             Id = id;
             PostType = postType;
@@ -35,7 +36,7 @@ namespace Uniwiki.Server.Persistence.Models
             CreationTime = creationTime;
             Comments = comments;
             Likes = likes;
-            IsRemoved = isRemoved;
+            ((IRemovableModel)this).IsRemoved = isRemoved;
             Files = files.ToArray();
         }
 
@@ -44,11 +45,6 @@ namespace Uniwiki.Server.Persistence.Models
             Text = text;
             PostType = postType;
             Files = postFiles;
-        }
-
-        public void Remove()
-        {
-            IsRemoved = true;
         }
     }
 }

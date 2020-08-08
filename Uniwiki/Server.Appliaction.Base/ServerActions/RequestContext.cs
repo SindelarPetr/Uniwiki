@@ -3,7 +3,6 @@ using System.Net;
 using Shared;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.Models.Authentication;
 
 namespace Server.Appliaction.ServerActions
 {

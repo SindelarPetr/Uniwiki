@@ -38,13 +38,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uniwiki.Server.Host", "Uniw
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uniwiki.Client.Host", "Uniwiki.Client.Host\Uniwiki.Client.Host.csproj", "{39EFE8B1-A6ED-4F65-A86D-5B116E23FAAC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Persistence.InMemory", "Server.Persistence.InMemory\Server.Persistence.InMemory.csproj", "{72AFE184-BA5D-4EE8-9C4E-79207179F56E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uniwiki.Server.Persistence.InMemory", "Uniwiki.Server.Persistence.InMemory\Uniwiki.Server.Persistence.InMemory.csproj", "{78C39F86-29AA-4F92-BE26-F91F12BCCC42}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Tests", "Shared.Tests\Shared.Tests.csproj", "{B7F92039-5746-4AE0-842D-EA3CA4020AA4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uniwiki.Server.Persistence.SqlServer", "Uniwiki.Server.Persistence.SqlServer\Uniwiki.Server.Persistence.SqlServer.csproj", "{022BC377-C100-4061-B697-9C56BD24677E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,22 +98,10 @@ Global
 		{39EFE8B1-A6ED-4F65-A86D-5B116E23FAAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39EFE8B1-A6ED-4F65-A86D-5B116E23FAAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39EFE8B1-A6ED-4F65-A86D-5B116E23FAAC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72AFE184-BA5D-4EE8-9C4E-79207179F56E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72AFE184-BA5D-4EE8-9C4E-79207179F56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72AFE184-BA5D-4EE8-9C4E-79207179F56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72AFE184-BA5D-4EE8-9C4E-79207179F56E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78C39F86-29AA-4F92-BE26-F91F12BCCC42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78C39F86-29AA-4F92-BE26-F91F12BCCC42}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78C39F86-29AA-4F92-BE26-F91F12BCCC42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78C39F86-29AA-4F92-BE26-F91F12BCCC42}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B7F92039-5746-4AE0-842D-EA3CA4020AA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B7F92039-5746-4AE0-842D-EA3CA4020AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7F92039-5746-4AE0-842D-EA3CA4020AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7F92039-5746-4AE0-842D-EA3CA4020AA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{022BC377-C100-4061-B697-9C56BD24677E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{022BC377-C100-4061-B697-9C56BD24677E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{022BC377-C100-4061-B697-9C56BD24677E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{022BC377-C100-4061-B697-9C56BD24677E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -134,10 +116,7 @@ Global
 		{2411409A-55AB-4326-856E-C35B35758102} = {19147708-523A-49D7-9235-8DB885ACD052}
 		{FC3325E7-7413-4ABD-814A-7A23120469D6} = {19147708-523A-49D7-9235-8DB885ACD052}
 		{83A3D431-3F9B-4CEE-96C8-FA2CA97A36D7} = {E9936A16-06FC-4ABF-A1B2-BFEA7833BD46}
-		{72AFE184-BA5D-4EE8-9C4E-79207179F56E} = {19147708-523A-49D7-9235-8DB885ACD052}
-		{78C39F86-29AA-4F92-BE26-F91F12BCCC42} = {E9936A16-06FC-4ABF-A1B2-BFEA7833BD46}
 		{B7F92039-5746-4AE0-842D-EA3CA4020AA4} = {19147708-523A-49D7-9235-8DB885ACD052}
-		{022BC377-C100-4061-B697-9C56BD24677E} = {E9936A16-06FC-4ABF-A1B2-BFEA7833BD46}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58C94EB4-3EDA-40CB-B028-8B24E0575547}
