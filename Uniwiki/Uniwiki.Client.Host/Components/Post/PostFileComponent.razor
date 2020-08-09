@@ -44,7 +44,7 @@
 else
 {
 	<button class="btn btn-secondary d-flex btn-block mb-2 @(PeriodicalTimer.IsRunning ? "disabled" : string.Empty)" type="button" @onclick="HandleDownload">
-		<span class="mr-2 dont-break-out">@File.NameWithoutExtension</span>
+		<span class="mr-2 dont-break-out">@File.OriginalFullName</span>
 		@if (PeriodicalTimer.IsRunning)
 		{
 			<span class="mr-2">(@PeriodicalTimer.PeriodsLeft s)</span>
