@@ -34,7 +34,7 @@ namespace Uniwiki.Client.Host
             services.AddScoped<ILanguageManagerService, LanguageManagerService>();
             services.AddScoped<ILocalStorageManagerService, LocalStorageManagerService>();
             services.AddScoped<TextService>();
-            services.AddScoped<TextServiceBase>(p => p.GetService<TextService>());
+            services.AddScoped<TextServiceShared>(p => p.GetService<TextService>());
             services.AddScoped<IFixingService, FixingService>();
             services.AddScoped<IScrollService, ScrollService>();
             services.AddScoped<IStaticStateService, StaticStateService>();

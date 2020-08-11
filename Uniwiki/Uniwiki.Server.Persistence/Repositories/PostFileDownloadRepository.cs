@@ -1,32 +1,29 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using Uniwiki.Server.Persistence.Models;
+using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class PostFileDownloadRepository : IPostFileDownloadRepository
+    internal class PostFileDownloadRepository : RepositoryBase<PostFileDownloadModel>, IPostFileDownloadRepository
     {
-        private readonly UniwikiContext _uniwikiContext;
+        private readonly TextService _textService;
 
-        public PostFileDownloadRepository(UniwikiContext uniwikiContext)
+        public string NotFoundByIdMessage => _textService.Error_PostFileDownloadNotFound;
+
+        public PostFileDownloadRepository(UniwikiContext uniwikiContext, TextService textService)
+            : base(uniwikiContext, uniwikiContext.PostFileDownloads)
         {
-            _uniwikiContext = uniwikiContext;
+            _textService = textService;
         }
 
-        public PostFileDownloadModel AddDownload(LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
-        {
-            // Create the download
-            var postFileDownload = new PostFileDownloadModel(token, fileDownloaded, downloadTime);
-
-            // Add the download to the DB
-            _uniwikiContext.AllPostFileDownloads.Add(postFileDownload);
-
-            return postFileDownload;
-        }
 
         public PostFileDownloadModel? TryGetLatestDownload(LoginTokenModel token, PostFileModel fileDownloaded)
         {
-            return _uniwikiContext.PostFileDownloads.LastOrDefault(d => d.Token == token && d.FileDownloaded == fileDownloaded);
+            return All.LastOrDefault(d => d.Token == token && d.FileDownloaded == fileDownloaded);
         }
     }
 }

@@ -28,8 +28,4 @@
     <ProjectReference Include="..\Uniwiki.Shared\Uniwiki.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\Base\" />
-  </ItemGroup>
-
 </Project>

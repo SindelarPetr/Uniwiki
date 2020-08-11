@@ -3,20 +3,21 @@ using System.Threading.Tasks;
 using Shared;
 using Uniwiki.Client.Host.Services.Abstractions;
 using Uniwiki.Shared;
+using Uniwiki.Shared.Services;
 
 namespace Uniwiki.Client.Host.Services
 {
     internal class LanguageManagerService : ILanguageManagerService
     {
-        private readonly TextService _textService;
+        private readonly ILanguageService _languageService;
         private readonly IJsInteropService _jsInteropService;
         private readonly ILocalStorageManagerService _localStorageManagerService;
-        public Language CurrentLanguage => _textService.Language;
+        public Language CurrentLanguage => _languageService.Language;
 
-        public LanguageManagerService(TextService textService, IJsInteropService jsInteropService,
+        public LanguageManagerService(ILanguageService languageService, IJsInteropService jsInteropService,
             ILocalStorageManagerService localStorageManagerService)
         {
-            _textService = textService;
+            _languageService = languageService;
             _jsInteropService = jsInteropService;
             _localStorageManagerService = localStorageManagerService;
         }
@@ -28,19 +29,12 @@ namespace Uniwiki.Client.Host.Services
             // Try to get current language from local storage
             var language = await _localStorageManagerService.GetCurrentLanguage();
 
-            Console.WriteLine("From local storage lang: " + language);
-
             // If the language is not present in local storage, then get it from the browser
             if (language == null)
             {
                 var langCode = await _jsInteropService.GetBrowserLanguage();
                 language = GetLanguageFromCode(langCode);
-                Console.WriteLine("From browser lang: " + langCode);
             }
-
-            // Get language from code
-            
-            Console.WriteLine("Got language from code: " + language);
 
             // Set it in the app
             await SetLanguage(language.Value);
@@ -49,7 +43,7 @@ namespace Uniwiki.Client.Host.Services
         public Task SetLanguage(Language language)
         {
             // Set language to texts
-            _textService.SetLanguage(language);
+            _languageService.SetLanguage(language);
 
             // Set the language to the storage
             return _localStorageManagerService.SetCurrentLanguage(language);

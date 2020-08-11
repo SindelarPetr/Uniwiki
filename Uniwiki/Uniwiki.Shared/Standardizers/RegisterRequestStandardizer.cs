@@ -17,7 +17,7 @@ namespace Uniwiki.Shared.Standardizers
         public RegisterRequestDto Standardize(RegisterRequestDto model)
         {
             var nameAndSurname = _stringStandardizationService.StandardizeNameAndSurname(model.NameAndSurname);
-            Console.WriteLine($"Standardizing !!!!: '{ nameAndSurname }'");
+
             return new RegisterRequestDto(
                 _stringStandardizationService.StandardizeEmail(model.Email),
                 nameAndSurname,

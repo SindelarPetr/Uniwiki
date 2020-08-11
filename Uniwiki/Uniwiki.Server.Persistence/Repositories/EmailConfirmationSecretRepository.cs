@@ -1,33 +1,29 @@
 ﻿using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using Uniwiki.Server.Persistence.Models;
+using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class EmailConfirmationSecretRepository : IEmailConfirmationSecretRepository
+    internal class EmailConfirmationSecretRepository : RepositoryBase<EmailConfirmationSecretModel>, IEmailConfirmationSecretRepository
     {
-        private readonly UniwikiContext _dataStorage;
         private readonly TextService _textService;
 
-        public EmailConfirmationSecretRepository(UniwikiContext dataStorage, TextService textService)
-        {
-            _dataStorage = dataStorage;
-            _textService = textService;
-        }
+        public string NotFoundByIdMessage => _textService.EmailConfirmationSecretNotFound;
 
-        public EmailConfirmationSecretModel GenerateEmailConfirmationSecret(ProfileModel profile, DateTime creationTime)
+        public EmailConfirmationSecretRepository(UniwikiContext uniwikiContext, TextService textService)
+            : base(uniwikiContext, uniwikiContext.EmailConfirmationSecrets)
         {
-            var secretGuid = Guid.NewGuid();
-            var secret = new EmailConfirmationSecretModel(profile, secretGuid, creationTime, true);
-            
-            return secret;
+            _textService = textService;
         }
 
         public void SaveEmailConfirmationSecret(EmailConfirmationSecretModel emailConfirmationSecret)
         {
-            _dataStorage.EmailConfirmationSecrets.Add(emailConfirmationSecret);
+            All.Add(emailConfirmationSecret);
         }
 
         public void ConfirmEmail(EmailConfirmationSecretModel secret)
@@ -38,7 +34,7 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public void InvalidateSecrets(ProfileModel profile)
         {
-            foreach (var emailConfirmationSecretModel in _dataStorage.EmailConfirmationSecrets.Where(s => s.Profile == profile && s.IsValid))
+            foreach (var emailConfirmationSecretModel in All.Where(s => s.Profile == profile && s.IsValid))
             {
                 emailConfirmationSecretModel.Invalidate();
             }
@@ -46,19 +42,19 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public EmailConfirmationSecretModel? TryGetValidEmailConfirmationSecret(ProfileModel profile)
         {
-            return _dataStorage.EmailConfirmationSecrets.FirstOrDefault(s => s.Profile == profile && s.IsValid);
+            return All.FirstOrDefault(s => s.Profile == profile && s.IsValid);
         }
 
         public EmailConfirmationSecretModel FindValidById(Guid secret)
         {
-            return _dataStorage.EmailConfirmationSecrets.FirstOrDefault(s => s.Secret == secret && s.IsValid) 
+            return All.FirstOrDefault(s => s.Secret == secret && s.IsValid) 
                    ?? throw new RequestException(_textService.Error_EmailConfirmationFailed);
         }
 
-        public EmailConfirmationSecretModel FindById(Guid secret)
-        {
-            return _dataStorage.EmailConfirmationSecrets.FirstOrDefault(s => s.Secret == secret)
-                   ?? throw new RequestException(_textService.Error_EmailConfirmationFailed);
-        }
+        //public EmailConfirmationSecretModel FindById(Guid secret)
+        //{
+        //    return All.FirstOrDefault(s => s.Secret == secret)
+        //           ?? throw new RequestException(_textService.Error_EmailConfirmationFailed);
+        //}
     }
 }

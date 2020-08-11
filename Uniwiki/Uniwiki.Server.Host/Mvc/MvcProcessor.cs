@@ -38,19 +38,20 @@ namespace Uniwiki.Server.Host.Mvc
             logger.LogInformation(requestString);
         }
 
-        private readonly IServiceProvider _serviceProvider;
         private readonly IAuthenticationService _authenticationService;
         private readonly IServerActionResolver _serverActionResolver;
         private readonly TextService _textService;
         private readonly ILogger<MvcProcessor> _logger;
+        private readonly ILanguageService _languageService;
 
-        public MvcProcessor(IServiceProvider serviceProvider, IAuthenticationService authenticationService, IServerActionResolver serverActionResolver, TextService textService, ILogger<MvcProcessor> logger)
+        public MvcProcessor(IAuthenticationService authenticationService, IServerActionResolver serverActionResolver, TextService textService, ILogger<MvcProcessor> logger,
+            ILanguageService languageService)
         {
-            _serviceProvider = serviceProvider;
             _authenticationService = authenticationService;
             _serverActionResolver = serverActionResolver;
             _textService = textService;
             _logger = logger;
+            _languageService = languageService;
         }
 
         // Transforms IRequest to RequestBase
@@ -60,7 +61,7 @@ namespace Uniwiki.Server.Host.Mvc
             LogRequest(_logger, request);
 
             // Set the language
-            _serviceProvider.GetService<TextServiceBase>().SetLanguage(inputContext.Language);
+            _languageService.SetLanguage(inputContext.Language);
 
             // Try to get info about the user
             var userInfo = _authenticationService.TryAuthenticate(inputContext.AccessToken);

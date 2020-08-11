@@ -3,19 +3,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Uniwiki.Server.Persistence.Models;
+using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
+using Uniwiki.Server.Persistence.Services;
 using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class CourseVisitRepository : ICourseVisitRepository
+    internal class CourseVisitRepository : RepositoryBase<CourseVisitModel>, ICourseVisitRepository
     {
-        public DbSet<CourseVisitModel> All { get; }
+        private readonly TextService _textService;
 
-        public CourseVisitRepository(UniwikiContext uniwikiContext)
+        public string NotFoundByIdMessage => _textService.Error_CourseVisitNotFound;
+
+        public CourseVisitRepository(UniwikiContext uniwikiContext, TextService textService)
+            : base(uniwikiContext, uniwikiContext.CourseVisits)
         {
-            All = uniwikiContext.CourseVisits;
+            _textService = textService;
         }
 
         public IEnumerable<CourseModel> GetRecentCourses(StudyGroupModel? studyGroup, ProfileModel profile)
@@ -32,7 +37,7 @@ namespace Uniwiki.Server.Persistence.Repositories
             foreach (var course in recentCourses.Reverse())
             {
                 var courseVisit = new CourseVisitModel(Guid.NewGuid(), course, profile, visitTime);
-                (this as IRepository<CourseVisitModel>).Add(courseVisit);
+                Add(courseVisit);
             }
         }
     }

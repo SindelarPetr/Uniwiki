@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
+using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse;
 
@@ -15,14 +17,17 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly IPostRepository _postRepository;
         private readonly IPostCommentRepository _postCommentRepository;
         private readonly ITimeService _timeService;
+        private readonly TextService _textService;
+
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public AddCommentServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostRepository postRepository, IPostCommentRepository postCommentRepository, ITimeService timeService) : base(serviceProvider)
+        public AddCommentServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostRepository postRepository, IPostCommentRepository postCommentRepository, ITimeService timeService, TextService textService) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postRepository = postRepository;
             _postCommentRepository = postCommentRepository;
             _timeService = timeService;
+            _textService = textService;
         }
 
         protected override Task<AddCommentResponseDto> ExecuteAsync(AddCommentRequestDto request, RequestContext context)
@@ -31,10 +36,11 @@ namespace Uniwiki.Server.Application.ServerActions
             var profile = _profileRepository.FindById(context.User.Id);
 
             // Get post
-            var post = _postRepository.FindById(request.PostId);
+            var post = _postRepository.FindById(request.PostId, _textService.Error_PostNotFound);
 
             // Create the comment
-            _postCommentRepository.CreatePostComment(profile, post, request.CommentText, _timeService.Now);
+            var comment = new PostCommentModel(Guid.NewGuid(), profile, post, request.CommentText, _timeService.Now, false);
+            _postCommentRepository.Add(comment);
 
             // Create response
             var response = new AddCommentResponseDto(post.ToDto(profile));

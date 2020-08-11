@@ -12,7 +12,7 @@ namespace Uniwiki.Server.Persistence.Models
 
         bool IRemovableModel.IsRemoved { get; set; }
 
-        internal PostFileDownloadModel(Guid id, LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
+        public PostFileDownloadModel(Guid id, LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
         {
             Id = id;
             Token = token;
@@ -20,7 +20,7 @@ namespace Uniwiki.Server.Persistence.Models
             DownloadTime = downloadTime;
         }
 
-        internal PostFileDownloadModel()
+        protected PostFileDownloadModel()
         {
 
         }

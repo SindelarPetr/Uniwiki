@@ -8,7 +8,7 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
     {
         //NewPasswordSecretModel GenerateNewPasswordSecret(ProfileModel profile, DateTime creationTime, DateTime expirationTime);
         ProfileModel GetProfileForNewPasswordSecret(Guid secret);
-        NewPasswordSecretModel TryGetSecretForProfile(ProfileModel profile);
+        NewPasswordSecretModel? TryGetSecretForProfile(ProfileModel profile);
         void InvalidateSecrets(ProfileModel profile);
         NewPasswordSecretModel GetValidSecretById(Guid secret);
     }

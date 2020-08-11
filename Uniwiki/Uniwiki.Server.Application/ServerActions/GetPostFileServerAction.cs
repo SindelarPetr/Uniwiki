@@ -7,6 +7,7 @@ using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared;
 using Uniwiki.Shared.RequestResponse;
@@ -48,8 +49,11 @@ namespace Uniwiki.Server.Application.ServerActions
             if (latestDownload != null && latestDownload.DownloadTime + Constants.DownloadAgainTime > currentTime)
                 throw new RequestException(_textService.Error_WaitBeforeRepeatedDownload);
 
-            // Add info about the file being downloaded
-            _postFileDownloadRepository.AddDownload(context.LoginToken, file, currentTime);
+            // Create info about the file being downloaded
+            var postFileDownload = new PostFileDownloadModel(Guid.NewGuid(), context.LoginToken, file, currentTime);
+
+            // Add it to the DB
+            _postFileDownloadRepository.Add(postFileDownload);
 
             // Get path for the file
             var filePath = Path.Combine(_uploadFileService.PostFilesDirectoryPath, request.FileId.ToString());

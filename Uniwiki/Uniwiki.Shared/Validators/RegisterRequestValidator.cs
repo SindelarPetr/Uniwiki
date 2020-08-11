@@ -10,10 +10,10 @@ namespace Uniwiki.Shared.Validators
 {
     internal class RegisterRequestValidator : StandardizerValidator<RegisterRequestDto>
     {
-        public RegisterRequestValidator(TextServiceBase textService, IStandardizer<RegisterRequestDto> standardizer, Constants constants) : base(standardizer)
+        public RegisterRequestValidator(TextServiceShared textService, IStandardizer<RegisterRequestDto> standardizer, Constants constants) : base(standardizer)
         {
             RuleFor(f => f.NameAndSurname).Cascade(CascadeMode.StopOnFirstFailure)
-                .Must(n => { Console.WriteLine($"VALIDATING: '{n}'") ;return n.Contains(" "); }).WithMessage(textService.Validation_FillNameAndSurname)
+                .Must(n => n.Contains(" ")).WithMessage(textService.Validation_FillNameAndSurname)
                 .MinMaxLengthWithMessages(textService, Constants.Validations.UserNameAndSurnameMinLength, Constants.Validations.UserNameAndSurnameMaxLength);
 
             RuleFor(f => f.Email).Cascade(CascadeMode.StopOnFirstFailure)

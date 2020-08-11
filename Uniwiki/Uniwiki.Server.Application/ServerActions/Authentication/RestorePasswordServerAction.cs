@@ -6,6 +6,7 @@ using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared;
 using Uniwiki.Shared.RequestResponse.Authentication;
@@ -49,8 +50,11 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
                 _newPasswordSecretRepository.InvalidateSecrets(profile);
             }
 
-            // Generate secret
-            var secret = _newPasswordSecretRepository.GenerateNewPasswordSecret(profile, _timeService.Now, _timeService.Now.Add(Constants.RestorePasswordSecretExpiration));
+            // Create the secret
+            var secret = new NewPasswordSecretModel(Guid.NewGuid(), profile, Guid.NewGuid(), _timeService.Now, _timeService.Now.Add(Constants.RestorePasswordSecretExpiration), true);
+
+            // Add it to the DB
+            _newPasswordSecretRepository.Add(secret);
 
             // Send the email
             await _emailService.SendRestorePasswordEmail(request.Email, secret.Id);

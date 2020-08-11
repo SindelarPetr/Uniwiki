@@ -8,6 +8,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
     public interface ICourseVisitRepository : IIdRepository<CourseVisitModel, Guid>
     {
         IEnumerable<CourseModel> GetRecentCourses(StudyGroupModel? studyGroup, ProfileModel profile);
-        //void AddRecentCourseVisits(IEnumerable<CourseModel> recentCourses, ProfileModel profile, DateTime visitTime);
+        void AddRecentCourseVisits(IEnumerable<CourseModel> recentCourses, ProfileModel profile, DateTime visitTime);
     }
 }

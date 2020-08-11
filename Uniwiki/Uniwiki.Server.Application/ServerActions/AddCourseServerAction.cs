@@ -6,6 +6,7 @@ using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse;
 
@@ -41,17 +42,18 @@ namespace Uniwiki.Server.Application.ServerActions
             var author = _profileRepository.FindById(context.User.Id);
 
             // Get study group
-            var studyGroup = _studyGroupRepository.FindById(studyGroupId);
+            var faculty = _studyGroupRepository.FindById(studyGroupId);
 
             // Check if the course name is unique
-            if(!_courseRepository.IsNameUnique(studyGroup, name))
+            if(!_courseRepository.IsNameUnique(faculty, name))
                 throw new RequestException(_textService.Error_CourseNameTaken(name));
 
             // Create url for the course
-            var url = _stringStandardizationService.CreateUrl(name, u => _courseRepository.IsUrlUnique(studyGroup, u));
+            var url = _stringStandardizationService.CreateUrl(name, u => _courseRepository.IsUrlUnique(faculty, u));
 
-            // Create course
-            var course = _courseRepository.CreateCourse(code, name, studyGroup, author, url);
+            // Create the course
+            var course = new CourseModel(Guid.NewGuid(), code, name, faculty, author, url, false);
+            _courseRepository.Add(course);
 
             // Create course DTO
             var courseDto = course.ToDto();

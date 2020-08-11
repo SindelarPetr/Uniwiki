@@ -15,20 +15,19 @@ namespace Uniwiki.Server.Persistence.Models
 
         bool IRemovableModel.IsRemoved { get; set; }
 
-        internal PostCommentModel()
-        {
-
-        }
-
-        internal PostCommentModel(Guid id, ProfileModel profile, PostModel post, string text, DateTime creationTime, IEnumerable<PostCommentLikeModel> likes, bool isRemoved)
+        public PostCommentModel(Guid id, ProfileModel profile, PostModel post, string text, DateTime creationTime, bool isRemoved)
         {
             Id = id;
             Post = post;
             Profile = profile;
             Text = text;
             CreationTime = creationTime;
-            Likes = likes;
             ((IRemovableModel)this).IsRemoved = isRemoved;
+        }
+
+        protected PostCommentModel()
+        {
+
         }
 
         internal void Edit(string text) => Text = text;

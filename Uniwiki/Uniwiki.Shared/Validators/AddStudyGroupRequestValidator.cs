@@ -10,7 +10,7 @@ namespace Uniwiki.Shared.Validators
 
     public class AddStudyGroupRequestValidator : StandardizerValidator<AddStudyGroupRequestDto>
     {
-        public AddStudyGroupRequestValidator(TextServiceBase textServiceBase, IStandardizer<AddStudyGroupRequestDto> standardizer) : base(standardizer)
+        public AddStudyGroupRequestValidator(TextServiceShared textServiceBase, IStandardizer<AddStudyGroupRequestDto> standardizer) : base(standardizer)
         {
             RuleFor(f => f.StudyGroupName)
                 .MinMaxLengthWithMessages(textServiceBase, Constants.Validations.StudyGroupNameMinLength, Constants.Validations.StudyGroupNameMaxLength);

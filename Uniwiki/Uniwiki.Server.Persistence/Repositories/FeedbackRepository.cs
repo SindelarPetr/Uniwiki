@@ -1,50 +1,55 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    class FeedbackRepository : IRemovableIdRepository<FeedbackModel>, IFeedbackRepository
+    class FeedbackRepository : RepositoryBase<FeedbackModel>, IFeedbackRepository
     {
-        private readonly UniwikiContext _uniwikiContext;
+        private readonly TextService _textService;
 
-        public FeedbackRepository(UniwikiContext uniwikiContext)
+        public string NotFoundByIdMessage => _textService.Error_FeedbackNotFound;
+
+        public FeedbackRepository(UniwikiContext uniwikiContext, TextService textService)
+            : base(uniwikiContext, uniwikiContext.Feedbacks)
         {
-            _uniwikiContext = uniwikiContext;
+            _textService = textService;
         }
 
         public double? GetAverageRating()
         {
-            return _uniwikiContext.Feedbacks.Where(f => f.Rating != null).Average(f => f.Rating);
+            return All.Where(f => f.Rating != null).Average(f => f.Rating);
         }
 
         public IEnumerable<string> GetLastFeedbacks(int count)
         {
-            return _uniwikiContext.Feedbacks.Select(f =>
+            return All.Select(f =>
             $"{(f.Rating.HasValue ? $"{f.CreationTime.ToString("g")} ({f.Rating}) " : string.Empty)}{f.Text}\n").Reverse().Take(count).Reverse();
         }
 
         public int GetFeedbacksCount()
         {
-            return _uniwikiContext.Feedbacks.Count();
+            return All.Count();
         }
 
         public int GetTextOnlyFeedbacksCount()
         {
-            return _uniwikiContext.Feedbacks.Count(f => f.Rating == null && !string.IsNullOrWhiteSpace(f.Text));
+            return All.Count(f => f.Rating == null && !string.IsNullOrWhiteSpace(f.Text));
         }
 
         public int RatingOnlyFeedbacksCount()
         {
-            return _uniwikiContext.Feedbacks.Count(f => f.Rating != null && string.IsNullOrWhiteSpace(f.Text));
+            return All.Count(f => f.Rating != null && string.IsNullOrWhiteSpace(f.Text));
         }
 
         public int TextAndRatingFeedbacksCount()
         {
-            return _uniwikiContext.Feedbacks.Count(f => f.Rating != null && !string.IsNullOrWhiteSpace(f.Text));
+            return All.Count(f => f.Rating != null && !string.IsNullOrWhiteSpace(f.Text));
         }
     }
 }

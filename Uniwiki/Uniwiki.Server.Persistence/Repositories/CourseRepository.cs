@@ -1,38 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using Shared.Extensions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
-using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
 
 
-    internal class CourseRepository : ICourseRepository
+    internal class CourseRepository : RepositoryBase<CourseModel>, ICourseRepository
     {
-        private readonly UniwikiContext _uniwikiContext;
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
 
-        public DbSet<CourseModel> All => _uniwikiContext.Courses;
+        public string NotFoundByIdMessage => _textService.Error_CourseNotFound;
 
-        public CourseRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService)
+        public CourseRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.Courses)
         {
-            _uniwikiContext = uniwikiContext;
             _stringStandardizationService = stringStandardizationService;
             _textService = textService;
         }
 
         public CourseModel GetCourse(string universityUrl, string studyGroupUrl, string courseUrl)
         {
-            return _uniwikiContext.Courses.FirstOrDefault(c =>
+            return All.FirstOrDefault(c =>
                 c.StudyGroup.University.Url == universityUrl.Neutralize() &&
                 c.StudyGroup.Url == studyGroupUrl.Neutralize() && c.Url == courseUrl.Neutralize()) ?? throw new RequestException(_textService.Error_CourseNotFound);
         }
@@ -67,8 +62,7 @@ namespace Uniwiki.Server.Persistence.Repositories
         public IEnumerable<CourseModel> TryGetCourses(IEnumerable<(string courseUrl, string studyGroupUrl, string universityUrl)> urls)
         {
             return urls
-                .Select(course => _uniwikiContext
-                    .Courses
+                .Select(course => All
                     .FirstOrDefault(c => c.Url == course.courseUrl && c.StudyGroup.Url == course.studyGroupUrl && c.StudyGroup.University.Url == course.universityUrl))
                 .Where(c => c != null);
         }

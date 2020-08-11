@@ -23,19 +23,18 @@ namespace Uniwiki.Server.Persistence.Models
 
         public Guid Id { get; protected set; }
 
-        internal UniversityModel()
-        {
-
-        }
-
-        internal UniversityModel(Guid id, string fullName, string shortName, string url, IEnumerable<StudyGroupModel> studyGroups, bool isRemoved)
+        public UniversityModel(Guid id, string fullName, string shortName, string url, bool isRemoved)
         {
             Id = id;
             FullName = fullName;
             ShortName = shortName;
-            StudyGroups = studyGroups;
             Url = url;
             ((IRemovableModel)this).IsRemoved = isRemoved;
+        }
+
+        protected UniversityModel()
+        {
+
         }
     }
 }

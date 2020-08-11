@@ -5,6 +5,7 @@ using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse;
 
@@ -37,8 +38,8 @@ namespace Uniwiki.Server.Application.ServerActions
             // Get course for the request
             var course = _courseRepository.GetCourse(request.UniversityUrl, request.StudyGroupUrl, request.CourseUrl);
 
-            // Get post type counts
-            var filterPostTypes = _postTypeRepository.GetFilterPostTypes(course).Select(pair => new FilterPostTypeDto(pair.Item1, pair.Item2)).ToArray();
+            // Get post type counts // TODO: FIX
+            var filterPostTypes = new FilterPostTypeDto[0]; // _postTypeRepository.GetFilterPostTypes(course).Select(pair => new FilterPostTypeDto(pair.Item1, pair.Item2)).ToArray();
 
             // Get posts for the course
             var posts = request.ShowAll 
@@ -52,15 +53,18 @@ namespace Uniwiki.Server.Application.ServerActions
 
             var postDtos = posts.Select(p => p.ToDto(profile)).ToArray();
 
-            // Post types
-            var postTypesForNewPost = _postTypeRepository.GetPostTypesForNewPost(course).ToArray();
+            // Post types // TODO: FIX
+            var postTypesForNewPost = new string[0]; // _postTypeRepository.GetPostTypesForNewPost(course).ToArray();
 
             // Convert course to Dto
             var courseDto = course.ToDto();
 
             // Set the course as recent
             if (context.IsAuthenticated) // Equivalent to context.IsAuthenticated
-                _courseVisitRepository.AddCourseVisit(course, profile, _timeService.Now);
+            {
+                var courseVisit = new CourseVisitModel(Guid.NewGuid(), course, profile, _timeService.Now);
+                _courseVisitRepository.Add(courseVisit);
+            }
 
             // Create response
             var response = new GetCourseResponseDto(request.PostType, 

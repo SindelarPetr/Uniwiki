@@ -8,7 +8,7 @@ namespace Uniwiki.Shared.Validators
 {
     internal class RestorePasswordRequestValidator : StandardizerValidator<RestorePasswordRequestDto>
     {
-        public RestorePasswordRequestValidator(TextServiceBase textService, IStandardizer<RestorePasswordRequestDto> standardizer)
+        public RestorePasswordRequestValidator(TextServiceShared textService, IStandardizer<RestorePasswordRequestDto> standardizer)
             :base(standardizer)
         {
             RuleFor(f => f.Email).Cascade(CascadeMode.StopOnFirstFailure)

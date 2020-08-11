@@ -17,7 +17,6 @@ using Uniwiki.Server.Application.ServerActions.Authentication;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.InMemory.Services;
 using Uniwiki.Shared;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;
@@ -59,7 +58,7 @@ namespace Uniwiki.Server.Application.Tests
             var addStudyGroupServerAction = provider.GetService<AddStudyGroupServerAction>();
             var addCourseServerAction = provider.GetService<AddCourseServerAction>();
             var getCourseServerAction = provider.GetService<GetCourseServerAction>();
-            var dataService = provider.GetService<DataService>();
+            var dataService = provider.GetService<UniwikiContext>();
             var addPostServerAction = provider.GetService<AddPostServerAction>();
             var editPostServerAction = provider.GetService<EditPostServerAction>();
             var removePostServerAction = provider.GetService<RemovePostServerAction>();
@@ -191,11 +190,11 @@ namespace Uniwiki.Server.Application.Tests
             // TEST: Can get course information which will include the default post types (for new post) of the language of the study group - check 2 languages
             var getCourse2Request = new GetCourseRequestDto(university1.Url, studyGroup1.Url, course1.Url, null, true, Constants.MaxPostsToFetch);
             var getCourse2Response = await getCourseServerAction.ExecuteActionAsync(getCourse2Request, user1Context);
-            CollectionAssert.AreEquivalent(getCourse2Response.NewPostPostTypes, dataService._defaultPostTypesEn.ToArray());
+            CollectionAssert.AreEquivalent(getCourse2Response.NewPostPostTypes, dataService.DefaultPostTypesEn.ToArray());
 
             var getCourse3Request = new GetCourseRequestDto(university1.Url, studyGroup2.Url, course3.Url, null, true, Constants.MaxPostsToFetch);
             var getCourse3Response = await getCourseServerAction.ExecuteActionAsync(getCourse3Request, user1Context);
-            CollectionAssert.AreEquivalent(getCourse3Response.NewPostPostTypes, dataService._defaultPostTypesCz.ToArray());
+            CollectionAssert.AreEquivalent(getCourse3Response.NewPostPostTypes, dataService.DefaultPostTypesCz.ToArray());
 
             // TEST: Can add a post without a category
             var addPost1Request = new AddPostRequestDto(postText1, null, course1.Id, new Shared.ModelDtos.PostFileDto[0]);
@@ -205,7 +204,7 @@ namespace Uniwiki.Server.Application.Tests
             // TEST: Response from getting a course should contain possibility to filter by null
             var getCourse4Request = new GetCourseRequestDto(university1.Url, studyGroup1.Url, course1.Url, null, true, Constants.MaxPostsToFetch);
             var getCourse4Response = await getCourseServerAction.ExecuteActionAsync(getCourse4Request, user1Context);
-            CollectionAssert.AreEquivalent(getCourse4Response.NewPostPostTypes, dataService._defaultPostTypesEn.ToArray(), "null Category is not a possibility to use in a new post.");
+            CollectionAssert.AreEquivalent(getCourse4Response.NewPostPostTypes, dataService.DefaultPostTypesEn.ToArray(), "null Category is not a possibility to use in a new post.");
             Assert.IsTrue(getCourse4Response.FilterPostTypes.Count() == 1);
             Assert.IsTrue(getCourse4Response.FilterPostTypes.First().PostType == null);
             Assert.IsTrue(getCourse4Response.FilterPostTypes.First().Count == 1);
@@ -289,7 +288,7 @@ namespace Uniwiki.Server.Application.Tests
             Assert.IsFalse(getCourse9Response.Posts.Any());
 
             // TEST: The category of removed post will not be shown in the add post and neither in the filter list
-            CollectionAssert.AreEquivalent(dataService._defaultPostTypesEn.ToArray(), getCourse9Response.NewPostPostTypes);
+            CollectionAssert.AreEquivalent(dataService.DefaultPostTypesEn.ToArray(), getCourse9Response.NewPostPostTypes);
             Assert.IsFalse(getCourse9Response.FilterPostTypes.Any());
 
             // TEST: It is possible to provide feedback as an anonymous user

@@ -6,7 +6,6 @@ using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.InMemory;
 using Uniwiki.Shared;
 using Uniwiki.Shared.Services;
 
@@ -20,14 +19,14 @@ namespace Uniwiki.Server.Application
         {
             services.AddServerApplication();
             services.AddUniwikiSharedServices();
-            services.AddUniwikiServerPersistenceInMemory();
+            services.AddUniwikiServerPersistence();
 
             services.AddTransient<IEmailService, EmailService>(); // Transient, because it uses HttpContext inside
             services.AddScoped<IServerActionProvider, ServerActionProvider>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IInputValidationService, InputValidationService>();
             services.AddScoped<TextService>();
-            services.AddScoped<TextServiceBase>(p => p.GetService<TextService>());
+            services.AddScoped<TextServiceShared>(p => p.GetService<TextService>());
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
             services.AddTransient<IDataManipulationService, DataManipulationService>();
             services.AddSingleton<IHashService, HashService>();

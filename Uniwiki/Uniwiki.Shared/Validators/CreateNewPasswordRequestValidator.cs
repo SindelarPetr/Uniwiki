@@ -8,7 +8,7 @@ namespace Uniwiki.Shared.Validators
 {
     internal class CreateNewPasswordRequestValidator : StandardizerValidator<CreateNewPasswordRequestDto>
     {
-        public CreateNewPasswordRequestValidator(TextServiceBase textService, IStandardizer<CreateNewPasswordRequestDto> standardizer) : base(standardizer)
+        public CreateNewPasswordRequestValidator(TextServiceShared textService, IStandardizer<CreateNewPasswordRequestDto> standardizer) : base(standardizer)
         {
             RuleFor(f => f.NewPassword).Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty().WithMessage(textService.Validation_TypeYourNewPassword);

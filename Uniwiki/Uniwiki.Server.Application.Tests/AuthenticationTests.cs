@@ -61,14 +61,19 @@ namespace Uniwiki.Server.Application.Tests
 
             // --------- Act + Assert
 
+
+
             // TEST: Register the user
             var userDto1 = (await registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Some Testuser", user1Password, user1Password, true, null, new CourseDto[0]), anonymousContext)).UserProfile;
             var confirmationSecret1 = emailService.RegisterSecrets.Last();
             Assert.IsNotNull(confirmationSecret1, "Confirmation email has to be sent.");
 
+
             // TEST: Repeated registration with the same email results in an exception
             await Assert.ThrowsExceptionAsync<RequestException>(() => registerServerAction.ExecuteActionAsync(new RegisterRequestDto(user1Email, "Somsse Testussser", user1Password, user1Password, true, null, new CourseDto[0]), anonymousContext));
 
+            var scope = provider.CreateScope();
+            registerServerAction = scope.ServiceProvider.GetService<RegisterServerAction>();
 
             // TEST: Repeated registration with the same email after some time results in resending the confirmation secret
             timeService.MoveTime(Constants.ResendRegistrationEmailMinTime.Add(TimeSpan.FromSeconds(5))); // Move time

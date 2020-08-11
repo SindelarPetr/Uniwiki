@@ -35,9 +35,10 @@ namespace Uniwiki.Server.Application.Services
         private readonly IProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
         private readonly IEmailService _emailService;
+        private readonly AddUniversityServerAction _addUniversityServerAction;
         private readonly RequestContext _anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid().ToString(), Language.English, new System.Net.IPAddress(0x2414188));
 
-        public DataManipulationService(AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, IUniversityRepository universityRepository, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService, IEmailService emailService)
+        public DataManipulationService(AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, IUniversityRepository universityRepository, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService, IEmailService emailService, AddUniversityServerAction addUniversityServerAction)
         {
             _addCourseServerAction = addCourseServerAction;
             _registerServerAction = registerServerAction;
@@ -54,6 +55,7 @@ namespace Uniwiki.Server.Application.Services
             _profileRepository = profileRepository;
             _timeService = timeService;
             _emailService = emailService;
+            _addUniversityServerAction = addUniversityServerAction;
         }
 
         public async Task InitializeFakeData()
@@ -70,11 +72,11 @@ namespace Uniwiki.Server.Application.Services
             var martinContext = await RegisterUser("f@f.cz", "Martin", "Novák", "aaaaaa");
 
             // Universities
-            var uniCvut = _universityRepository.CreateUniversity("České vysoké učení technické v Praze", "ČVUT", "cvut");
-            var uniVse = _universityRepository.CreateUniversity("Vysoká škola ekonomická", "VŠE", "vse");
-            var uniCzu = _universityRepository.CreateUniversity("Česká zemědělská universita", "ČZU", "czu");
-            var uniHse = _universityRepository.CreateUniversity("Higher school of economics", "HSE", "hse");
-            var uniUof = _universityRepository.CreateUniversity("University of Oxford", "UOF", "uof");
+            var uniCvut = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("České vysoké učení technické v Praze", "ČVUT", "cvut"), lucieContext)).University;
+            var uniVse = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("Vysoká škola ekonomická", "VŠE", "vse"), lucieContext)).University;
+            var uniCzu = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("Česká zemědělská universita", "ČZU", "czu"), lucieContext)).University;
+            var uniHse = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("Higher school of economics", "HSE", "hse"), lucieContext)).University;
+            var uniUof = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("University of Oxford", "UOF", "uof"), lucieContext)).University;
 
             // Study groups (faculties)
             var fitCvut = (await _addStudyGroupServerAction.ExecuteActionAsync(
@@ -303,7 +305,7 @@ namespace Uniwiki.Server.Application.Services
             await _confirmEmailServerAction.ExecuteActionAsync(new ConfirmEmailRequestDto(emailSecret.Id),
                 _anonymousContext);
             var loginTokenDto = (await _loginServerAction.ExecuteActionAsync(new LoginRequestDto(email, password, new CourseDto[0]), _anonymousContext)).LoginToken;
-            var token = _loginTokenRepository.TryFindById(loginTokenDto.PrimaryTokenId, _timeService.Now);
+            var token = _loginTokenRepository.TryFindNonExpiredById(loginTokenDto.PrimaryTokenId, _timeService.Now);
             
             return new RequestContext(token, isAdmin ? AuthenticationLevel.Admin : AuthenticationLevel.PrimaryToken, Guid.NewGuid().ToString(), Language.English, _anonymousContext.IpAddress);
         }

@@ -6,39 +6,39 @@ using Uniwiki.Server.Persistence.Models;
 
 namespace Uniwiki.Server.Persistence
 {
-    internal class UniwikiContext : DbContext
+    public class UniwikiContext : DbContext
     {
-        public DbSet<LoginTokenModel> LoginTokens { get; set; }
+        public DbSet<LoginTokenModel> LoginTokens => Set<LoginTokenModel>();
 
-        public DbSet<NewPasswordSecretModel> NewPasswordSecrets { get; set; }
+        public DbSet<NewPasswordSecretModel> NewPasswordSecrets => Set<NewPasswordSecretModel>();
 
-        public DbSet<EmailConfirmationSecretModel> EmailConfirmationSecrets { get; set; }
+        public DbSet<EmailConfirmationSecretModel> EmailConfirmationSecrets => Set<EmailConfirmationSecretModel>();
 
-        public DbSet<ProfileModel> Profiles { get; set; }
+        public DbSet<ProfileModel> Profiles => Set<ProfileModel>();
 
-        public DbSet<UniversityModel> Universities { get; set; }
+        public DbSet<UniversityModel> Universities => Set<UniversityModel>();
 
-        public DbSet<StudyGroupModel> StudyGroups { get; set; }
+        public DbSet<StudyGroupModel> StudyGroups => Set<StudyGroupModel>();
 
-        public DbSet<CourseVisitModel> CourseVisits { get; set; }
+        public DbSet<CourseVisitModel> CourseVisits => Set<CourseVisitModel>();
 
-        public DbSet<CourseModel> Courses { get; set; }
-
-        public DbSet<PostModel> Posts { get; set; }
+        public DbSet<CourseModel> Courses => Set<CourseModel>();
+         
+        public DbSet<PostModel> Posts => Set<PostModel>();
 
         // TODO: Create the post file to be removable
         // TODO: Keep track of every post file, which is not used
-        public DbSet<PostFileModel> PostFiles { get; set; }
+        public DbSet<PostFileModel> PostFiles => Set<PostFileModel>();
 
-        public DbSet<PostCommentModel> PostComments { get; set; }
+        public DbSet<PostCommentModel> PostComments => Set<PostCommentModel>();
 
-        public DbSet<PostLikeModel> PostLikes { get; set; }
+        public DbSet<PostLikeModel> PostLikes => Set<PostLikeModel>();
 
-        public DbSet<PostCommentLikeModel> PostCommentLikes { get; set; }
+        public DbSet<PostCommentLikeModel> PostCommentLikes => Set<PostCommentLikeModel>();
 
-        public DbSet<PostFileDownloadModel> PostFileDownloads { get; set; }
+        public DbSet<PostFileDownloadModel> PostFileDownloads => Set<PostFileDownloadModel>();
 
-        public DbSet<FeedbackModel> Feedbacks { get; set; }
+        public DbSet<FeedbackModel> Feedbacks => Set<FeedbackModel>();
 
         // TODO: Move to configuration
         public IEnumerable<string> DefaultPostTypesCz => new[]
@@ -72,8 +72,111 @@ namespace Uniwiki.Server.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.Entity<LoginTokenModel>().
+            modelBuilder.Entity<StudyGroupModel>()
+            .HasOne(a => a.Profile)
+            .WithOne(a => a.HomeFaculty)
+            .HasForeignKey<StudyGroupModel>(c => c.Id);
+
+            modelBuilder.Entity<PostCommentModel>()
+                .HasMany(c => c.Likes)
+                .WithOne(l => l.Comment);
+
+            modelBuilder.Entity<PostCommentLikeModel>()
+                .HasKey(e => new PostCommentLikeModelId(e.CommentId, e.ProfileId));
+
+            modelBuilder.Entity<PostModel>()
+                .HasMany(p => p.Likes)
+                .WithOne(l => l.Post);
+
+            modelBuilder.Entity<PostLikeModel>()
+                .HasKey(e => new PostLikeModelId(e.PostId, e.ProfileId));
         }
 
+    }
+
+    public struct PostLikeModelId
+    {
+        public Guid PostId;
+        public Guid ProfileId;
+
+        public PostLikeModelId(PostModel post, ProfileModel profile)
+            : this(post.Id, profile.Id) { }
+
+        public PostLikeModelId(Guid postId, Guid profileId)
+        {
+            PostId = postId;
+            ProfileId = profileId;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is PostLikeModelId other &&
+                   PostId.Equals(other.PostId) &&
+                   ProfileId.Equals(other.ProfileId);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(PostId, ProfileId);
+        }
+
+        public void Deconstruct(out Guid postId, out Guid profileId)
+        {
+            postId = PostId;
+            profileId = ProfileId;
+        }
+
+        public static implicit operator (Guid PostId, Guid ProfileId)(PostLikeModelId value)
+        {
+            return (value.PostId, value.ProfileId);
+        }
+
+        public static implicit operator PostLikeModelId((Guid PostId, Guid ProfileId) value)
+        {
+            return new PostLikeModelId(value.PostId, value.ProfileId);
+        }
+    }
+
+    public struct PostCommentLikeModelId
+    {
+        public Guid CommentId;
+        public Guid ProfileId;
+
+        public PostCommentLikeModelId(PostCommentModel comment , ProfileModel profile)
+            : this(comment.Id, profile.Id) { }
+
+        public PostCommentLikeModelId(Guid commentId, Guid profileId)
+        {
+            CommentId = commentId;
+            ProfileId = profileId;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is PostCommentLikeModelId other &&
+                   CommentId.Equals(other.CommentId) &&
+                   ProfileId.Equals(other.ProfileId);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(CommentId, ProfileId);
+        }
+
+        public void Deconstruct(out Guid commentId, out Guid profileId)
+        {
+            commentId = CommentId;
+            profileId = ProfileId;
+        }
+
+        public static implicit operator (Guid CommentId, Guid ProfileId)(PostCommentLikeModelId value)
+        {
+            return (value.CommentId, value.ProfileId);
+        }
+
+        public static implicit operator PostCommentLikeModelId((Guid CommentId, Guid ProfileId) value)
+        {
+            return new PostCommentLikeModelId(value.CommentId, value.ProfileId);
+        }
     }
 }

@@ -66,8 +66,11 @@ namespace Uniwiki.Server.Application.Services
             // Extend the expiration of the token for 3 years for now - to avoid renewals
             var extendedExpiration = expiration.AddYears(3);
 
-            // Issue the token
-            var token = _loginTokenRepository.IssueLoginToken(profile, creationTime, extendedExpiration);
+            // Create the token
+            var token = new LoginTokenModel(Guid.NewGuid(), Guid.NewGuid(), profile, creationTime, extendedExpiration, Guid.NewGuid());
+
+            // Add it to the DB
+            _loginTokenRepository.Add(token);
 
             return token;
         }

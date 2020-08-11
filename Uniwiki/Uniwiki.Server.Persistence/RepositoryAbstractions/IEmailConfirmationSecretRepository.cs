@@ -11,7 +11,7 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         void InvalidateSecrets(ProfileModel profile);
         EmailConfirmationSecretModel? TryGetValidEmailConfirmationSecret(ProfileModel profile);
         EmailConfirmationSecretModel FindValidById(Guid secret);
-        EmailConfirmationSecretModel FindById(Guid secret);
+        //EmailConfirmationSecretModel FindById(Guid secret);
         void SaveEmailConfirmationSecret(EmailConfirmationSecretModel emailConfirmationSecret);
     }
 }

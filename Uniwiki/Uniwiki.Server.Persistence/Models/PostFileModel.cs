@@ -41,7 +41,7 @@ namespace Uniwiki.Server.Persistence.Models
         }
 
 
-        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size, bool isRemoved)
+        public PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size, bool isRemoved)
         {
             Id = id;
             Path = path;
@@ -55,7 +55,7 @@ namespace Uniwiki.Server.Persistence.Models
             ((IRemovableModel)this).IsRemoved = isRemoved;
         }
 
-        internal PostFileModel()
+        protected PostFileModel()
         {
 
         }

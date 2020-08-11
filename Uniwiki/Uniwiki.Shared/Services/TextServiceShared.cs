@@ -6,15 +6,15 @@ using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Shared.Services
 {
-    public abstract class TextServiceBase
+    internal class TextServiceShared
     {
         public Language Language { get; private set; }
 
-        protected string Sanitize(string text) => HtmlEncoder.Default.Encode(text);
-        public TextServiceBase()
+        public TextServiceShared(ILanguageService languageService)
         {
             Language = Constants.DefaultLanguage;
         }
+        protected string Sanitize(string text) => HtmlEncoder.Default.Encode(text);
 
         public void SetLanguage(Language language) => Language = language;
 

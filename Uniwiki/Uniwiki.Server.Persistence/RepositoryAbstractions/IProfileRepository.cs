@@ -11,7 +11,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         ProfileModel GetProfileByEmail(string email);
         ProfileModel TryGetProfileByEmail(string email);
         void ChangePassword(ProfileModel profile, string newPassword, byte[] passwordSalt);
-        ProfileModel FindById(Guid id);
         ProfileModel TryGetProfileByUrl(string url);
         void SetAdmin(ProfileModel profile);
         void EditHomeFaculty(ProfileModel user, StudyGroupModel? homeFaculty);

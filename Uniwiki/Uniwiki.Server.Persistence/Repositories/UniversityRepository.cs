@@ -6,22 +6,21 @@ using Shared.Exceptions;
 using Shared.Extensions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
+using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class UniversityRepository : IUniversityRepository
+    internal class UniversityRepository : RepositoryBase<UniversityModel>, IUniversityRepository
     {
-        //private readonly UniwikiContext _uniwikiContext;
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
 
-        public DbSet<UniversityModel> All { get; }
+        public string NotFoundByIdMessage => _textService.Error_UniversityNotFound;
 
-        public UniversityRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService)
+        public UniversityRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.Universities)
         {
-            All = uniwikiContext.Universities;
             _stringStandardizationService = stringStandardizationService;
             _textService = textService;
         }
@@ -57,11 +56,6 @@ namespace Uniwiki.Server.Persistence.Repositories
             return GetUniversities().Where(u =>
                     _stringStandardizationService.StandardizeSearchText(u.ShortName).Contains(text) ||
                     _stringStandardizationService.StandardizeSearchText(u.FullName).Contains(text));
-        }
-
-        public UniversityModel FindById(Guid id)
-        {
-            return All.First(u => u.Id == id);
         }
 
         public bool IsNameAndUrlUniq(string fullName, string url)

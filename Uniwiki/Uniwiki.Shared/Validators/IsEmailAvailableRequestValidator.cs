@@ -8,7 +8,7 @@ namespace Uniwiki.Shared.Validators
 {
     internal class IsEmailAvailableRequestValidator : StandardizerValidator<IsEmailAvailableRequestDto>
     {
-        public IsEmailAvailableRequestValidator(TextServiceBase textService, IStandardizer<IsEmailAvailableRequestDto> standardizer) : base(standardizer)
+        public IsEmailAvailableRequestValidator(TextServiceShared textService, IStandardizer<IsEmailAvailableRequestDto> standardizer) : base(standardizer)
         {
             RuleFor(f => f.Email).Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty().WithMessage(textService.Validation_TypeYourEmail)

@@ -34,7 +34,7 @@ namespace Uniwiki.Server.Application.ServerActions
                 throw new RequestException("You cannot remove a comment which is not yours.");
             
             // Remove the comment
-            _postCommentRepository.RemoveComment(comment);
+            _postCommentRepository.Remove(comment);
             
             // Create the response
             var response = new RemovePostCommentResponseDto(comment.Post.ToDto(profile));

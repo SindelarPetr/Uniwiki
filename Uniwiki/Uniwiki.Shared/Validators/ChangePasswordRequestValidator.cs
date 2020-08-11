@@ -8,7 +8,7 @@ namespace Uniwiki.Shared.Validators
 {
     internal class ChangePasswordRequestValidator : StandardizerValidator<ChangePasswordRequestDto>
     {
-        public ChangePasswordRequestValidator(TextServiceBase textServiceBase, IStandardizer<ChangePasswordRequestDto> standardizer) : base(standardizer)
+        public ChangePasswordRequestValidator(TextServiceShared textServiceBase, IStandardizer<ChangePasswordRequestDto> standardizer) : base(standardizer)
         {
             RuleFor(f => f.OldPassword).Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty().WithMessage(textServiceBase.Validation_TypeYourOldPassword);

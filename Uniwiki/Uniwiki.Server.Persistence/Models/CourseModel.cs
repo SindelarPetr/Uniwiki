@@ -15,7 +15,7 @@ namespace Uniwiki.Server.Persistence.Models
         public Guid Id { get; protected set; }
         bool IRemovableModel.IsRemoved { get; set; }
 
-        internal CourseModel(Guid id, string code, string fullname, StudyGroupModel studyGroup, ProfileModel author, string url, IEnumerable<PostModel> posts, bool isRemoved)
+        public CourseModel(Guid id, string code, string fullname, StudyGroupModel studyGroup, ProfileModel author, string url, bool isRemoved)
         {
             Id = id;
             Code = code;
@@ -23,11 +23,10 @@ namespace Uniwiki.Server.Persistence.Models
             StudyGroup = studyGroup;
             Author = author;
             Url = url;
-            Posts = posts;
             ((IRemovableModel)this).IsRemoved = isRemoved;
         }
 
-        internal CourseModel()
+        protected CourseModel()
         {
 
         }

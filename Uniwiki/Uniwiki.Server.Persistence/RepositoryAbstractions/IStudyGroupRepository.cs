@@ -10,7 +10,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
     {
         StudyGroupModel GetStudyGroup(string studyGroupUrlName);
         IEnumerable<CourseModel> GetCourses(string studyGroupUrl);
-        IEnumerable<StudyGroupModel> GetStudyGroups();
         IEnumerable<StudyGroupModel> SearchStudyGroups(string text);
         IEnumerable<StudyGroupModel> SearchStudyGroupsOfUniversity(string text, UniversityModel university);
         StudyGroupModel? TryGetStudyGroup(string url);

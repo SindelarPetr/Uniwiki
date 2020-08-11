@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse;
 
@@ -36,7 +37,8 @@ namespace Uniwiki.Server.Application.ServerActions
                 throw new RequestException(_textService.Error_UniversityNameOrUrlNotUniq(request.FullName, request.Url));
 
             // Create the university
-            var university = _universityRepository.CreateUniversity(request.FullName, request.ShortName, request.Url);
+            var university = new UniversityModel(Guid.NewGuid(), request.FullName, request.ShortName, request.Url, false);
+            _universityRepository.Add(university);
 
             // Create response
             var response = new AddUniversityResponseDto(university.ToDto());

@@ -8,7 +8,7 @@ namespace Uniwiki.Shared.Validators
 {
     internal class LoginRequestValidator : StandardizerValidator<LoginRequestDto>
     {
-        public LoginRequestValidator(TextServiceBase textService, IStandardizer<LoginRequestDto> standardizer) : base(standardizer)
+        public LoginRequestValidator(TextServiceShared textService, IStandardizer<LoginRequestDto> standardizer) : base(standardizer)
         {
             RuleFor(f => f.Email).Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty().WithMessage(textService.Validation_TypeValidEmailAddress)

@@ -7,6 +7,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
     public interface ILoginTokenRepository : IIdRepository<LoginTokenModel, Guid>
     {
         //LoginTokenModel IssueLoginToken(ProfileModel profile, DateTime creationTime, DateTime expiration);
-        LoginTokenModel? TryFindById(Guid token, DateTime searchTime);
+        LoginTokenModel? TryFindNonExpiredById(Guid token, DateTime searchTime);
     }
 }

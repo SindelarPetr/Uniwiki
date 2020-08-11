@@ -7,6 +7,7 @@ using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
@@ -70,7 +71,10 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
                 var homeFaculty = request.HomeFacultyId.HasValue ? _studyGroupRepository.FindById(request.HomeFacultyId.Value) : null;
 
                 // Create a new profile
-                profile = _profileRepository.Register(request.Email, names[0], names[1], url, password.hashedPassword, password.salt, _timeService.Now, homeFaculty);
+                profile = new ProfileModel(Guid.NewGuid(), request.Email, names[0], names[1], url, password.hashedPassword, password.salt, $"/img/profilePictures/no-profile-picture.jpg", _timeService.Now, false, AuthenticationLevel.PrimaryToken, homeFaculty);
+
+                // Add it to DB
+                _profileRepository.Add(profile);
             }
 
             // Set the recent courses

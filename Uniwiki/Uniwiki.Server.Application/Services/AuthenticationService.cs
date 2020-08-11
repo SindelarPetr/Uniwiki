@@ -23,7 +23,7 @@ namespace Uniwiki.Server.Application.Services
             if (tokenId != null)
             {
                 // Get token guid
-                var token = _loginTokenRepository.TryFindById(tokenId.Value, _timeService.Now);
+                var token = _loginTokenRepository.TryFindNonExpiredById(tokenId.Value, _timeService.Now);
 
                 if (token != null)
                 {

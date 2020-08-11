@@ -12,7 +12,7 @@ namespace Uniwiki.Server.Persistence.Models
         public DateTime Expiration { get; protected set; }
         public Guid SecondaryTokenId { get; protected set; }
 
-        internal LoginTokenModel(Guid id, Guid primaryTokenId, ProfileModel profile, DateTime creationTime, DateTime expiration, Guid secondaryTokenId)
+        public LoginTokenModel(Guid id, Guid primaryTokenId, ProfileModel profile, DateTime creationTime, DateTime expiration, Guid secondaryTokenId)
         {
             Id = id;
             PrimaryTokenId = primaryTokenId;
@@ -22,7 +22,7 @@ namespace Uniwiki.Server.Persistence.Models
             SecondaryTokenId = secondaryTokenId;
         }
 
-        internal LoginTokenModel()
+        protected LoginTokenModel()
         {
 
         }

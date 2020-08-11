@@ -9,7 +9,7 @@ namespace Uniwiki.Shared.Validators
 {
     public class AddCourseRequestValidator : StandardizerValidator<AddCourseRequestDto>
     {
-        public AddCourseRequestValidator(TextServiceBase textServiceBase, IStandardizer<AddCourseRequestDto> standardizer) : base(standardizer)
+        public AddCourseRequestValidator(TextServiceShared textServiceBase, IStandardizer<AddCourseRequestDto> standardizer) : base(standardizer)
         {
             RuleFor(f => f.CourseCode)
                 .MinMaxLengthWithMessages(textServiceBase, Constants.Validations.CourseCodeMinLength, Constants.Validations.CourseCodeMaxLength);

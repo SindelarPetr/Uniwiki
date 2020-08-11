@@ -1,32 +1,29 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using Uniwiki.Server.Persistence.Models;
+using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class LoginTokenRepository : ILoginTokenRepository
+    internal class LoginTokenRepository : RepositoryBase<LoginTokenModel>, ILoginTokenRepository
     {
-        private readonly UniwikiContext _dataStorage;
+        private readonly TextService _textService;
 
-        public LoginTokenRepository(UniwikiContext dataStorage)
+        public string NotFoundByIdMessage => _textService.Error_LoginTokenNotFound;
+
+        public LoginTokenRepository(UniwikiContext uniwikiContext, TextService textService)
+            : base(uniwikiContext, uniwikiContext.LoginTokens)
         {
-            _dataStorage = dataStorage;
+            _textService = textService;
         }
 
-        public LoginTokenModel IssueLoginToken(ProfileModel profile, DateTime creationTime, DateTime expiration)
+
+        public LoginTokenModel? TryFindNonExpiredById(Guid tokenValue, DateTime searchTime)
         {
-            // Issue a new token - pair it with the current user
-            var token = new LoginTokenModel(Guid.NewGuid(), profile, creationTime, expiration, Guid.NewGuid());
-
-            // Persist the token
-            _dataStorage.LoginTokens.Add(token);
-
-            return token;
-        }
-
-        public LoginTokenModel? TryFindById(Guid tokenValue, DateTime searchTime)
-        {
-            return _dataStorage.LoginTokens.FirstOrDefault(t => (t.PrimaryTokenId == tokenValue || t.SecondaryTokenId == tokenValue) && t.Expiration > searchTime);
+            return All.FirstOrDefault(t => (t.PrimaryTokenId == tokenValue || t.SecondaryTokenId == tokenValue) && t.Expiration > searchTime);
         }
     }
 }

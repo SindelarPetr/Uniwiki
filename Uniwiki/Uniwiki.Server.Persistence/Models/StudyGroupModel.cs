@@ -13,17 +13,12 @@ namespace Uniwiki.Server.Persistence.Models
         public string Url { get; protected set; }
         public ProfileModel Profile { get; protected set; }
         public IEnumerable<CourseModel> Courses { get; protected set; }
-        public Language PrimaryLanguage { get; }
+        public Language PrimaryLanguage { get; protected set; }
         bool IRemovableModel.IsRemoved { get; set; }
         public Guid Id { get; protected set; }
 
-        internal StudyGroupModel()
-        {
-
-        }
-
-        internal StudyGroupModel(Guid id, UniversityModel university, string shortName, string longName, string url,
-            ProfileModel profile, Language primaryLanguage, IEnumerable<CourseModel> courses, bool isRemoved)
+        public StudyGroupModel(Guid id, UniversityModel university, string shortName, string longName, string url,
+            ProfileModel profile, Language primaryLanguage, bool isRemoved)
         {
             Id = id;
             University = university;
@@ -32,8 +27,12 @@ namespace Uniwiki.Server.Persistence.Models
             Url = url;
             Profile = profile;
             PrimaryLanguage = primaryLanguage;
-            Courses = courses;
             ((IRemovableModel)this).IsRemoved = isRemoved;
+        }
+
+        protected StudyGroupModel()
+        {
+
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Uniwiki.Server.Application.ServerActions
             }
 
             // Remove the post
-            _postRepository.RemovePost(post);
+            _postRepository.Remove(post);
 
             // Create response
             var response = new RemovePostResponseDto();

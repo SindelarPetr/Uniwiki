@@ -9,6 +9,7 @@ using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse;
 
@@ -72,7 +73,10 @@ namespace Uniwiki.Server.Application.ServerActions
             _logger.LogInformation("Writing the file record to the DB: FileId: '{FileId}', FileName: '{FileName}', Size: {Size}", id, originalName, file.Length);
 
             // Create a new file record in the DB
-            var postFileModel = _postFileRepository.CreatePostFile(id, path, fileName, extension, profile, request.CourseId, creationTime, file.Length);
+            var postFileModel = new PostFileModel(id, path, fileName, extension, false, profile, request.CourseId, creationTime, file.Length, false);
+
+            // Add it to the DB
+            _postFileRepository.Add(postFileModel);
 
             // Log information about the file
             _logger.LogInformation("Copying the file to the file system: FileId: '{FileId}'", id);

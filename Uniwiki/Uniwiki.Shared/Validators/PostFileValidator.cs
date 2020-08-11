@@ -9,7 +9,7 @@ namespace Uniwiki.Shared.Validators
 {
     internal class PostFileValidator : AbstractValidator<PostFileDto>
     {
-        public PostFileValidator(TextServiceBase textService)
+        public PostFileValidator(TextServiceShared textService)
         {
             RuleFor(f => f.NameWithoutExtension).Cascade(CascadeMode.StopOnFirstFailure)
                 .MinMaxLengthWithMessages(textService, 1, Constants.Validations.FileNameMaxLength)

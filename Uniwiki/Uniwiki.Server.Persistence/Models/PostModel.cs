@@ -21,12 +21,7 @@ namespace Uniwiki.Server.Persistence.Models
 
         public Guid Id { get; protected set; }
 
-        internal PostModel()
-        {
-
-        }
-
-        internal PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> files, IEnumerable<PostCommentModel> comments, IEnumerable<PostLikeModel> likes, bool isRemoved)
+        public PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> files, bool isRemoved)
         {
             Id = id;
             PostType = postType;
@@ -34,10 +29,13 @@ namespace Uniwiki.Server.Persistence.Models
             Text = text;
             Course = course;
             CreationTime = creationTime;
-            Comments = comments;
-            Likes = likes;
             ((IRemovableModel)this).IsRemoved = isRemoved;
             Files = files.ToArray();
+        }
+
+        protected PostModel()
+        {
+
         }
 
         internal void Edit(string text, string? postType, PostFileModel[] postFiles)

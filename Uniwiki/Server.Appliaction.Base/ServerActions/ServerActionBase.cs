@@ -28,7 +28,6 @@ namespace Server.Appliaction.ServerActions
             _textService = serviceProvider.GetService<TextService>();
         }
 
-
         public virtual async Task<TResponse> ExecuteActionAsync(TRequest request, RequestContext context)
             => (TResponse) await ExecuteActionAsync((IRequest) request, context);
 
@@ -59,7 +58,9 @@ namespace Server.Appliaction.ServerActions
                 throw new RequestException(_textService.RequestWasNotSuccessfullyValidated);
 
             // Execute the server request
-            return await ExecuteAsync(tRequest, context);
+            var result = await ExecuteAsync(tRequest, context);
+
+            return result;
         }
 
         private void ThrowIfNotAuthenticated(AuthenticationLevel userLevel)

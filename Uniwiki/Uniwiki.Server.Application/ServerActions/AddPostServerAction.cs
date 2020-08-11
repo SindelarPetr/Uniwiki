@@ -5,6 +5,7 @@ using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse;
 
@@ -45,7 +46,8 @@ namespace Uniwiki.Server.Application.ServerActions
             var postFiles = _postFileRepository.FindPostFilesAndUpdateNames(files, profile);
 
             // Add the post to the DB
-            var newPost = _postRepository.CreatePost(request.PostType, profile, request.Text, course, _timeService.Now, postFiles);
+            var newPost = new PostModel(Guid.NewGuid(), request.PostType, profile, request.Text, course, _timeService.Now, postFiles, false);
+            _postRepository.Add(newPost);
 
             // Create DTO
             var newPostDto = newPost.ToDto(profile);

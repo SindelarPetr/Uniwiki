@@ -22,17 +22,11 @@ namespace Uniwiki.Server.Persistence.Models
         public string Url { get; protected set; }
         public string ProfilePictureSrc { get; protected set; }
         public IEnumerable<CourseModel> RecentCourses { get; protected set; }
-        public IEnumerable<FeedbackModel> Feedbacks { get; protected set; }
+        public ICollection<FeedbackModel> Feedbacks { get; set; } = new List<FeedbackModel>();
         public bool FeedbackProvided => Feedbacks.Any();
         public Guid Id { get; protected set; }
 
-        // For Entity framework
-        internal ProfileModel()
-        {
-
-        }
-
-        internal ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty, IEnumerable<CourseModel> recentCourses, IEnumerable<FeedbackModel>  feedbacks)
+        public ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty)
         {
             Id = id;
             Email = email;
@@ -42,12 +36,16 @@ namespace Uniwiki.Server.Persistence.Models
             IsConfirmed = isConfirmed;
             AuthenticationLevel = authenticationLevel;
             HomeFaculty = homeFaculty;
-            RecentCourses = recentCourses;
             ProfilePictureSrc = profilePictureSrc;
             FirstName = firstName;
             FamilyName = familyName;
             Url = url;
-            Feedbacks = feedbacks;
+        }
+
+        // For Entity framework
+        protected ProfileModel()
+        {
+
         }
 
         internal void SetAsConfirmed()

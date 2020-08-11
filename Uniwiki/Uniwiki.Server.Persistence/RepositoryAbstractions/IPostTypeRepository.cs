@@ -5,7 +5,7 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
     public interface IPostTypeRepository
     {
-        IEnumerable<string> GetPostTypesForNewPost(CourseModel course);
-        IEnumerable<(string?, int)> GetFilterPostTypes(CourseModel course);
+        //IEnumerable<string> GetPostTypesForNewPost(CourseModel course);
+        //IEnumerable<(string?, int)> GetFilterPostTypes(CourseModel course);
     }
 }
