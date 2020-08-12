@@ -5,7 +5,7 @@ using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Shared.Standardizers
 {
-    public class AddCourseRequestStandardizer : IStandardizer<AddCourseRequestDto>
+    internal class AddCourseRequestStandardizer : IStandardizer<AddCourseRequestDto>
     {
         private readonly IStringStandardizationService _stringStandardizationService;
 

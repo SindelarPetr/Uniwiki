@@ -1,6 +1,6 @@
 ﻿using System;
 using Shared.RequestResponse;
-using Uniwiki.Shared.Services;
+using Uniwiki.Shared.Services.Abstractions;
 
 namespace Server.Appliaction.Services
 {

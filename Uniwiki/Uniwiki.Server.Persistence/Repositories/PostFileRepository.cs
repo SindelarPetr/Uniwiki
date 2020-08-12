@@ -52,6 +52,15 @@ namespace Uniwiki.Server.Persistence.Repositories
             return fileModels.Select(f => f.postFile);
         }
 
+        public PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size)
+        {
+            var postFile = new PostFileModel(Guid.NewGuid(), path, nameWithoutExtension, extension, isSaved, profile, courseId, creationTime, size, false);
+
+            All.Add(postFile);
+
+            return postFile;
+        }
+
         //public PostFileModel FindById(Guid fileId, string fileName)
         //{
         //    return All.FirstOrDefault(f => f.Id == fileId) ??

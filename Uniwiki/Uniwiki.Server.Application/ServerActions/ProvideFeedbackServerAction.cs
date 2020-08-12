@@ -26,11 +26,8 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<ProvideFeedbackResponseDto> ExecuteAsync(ProvideFeedbackRequestDto request, RequestContext context)
         {
-            // Create a new feedback
-            var feedback = new FeedbackModel(Guid.NewGuid(), false, context.User, request.Rating, request.Text, _timeService.Now);
-
             // Add the feedback to the DB
-            _feedbackRepository.Add(feedback);
+            _feedbackRepository.AddFeedback(context.User, request.Rating, request.Text, _timeService.Now);
 
             // Create response
             var response = new ProvideFeedbackResponseDto(context.User?.ToDto());

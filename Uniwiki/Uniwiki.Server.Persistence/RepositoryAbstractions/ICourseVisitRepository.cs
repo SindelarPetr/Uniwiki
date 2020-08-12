@@ -9,5 +9,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
     {
         IEnumerable<CourseModel> GetRecentCourses(StudyGroupModel? studyGroup, ProfileModel profile);
         void AddRecentCourseVisits(IEnumerable<CourseModel> recentCourses, ProfileModel profile, DateTime visitTime);
+        CourseVisitModel AddCourseVisit(CourseModel course, ProfileModel profile, DateTime visitTime);
     }
 }

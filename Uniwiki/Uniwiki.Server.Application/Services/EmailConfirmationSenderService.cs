@@ -41,14 +41,11 @@ namespace Uniwiki.Server.Application.Services
             // Invalidate all old secret(s)
             _emailConfirmationSecretRepository.InvalidateSecrets(profile);
 
-            // Create email confirmation secret
-            var emailConfirmationSecret = new EmailConfirmationSecretModel(Guid.NewGuid(), profile, Guid.NewGuid(), _timeService.Now, true);
-
             // Add it to the DB
-            _emailConfirmationSecretRepository.Add(emailConfirmationSecret);
+            var emailConfirmationSecret = _emailConfirmationSecretRepository.AddEmailConfirmationSecret(profile, Guid.NewGuid(), _timeService.Now);
 
             // Send the message to email
-            await _emailService.SendRegisterEmail(profile.Email, emailConfirmationSecret.Id);
+            await _emailService.SendRegisterEmail(profile.Email, emailConfirmationSecret.Secret);
 
             // Save the email secret to the DB. We have to do it after the email was sent - if it will fail it throws exception and the secret will not be saved.
             _emailConfirmationSecretRepository.SaveEmailConfirmationSecret(emailConfirmationSecret);

@@ -12,6 +12,7 @@ using Shared.Exceptions;
 using Shared.RequestResponse;
 using Uniwiki.Client.Host.Exceptions;
 using Uniwiki.Client.Host.Services.Abstractions;
+using Uniwiki.Shared.Services.Abstractions;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Uniwiki.Client.Host.Services
@@ -23,14 +24,16 @@ namespace Uniwiki.Client.Host.Services
         private readonly IToastService _toastService;
         private readonly TextService _textService;
         private readonly IFixingService _fixingService;
+        private readonly ILanguageService _languageService;
 
-        public RequestSender(IHttpService client, ILocalAuthenticationStateProvider localAuthenticationStateProvider, IToastService toastService, TextService textService, IFixingService fixingService)
+        public RequestSender(IHttpService client, ILocalAuthenticationStateProvider localAuthenticationStateProvider, IToastService toastService, TextService textService, IFixingService fixingService, ILanguageService languageService)
         {
             _client = client;
             _localAuthenticationStateProvider = localAuthenticationStateProvider;
             _toastService = toastService;
             _textService = textService;
             _fixingService = fixingService;
+            _languageService = languageService;
         }
 
         public Task<T> SendRequestAsync<T>(RequestBase<T> request, Action? finalAction = null, [CallerMemberName] string callerName = null, [CallerLineNumber] int lineNumber = 0) where T : ResponseBase
@@ -51,7 +54,7 @@ namespace Uniwiki.Client.Host.Services
                 var type = request.GetType();
 
                 // Wrap the request to DataForServer
-                var wrapped = new DataForServer(serialized, type, _localAuthenticationStateProvider.Token, _textService.Language, ClientConstants.AppVersionString);
+                var wrapped = new DataForServer(serialized, type, _localAuthenticationStateProvider.Token, _languageService.Language, ClientConstants.AppVersionString);
 
                 // Serialize the wrapper
                 var serializedWrapped = JsonSerializer.Serialize(wrapped);

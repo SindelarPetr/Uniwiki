@@ -18,12 +18,5 @@ namespace Uniwiki.Server.Persistence.Repositories.Base
         }
 
         protected void SaveChanges() => _uniwikiContext.SaveChanges();
-
-        public void Add(TModel model)
-        {
-            All.Add(model);
-
-            SaveChanges();
-        }
     }
 }

@@ -8,5 +8,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
     {
         //PostFileDownloadModel AddDownload(LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime);
         PostFileDownloadModel? TryGetLatestDownload(LoginTokenModel token, PostFileModel fileDownloaded);
+        PostFileDownloadModel AddPostFileDownload(LoginTokenModel loginToken, PostFileModel fileDownloaded, DateTime downloadTime);
     }
 }

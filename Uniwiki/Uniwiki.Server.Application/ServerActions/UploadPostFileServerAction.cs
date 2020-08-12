@@ -73,10 +73,7 @@ namespace Uniwiki.Server.Application.ServerActions
             _logger.LogInformation("Writing the file record to the DB: FileId: '{FileId}', FileName: '{FileName}', Size: {Size}", id, originalName, file.Length);
 
             // Create a new file record in the DB
-            var postFileModel = new PostFileModel(id, path, fileName, extension, false, profile, request.CourseId, creationTime, file.Length, false);
-
-            // Add it to the DB
-            _postFileRepository.Add(postFileModel);
+            var postFileModel = _postFileRepository.AddPostFile(path, fileName, extension, false, profile, request.CourseId, creationTime, file.Length);
 
             // Log information about the file
             _logger.LogInformation("Copying the file to the file system: FileId: '{FileId}'", id);

@@ -7,21 +7,22 @@ using System.Threading.Tasks;
 using Uniwiki.Client.Host.Components.FileUploader;
 using Uniwiki.Client.Host.Services.Abstractions;
 using Uniwiki.Shared.RequestResponse;
+using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Client.Host.Services
 {
     internal class FileUploadQueueService : IFileUploadQueueService
     {
         private readonly ILoginService _loginService;
-        private readonly TextService _textService;
+        private readonly ILanguageService _languageService;
         Queue<Func<Task<UploadFile>>> _queue;
         int uploading = 0;
 
-        public FileUploadQueueService(ILoginService loginService, TextService textService)
+        public FileUploadQueueService(ILoginService loginService, ILanguageService languageService)
         {
             _queue = new Queue<Func<Task<UploadFile>>>();
             _loginService = loginService;
-            _textService = textService;
+            _languageService = languageService;
         }
 
         public Task Upload(UploadFile file, Guid courseId)
@@ -70,7 +71,7 @@ namespace Uniwiki.Client.Host.Services
                 var cId = courseId;
                 var request = new UploadPostFileRequestDto(uploadFile.Name, cId);
                 var requestSerialized = JsonConvert.SerializeObject(request);
-                var dataForServer = new DataForServer(requestSerialized, request.GetType(), _loginService.LoginToken?.PrimaryTokenId, _textService.Language, ClientConstants.AppVersionString);
+                var dataForServer = new DataForServer(requestSerialized, request.GetType(), _loginService.LoginToken?.PrimaryTokenId, _languageService.Language, ClientConstants.AppVersionString);
                 await uploadFile.Upload(JsonConvert.SerializeObject(dataForServer));
                 return uploadFile;
             }

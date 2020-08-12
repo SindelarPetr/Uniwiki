@@ -74,5 +74,19 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             return university.StudyGroups.All(g => g.LongName.ToLower() != name.ToLower());
         }
+
+        public StudyGroupModel AddStudyGroup(UniversityModel university, string shortName, string longName, string url, ProfileModel profile, Language primaryLanguage)
+        {
+            // Create ID
+            var id = Guid.NewGuid();
+
+            // Create the study group
+            var studyGroup = new StudyGroupModel(id, university, shortName, longName, url, profile, primaryLanguage, false);
+
+            // Add the study group to the DB
+            All.Add(studyGroup);
+
+            return studyGroup;
+        }
     }
 }

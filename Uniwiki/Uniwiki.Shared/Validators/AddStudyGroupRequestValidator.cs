@@ -8,7 +8,7 @@ using Uniwiki.Shared.Services;
 namespace Uniwiki.Shared.Validators
 {
 
-    public class AddStudyGroupRequestValidator : StandardizerValidator<AddStudyGroupRequestDto>
+    internal class AddStudyGroupRequestValidator : StandardizerValidator<AddStudyGroupRequestDto>
     {
         public AddStudyGroupRequestValidator(TextServiceShared textServiceBase, IStandardizer<AddStudyGroupRequestDto> standardizer) : base(standardizer)
         {

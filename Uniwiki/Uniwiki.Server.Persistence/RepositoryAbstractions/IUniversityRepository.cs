@@ -12,5 +12,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         IEnumerable<UniversityModel> GetUniversities();
         IEnumerable<UniversityModel> SearchUniversities(string text);
         bool IsNameAndUrlUniq(string fullName, string url);
+        UniversityModel AddUniversity(string fullName, string shortName, string url);
     }
 }

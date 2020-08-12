@@ -11,5 +11,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         //PostFileModel CreatePostFile(Guid id, string path, string fileName, string extension, ProfileModel profile, Guid courseId, DateTime creationTime, long size);
         void FileSaved(PostFileModel postFileModel);
         IEnumerable<PostFileModel> FindPostFilesAndUpdateNames(IEnumerable<(Guid id, string fileName)> files, ProfileModel profile);
+        PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size);
     }
 }

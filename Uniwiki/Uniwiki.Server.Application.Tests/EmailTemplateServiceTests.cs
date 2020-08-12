@@ -5,9 +5,10 @@ using System.IO;
 using Server.Appliaction.Services.Abstractions;
 using Shared;
 using Uniwiki.Server.Application.Services;
-using Uniwiki.Shared.Services;
 using Uniwiki.Shared;
 using System.Web;
+using Uniwiki.Shared.Services.Abstractions;
+using Uniwiki.Shared.Tests.FakeServices;
 
 namespace Uniwiki.Server.Application.Tests
 {
@@ -26,8 +27,7 @@ namespace Uniwiki.Server.Application.Tests
         public void RegistrationEmailCanBeCreated()
         {
             var uploadFileService = new FakeUploadFileService();
-            var textService = new TextService();
-            textService.SetLanguage(Language.Czech); // Set language of the email
+            var textService = new TextService(new FakeLanguageService());
             var emailTemplateService = new EmailTemplateService(uploadFileService, textService);
             var confirmationLink = "https://uniwiki.com/some/confi9438729874";
             var registerEmailTemplate = emailTemplateService.GetVerifyEmailText(confirmationLink);
@@ -45,18 +45,6 @@ namespace Uniwiki.Server.Application.Tests
             var registerEmailTemplate = emailTemplateService.GetRestorePasswordText(confirmationLink);
             Console.WriteLine(registerEmailTemplate);
         }
-    }
-
-    class FakeLanguageService : ILanguageService
-    {
-        public Language Language { get; private set; } = Constants.DefaultLanguage;
-
-        public string GetTranslation(string czech, string english) 
-            => Language.Czech == Language ? czech : english;
-
-        public string Sanitize(string text) => HttpUtility.HtmlEncode(text);
-
-        public void SetLanguage(Language language) => Language = language;
     }
 
     class FakeUploadFileService : IUploadFileService

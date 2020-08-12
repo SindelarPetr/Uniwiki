@@ -14,5 +14,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         IEnumerable<StudyGroupModel> SearchStudyGroupsOfUniversity(string text, UniversityModel university);
         StudyGroupModel? TryGetStudyGroup(string url);
         bool IsStudyGroupNameUniq(UniversityModel university, string name);
+        StudyGroupModel AddStudyGroup(UniversityModel university, string shortName, string longName, string url, ProfileModel profile, Language primaryLanguage);
     }
 }

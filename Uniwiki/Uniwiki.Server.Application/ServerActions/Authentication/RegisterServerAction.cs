@@ -56,10 +56,6 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
                 // Get the name and surname
                 var names = request.NameAndSurname.Split( new[] { ' ' }, 2);
 
-                // Check if there is a name and surname (even though it should be already checked by a validator)
-                if (names.Length != 2)
-                    throw new RequestException(_textService.Validation_FillNameAndSurname);
-
                 // Create url for the new profile
                 string url = _stringStandardizationService.CreateUrl(request.NameAndSurname,
                     u => _profileRepository.TryGetProfileByUrl(u) == null);
@@ -70,11 +66,8 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
                 // Get the home faculty
                 var homeFaculty = request.HomeFacultyId.HasValue ? _studyGroupRepository.FindById(request.HomeFacultyId.Value) : null;
 
-                // Create a new profile
-                profile = new ProfileModel(Guid.NewGuid(), request.Email, names[0], names[1], url, password.hashedPassword, password.salt, $"/img/profilePictures/no-profile-picture.jpg", _timeService.Now, false, AuthenticationLevel.PrimaryToken, homeFaculty);
-
-                // Add it to DB
-                _profileRepository.Add(profile);
+                // Create the profile
+                profile = _profileRepository.AddProfile(request.Email, names[0], names[1], url, password.hashedPassword, password.salt, $"/img/profilePictures/no-profile-picture.jpg", _timeService.Now, false, AuthenticationLevel.PrimaryToken, homeFaculty);
             }
 
             // Set the recent courses

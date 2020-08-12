@@ -28,6 +28,13 @@ namespace Uniwiki.Server.Persistence.Repositories
             return comment;
         }
 
+        public PostCommentModel AddPostComment(ProfileModel profile, PostModel post, string commentText, DateTime creationTime)
+        {
+            var postComment = new PostCommentModel(Guid.NewGuid(), profile, post, commentText, creationTime, false);
 
+            All.Add(postComment);
+
+            return postComment;
+        }
     }
 }

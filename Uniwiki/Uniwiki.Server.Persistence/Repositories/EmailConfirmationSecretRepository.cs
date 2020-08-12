@@ -51,10 +51,13 @@ namespace Uniwiki.Server.Persistence.Repositories
                    ?? throw new RequestException(_textService.Error_EmailConfirmationFailed);
         }
 
-        //public EmailConfirmationSecretModel FindById(Guid secret)
-        //{
-        //    return All.FirstOrDefault(s => s.Secret == secret)
-        //           ?? throw new RequestException(_textService.Error_EmailConfirmationFailed);
-        //}
+        public EmailConfirmationSecretModel AddEmailConfirmationSecret(ProfileModel profile, Guid secret, DateTime creationTime)
+        {
+            EmailConfirmationSecretModel emailConfirmationSecretModel = new EmailConfirmationSecretModel(Guid.NewGuid(), profile, secret, creationTime, true);
+
+            All.Add(emailConfirmationSecretModel);
+
+            return emailConfirmationSecretModel;
+        }
     }
 }

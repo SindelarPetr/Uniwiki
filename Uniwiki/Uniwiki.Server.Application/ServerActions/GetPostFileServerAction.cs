@@ -49,11 +49,8 @@ namespace Uniwiki.Server.Application.ServerActions
             if (latestDownload != null && latestDownload.DownloadTime + Constants.DownloadAgainTime > currentTime)
                 throw new RequestException(_textService.Error_WaitBeforeRepeatedDownload);
 
-            // Create info about the file being downloaded
-            var postFileDownload = new PostFileDownloadModel(Guid.NewGuid(), context.LoginToken, file, currentTime);
-
             // Add it to the DB
-            _postFileDownloadRepository.Add(postFileDownload);
+            _postFileDownloadRepository.AddPostFileDownload(context.LoginToken, file, currentTime);
 
             // Get path for the file
             var filePath = Path.Combine(_uploadFileService.PostFilesDirectoryPath, request.FileId.ToString());

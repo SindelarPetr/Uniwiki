@@ -46,13 +46,12 @@ namespace Uniwiki.Server.Application.ServerActions
             var postFiles = _postFileRepository.FindPostFilesAndUpdateNames(files, profile);
 
             // Add the post to the DB
-            var newPost = new PostModel(Guid.NewGuid(), request.PostType, profile, request.Text, course, _timeService.Now, postFiles, false);
-            _postRepository.Add(newPost);
+            var post = _postRepository.AddPost(request.PostType, profile, request.Text, course, _timeService.Now, postFiles);
 
             // Create DTO
-            var newPostDto = newPost.ToDto(profile);
+            var postDto = post.ToDto(profile);
 
-            return Task.FromResult(new AddPostResponseDto(newPostDto));
+            return Task.FromResult(new AddPostResponseDto(postDto));
         }
 
     }

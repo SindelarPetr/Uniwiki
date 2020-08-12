@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Shared.Exceptions;
-using Uniwiki.Shared.Services;
+using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Persistence.Services
 {

@@ -26,7 +26,6 @@ namespace Uniwiki.Server.Application
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IInputValidationService, InputValidationService>();
             services.AddScoped<TextService>();
-            services.AddScoped<TextServiceShared>(p => p.GetService<TextService>());
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
             services.AddTransient<IDataManipulationService, DataManipulationService>();
             services.AddSingleton<IHashService, HashService>();

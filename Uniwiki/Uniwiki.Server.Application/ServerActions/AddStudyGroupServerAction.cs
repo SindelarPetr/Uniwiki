@@ -51,7 +51,8 @@ namespace Uniwiki.Server.Application.ServerActions
 
             // Create the study group
             var studyGroup = new StudyGroupModel(Guid.NewGuid(), university, shortName, longName, studyGroupUrl, profile, request.PrimaryLanguage, false);
-            _studyGroupRepository.Add(studyGroup);
+
+            _studyGroupRepository.AddStudyGroup(university, shortName, longName, studyGroupUrl, profile, request.PrimaryLanguage);
 
             // Create study group DTO
             var studyGroupDto = studyGroup.ToDto();

@@ -25,5 +25,14 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             return All.FirstOrDefault(t => (t.PrimaryTokenId == tokenValue || t.SecondaryTokenId == tokenValue) && t.Expiration > searchTime);
         }
+
+        public LoginTokenModel AddLoginToken(Guid primaryToken, Guid secondaryToken, ProfileModel profile, DateTime creationTime, DateTime expiration)
+        {
+            var loginToken = new LoginTokenModel(Guid.NewGuid(), primaryToken, secondaryToken, profile, creationTime, expiration);
+
+            All.Add(loginToken);
+
+            return loginToken;
+        }
     }
 }

@@ -6,6 +6,8 @@ using Shared.Standardizers;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;
+using Uniwiki.Shared.Services;
+using Uniwiki.Shared.Services.Abstractions;
 using Uniwiki.Shared.Standardizers;
 using Uniwiki.Shared.Validators;
 
@@ -20,6 +22,7 @@ namespace Uniwiki.Shared
             services.AddSharedServices();
             services.AddValidatorsAndStandardizers();
             services.AddSingleton<Constants>();
+            services.AddScoped<ILanguageService, LanguageService>();
         }
 
         private static void AddValidatorsAndStandardizers(this IServiceCollection services)

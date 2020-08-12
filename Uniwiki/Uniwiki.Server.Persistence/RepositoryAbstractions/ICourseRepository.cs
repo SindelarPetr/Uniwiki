@@ -19,5 +19,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         IEnumerable<CourseModel> SearchCoursesFromUniversity(string text, UniversityModel university);
         bool IsUrlUnique(StudyGroupModel studyGroup, string url);
         bool IsNameUnique(StudyGroupModel studyGroup, string name);
+        CourseModel AddCourse(string code, string name, StudyGroupModel faculty, ProfileModel author, string url);
     }
 }

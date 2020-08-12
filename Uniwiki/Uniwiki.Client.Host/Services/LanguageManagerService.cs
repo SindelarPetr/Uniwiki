@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Shared;
 using Uniwiki.Client.Host.Services.Abstractions;
 using Uniwiki.Shared;
-using Uniwiki.Shared.Services;
+using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Client.Host.Services
 {
@@ -24,8 +24,6 @@ namespace Uniwiki.Client.Host.Services
 
         public async Task InitializeLanguage()
         {
-            Console.WriteLine("Initializing language");
-
             // Try to get current language from local storage
             var language = await _localStorageManagerService.GetCurrentLanguage();
 

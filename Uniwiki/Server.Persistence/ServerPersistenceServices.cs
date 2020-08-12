@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Server.Persistence.Services;
 
 namespace Server.Persistence
 {
@@ -7,7 +6,7 @@ namespace Server.Persistence
     {
         public static void AddServerPersistence(this IServiceCollection services)
         {
-            services.AddScoped<PersistenceTextService>();
+
         }
     }
 }

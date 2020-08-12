@@ -52,8 +52,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var url = _stringStandardizationService.CreateUrl(name, u => _courseRepository.IsUrlUnique(faculty, u));
 
             // Create the course
-            var course = new CourseModel(Guid.NewGuid(), code, name, faculty, author, url, false);
-            _courseRepository.Add(course);
+            var course = _courseRepository.AddCourse(code, name, faculty, author, url);
 
             // Create course DTO
             var courseDto = course.ToDto();

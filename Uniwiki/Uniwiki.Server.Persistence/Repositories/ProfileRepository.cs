@@ -57,5 +57,14 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             user.SetHomeFaculty(homeFaculty);
         }
+
+        public ProfileModel AddProfile(string email, string firstName, string familyName, string url, string hashedPassword, byte[] salt, string profilePictureSrc, DateTime creationTime, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty)
+        {
+            var profile = new ProfileModel(Guid.NewGuid(), email, firstName, familyName, url, hashedPassword, salt, profilePictureSrc, creationTime, isConfirmed, authenticationLevel, homeFaculty);
+
+            All.Add(profile);
+
+            return profile;
+        }
     }
 }

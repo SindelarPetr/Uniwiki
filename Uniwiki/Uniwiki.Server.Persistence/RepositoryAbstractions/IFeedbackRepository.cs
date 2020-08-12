@@ -13,5 +13,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         int GetTextOnlyFeedbacksCount();
         int RatingOnlyFeedbacksCount();
         int TextAndRatingFeedbacksCount();
+        FeedbackModel AddFeedback(ProfileModel? user, int? rating, string text, DateTime creationTime);
     }
 }

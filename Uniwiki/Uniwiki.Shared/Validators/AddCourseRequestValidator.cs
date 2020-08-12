@@ -7,7 +7,7 @@ using Uniwiki.Shared.Services;
 
 namespace Uniwiki.Shared.Validators
 {
-    public class AddCourseRequestValidator : StandardizerValidator<AddCourseRequestDto>
+    internal class AddCourseRequestValidator : StandardizerValidator<AddCourseRequestDto>
     {
         public AddCourseRequestValidator(TextServiceShared textServiceBase, IStandardizer<AddCourseRequestDto> standardizer) : base(standardizer)
         {

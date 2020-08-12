@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Server.Appliaction.ServerActions;
 using Shared.Dtos;
@@ -13,7 +12,7 @@ using Uniwiki.Client.Host;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Host.Services;
 using Uniwiki.Shared.Attributes;
-using Uniwiki.Shared.Services;
+using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Host.Mvc
 {

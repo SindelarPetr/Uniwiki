@@ -6,7 +6,7 @@
 	<MyFluentValidator></MyFluentValidator>
 	<div class="form-group">
 		<label for="addGroup_Name">@TextService.SearchBox_FacultyName</label>
-		<InputText id="addGroup_Name" class="form-control" type="text" placeholder="@TextService.EgGroupName" @bind-Value="AddStudyGroupRequestDto.StudyGroupName" maxlength="@Constants.Validations.StudyGroupNameMaxLength" name="studygroupname"/>
+		<InputText id="addGroup_Name" class="form-control" type="text" placeholder="@TextService.EgGroupName" @bind-Value="AddStudyGroupRequestDto.StudyGroupName" maxlength="@Constants.Validations.StudyGroupNameMaxLength" name="studygroupname" />
 		<ValidationMessage For="@(() => AddStudyGroupRequestDto.StudyGroupName)" />
 	</div>
 	<div class="form-group">
@@ -22,10 +22,10 @@
 		{
 			<select class="form-control" id="addGroup_University" @onchange="HandleUniversitySelect">
 				<option value=""></option>
-					@foreach (var uni in _universitiesWithStudyGroups)
-					{
-						<option selected="@(uni.University.Id == AddStudyGroupRequestDto.UniversityId)" value="@uni.University.Id">@uni.University.ShortName - @uni.University.LongName</option>
-					}
+				@foreach (var uni in _universitiesWithStudyGroups)
+				{
+					<option selected="@(uni.University.Id == AddStudyGroupRequestDto.UniversityId)" value="@uni.University.Id">@uni.University.ShortName - @uni.University.LongName</option>
+				}
 			</select>
 		}
 		else
@@ -52,6 +52,7 @@
 
 @code {
 	[Inject] IRequestSender RequestSender { get; set; }
+	[Inject] ILanguageService LanguageService { get; set; }
 
 	[CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 
@@ -80,7 +81,7 @@
 	{
 		await base.OnInitializedAsync();
 
-		AddStudyGroupRequestDto.PrimaryLanguage = TextService.Language;
+		AddStudyGroupRequestDto.PrimaryLanguage = LanguageService.Language;
 
 		var request = new GetUniversitiesAndStudyGroupsRequestDto();
 		var response = await RequestSender.SendRequestAsync(request);

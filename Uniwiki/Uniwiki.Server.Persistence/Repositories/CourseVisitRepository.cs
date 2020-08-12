@@ -26,7 +26,6 @@ namespace Uniwiki.Server.Persistence.Repositories
         public IEnumerable<CourseModel> GetRecentCourses(StudyGroupModel? studyGroup, ProfileModel profile)
         {
             return profile.RecentCourses
-                //.Where(c => c.StudyGroup == studyGroup || studyGroup == null)
                 .Reverse()
                 .Take(Constants.NumberOrRecentCourses)
                 .Reverse();
@@ -36,9 +35,17 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             foreach (var course in recentCourses.Reverse())
             {
-                var courseVisit = new CourseVisitModel(Guid.NewGuid(), course, profile, visitTime);
-                Add(courseVisit);
+                AddCourseVisit(course, profile, visitTime);
             }
+        }
+
+        public CourseVisitModel AddCourseVisit(CourseModel course, ProfileModel profile, DateTime visitTime)
+        {
+            var courseVisit = new CourseVisitModel(Guid.NewGuid(), course, profile, visitTime);
+
+            All.Add(courseVisit);
+
+            return courseVisit;
         }
     }
 }

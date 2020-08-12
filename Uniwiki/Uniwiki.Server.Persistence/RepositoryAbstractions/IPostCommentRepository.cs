@@ -7,5 +7,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
     public interface IPostCommentRepository : IRemovableRepository<PostCommentModel>, IIdRepository<PostCommentModel, Guid>
     {
         PostCommentModel EditComment(PostCommentModel comment, string text);
+        PostCommentModel AddPostComment(ProfileModel profile, PostModel post, string commentText, DateTime creationTime);
     }
 }

@@ -37,8 +37,7 @@ namespace Uniwiki.Server.Application.ServerActions
                 throw new RequestException(_textService.Error_UniversityNameOrUrlNotUniq(request.FullName, request.Url));
 
             // Create the university
-            var university = new UniversityModel(Guid.NewGuid(), request.FullName, request.ShortName, request.Url, false);
-            _universityRepository.Add(university);
+            var university = _universityRepository.AddUniversity(request.FullName, request.ShortName, request.Url);
 
             // Create response
             var response = new AddUniversityResponseDto(university.ToDto());

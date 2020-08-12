@@ -39,8 +39,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var post = _postRepository.FindById(request.PostId, _textService.Error_PostNotFound);
 
             // Create the comment
-            var comment = new PostCommentModel(Guid.NewGuid(), profile, post, request.CommentText, _timeService.Now, false);
-            _postCommentRepository.Add(comment);
+            _postCommentRepository.AddPostComment(profile, post, request.CommentText, _timeService.Now);
 
             // Create response
             var response = new AddCommentResponseDto(post.ToDto(profile));

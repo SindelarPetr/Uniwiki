@@ -14,5 +14,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         ProfileModel TryGetProfileByUrl(string url);
         void SetAdmin(ProfileModel profile);
         void EditHomeFaculty(ProfileModel user, StudyGroupModel? homeFaculty);
+        ProfileModel AddProfile(string email, string name, string surname, string url, string hashedPassword, byte[] salt, string profileImageUrl, DateTime creationTime, bool isAdmin, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty);
     }
 }

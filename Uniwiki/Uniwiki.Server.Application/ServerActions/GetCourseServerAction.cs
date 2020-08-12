@@ -62,8 +62,7 @@ namespace Uniwiki.Server.Application.ServerActions
             // Set the course as recent
             if (context.IsAuthenticated) // Equivalent to context.IsAuthenticated
             {
-                var courseVisit = new CourseVisitModel(Guid.NewGuid(), course, profile, _timeService.Now);
-                _courseVisitRepository.Add(courseVisit);
+                _courseVisitRepository.AddCourseVisit(course, profile, _timeService.Now);
             }
 
             // Create response

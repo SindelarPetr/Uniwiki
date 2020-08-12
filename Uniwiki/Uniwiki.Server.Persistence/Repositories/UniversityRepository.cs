@@ -62,5 +62,14 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             return All.All(u => u.FullName.ToLower() != fullName.ToLower() && u.Url != url);
         }
+
+        public UniversityModel AddUniversity(string fullName, string shortName, string url)
+        {
+            var university = new UniversityModel(Guid.NewGuid(), fullName, shortName, url, false);
+
+            All.Add(university);
+
+            return university;
+        }
     }
 }

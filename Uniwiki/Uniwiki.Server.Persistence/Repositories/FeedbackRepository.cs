@@ -51,5 +51,16 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             return All.Count(f => f.Rating != null && !string.IsNullOrWhiteSpace(f.Text));
         }
+
+        public FeedbackModel AddFeedback(ProfileModel? user, int? rating, string text, DateTime creationTime)
+        {
+            var feedback = new FeedbackModel(Guid.NewGuid(), false, user, rating, text, creationTime);
+
+            All.Add(feedback);
+
+            SaveChanges();
+
+            return feedback;
+        }
     }
 }

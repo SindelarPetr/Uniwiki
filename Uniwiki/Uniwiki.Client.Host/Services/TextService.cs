@@ -3,7 +3,7 @@ using System;
 using System.Text.Encodings.Web;
 using Uniwiki.Shared;
 using Uniwiki.Shared.ModelDtos;
-using Uniwiki.Shared.Services;
+using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Client.Host.Services
 {

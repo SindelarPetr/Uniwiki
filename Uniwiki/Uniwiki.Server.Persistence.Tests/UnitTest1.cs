@@ -12,24 +12,42 @@ namespace Uniwiki.Server.Persistence.Tests
     [TestClass]
     public class BasicTest
     {
+
+
         [TestMethod]
         public void TestMethod1()
         {
             ServiceCollection services = new ServiceCollection();
-
             var timeService = new FakeTimeService(new DateTime(2020, 3, 12));
-
             services.AddSingleton<ITimeService>(timeService);
-
             services.AddUniwikiServerPersistence();
+
+            var feedbackText = "Some god damn feedback";
+            var feedbackRating = 2;
+            ProfileModel? feedbackUser = null;
 
             var provider = services.BuildServiceProvider();
 
-            var feedbackRepository = provider.GetService<IFeedbackRepository>();
+            // Create a new feedback          
+            FeedbackModel createdFeedback;  
+            using (var scope = provider.CreateScope())
+            {
+                var feedbackRepository = scope.ServiceProvider.GetService<IFeedbackRepository>();
+                
+                createdFeedback = feedbackRepository.AddFeedback(feedbackUser, feedbackRating, feedbackText, timeService.Now);
+            }
 
-            var feedback = new FeedbackModel(Guid.NewGuid(), false, null, 3, "ffff", timeService.Now);
+            // Load the feedback
+            FeedbackModel loadedFeedback;
+            using (var scope = provider.CreateScope())
+            {
+                var feedbackRepository = scope.ServiceProvider.GetService<IFeedbackRepository>();
 
-            feedbackRepository.Add(feedback);
+                loadedFeedback = feedbackRepository.FindById(createdFeedback.Id);
+            }
+
+            // Assert comparison of the properties in this createdFeedback and loadedFeedback all should match
+            
         }
     }
 }

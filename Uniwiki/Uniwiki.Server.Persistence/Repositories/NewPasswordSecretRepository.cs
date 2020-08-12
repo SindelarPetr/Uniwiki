@@ -41,5 +41,14 @@ namespace Uniwiki.Server.Persistence.Repositories
             return All.FirstOrDefault(s => s.Secret == secret && s.IsValid) ??
                 throw new RequestException( _textService.Error_FailedToCreateTheNewPassword);
         }
+
+        public NewPasswordSecretModel AddNewPasswordSecret(ProfileModel profile, Guid secret, DateTime creationTime, DateTime expirationTime)
+        {
+            var newPasswordSecretModel = new NewPasswordSecretModel(Guid.NewGuid(), profile, secret, creationTime, expirationTime, true);
+
+            All.Add(newPasswordSecretModel);
+
+            return newPasswordSecretModel;
+        }
     }
 }

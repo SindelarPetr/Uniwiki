@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Shared.Exceptions;
 using Shared.Extensions;
@@ -67,5 +68,13 @@ namespace Uniwiki.Server.Persistence.Repositories
                 .Where(c => c != null);
         }
 
+        public CourseModel AddCourse(string code, string name, StudyGroupModel faculty, ProfileModel author, string url)
+        {
+            var course = new CourseModel(Guid.NewGuid(), code, name, faculty, author, url, false);
+
+            All.Add(course);
+
+            return course;
+        }
     }
 }

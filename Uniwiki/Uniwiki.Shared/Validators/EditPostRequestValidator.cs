@@ -6,9 +6,9 @@ using Uniwiki.Shared.Services;
 namespace Uniwiki.Shared.Validators
 {
 
-    public class EditPostRequestValidator : AbstractValidator<EditPostRequestDto>
+    internal class EditPostRequestValidator : AbstractValidator<EditPostRequestDto>
     {
-        internal EditPostRequestValidator(TextServiceShared textServiceBase)
+        public EditPostRequestValidator(TextServiceShared textServiceBase)
         {
             RuleFor(f => f.Text).Cascade(CascadeMode.StopOnFirstFailure)
                 .MinMaxLengthWithMessages(textServiceBase, Constants.Validations.PostTextMinLength, Constants.Validations.PostTextMaxLength);
