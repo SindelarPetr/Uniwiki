@@ -23,7 +23,7 @@ namespace Uniwiki.Server.Persistence.Models
 
         public Guid Id { get; protected set; }
 
-        public UniversityModel(Guid id, string fullName, string shortName, string url, bool isRemoved)
+        internal UniversityModel(Guid id, string fullName, string shortName, string url, bool isRemoved)
         {
             Id = id;
             FullName = fullName;

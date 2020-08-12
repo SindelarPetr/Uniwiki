@@ -12,7 +12,7 @@ namespace Uniwiki.Server.Persistence.Models
         public Guid Id { get; protected set; }
         public Guid Secret { get; protected set; }
 
-        public NewPasswordSecretModel(Guid id, ProfileModel profile, Guid secret, DateTime creationTime, DateTime expirationTime, bool isValid)
+        internal NewPasswordSecretModel(Guid id, ProfileModel profile, Guid secret, DateTime creationTime, DateTime expirationTime, bool isValid)
         {
             Id = id;
             Profile = profile;

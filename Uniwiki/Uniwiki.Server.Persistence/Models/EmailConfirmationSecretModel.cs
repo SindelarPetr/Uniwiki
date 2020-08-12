@@ -11,7 +11,7 @@ namespace Uniwiki.Server.Persistence.Models
         public Guid Id { get; set; }
         public Guid Secret { get; protected set; }
 
-        public EmailConfirmationSecretModel(Guid id, ProfileModel profile, Guid secret, DateTime creationTime, bool isValid)
+        internal EmailConfirmationSecretModel(Guid id, ProfileModel profile, Guid secret, DateTime creationTime, bool isValid)
         {
             Id = id;
             Profile = profile;

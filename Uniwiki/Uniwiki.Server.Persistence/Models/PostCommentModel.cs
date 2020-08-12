@@ -15,7 +15,7 @@ namespace Uniwiki.Server.Persistence.Models
 
         bool IRemovableModel.IsRemoved { get; set; }
 
-        public PostCommentModel(Guid id, ProfileModel profile, PostModel post, string text, DateTime creationTime, bool isRemoved)
+        internal PostCommentModel(Guid id, ProfileModel profile, PostModel post, string text, DateTime creationTime, bool isRemoved)
         {
             Id = id;
             Post = post;

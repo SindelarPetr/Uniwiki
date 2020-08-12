@@ -21,7 +21,7 @@ namespace Uniwiki.Server.Persistence.Models
 
         public Guid Id { get; protected set; }
 
-        public PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> files, bool isRemoved)
+        internal PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> files, bool isRemoved)
         {
             Id = id;
             PostType = postType;

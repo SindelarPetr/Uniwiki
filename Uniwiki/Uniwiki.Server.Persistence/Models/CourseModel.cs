@@ -15,7 +15,7 @@ namespace Uniwiki.Server.Persistence.Models
         public Guid Id { get; protected set; }
         bool IRemovableModel.IsRemoved { get; set; }
 
-        public CourseModel(Guid id, string code, string fullname, StudyGroupModel studyGroup, ProfileModel author, string url, bool isRemoved)
+        internal CourseModel(Guid id, string code, string fullname, StudyGroupModel studyGroup, ProfileModel author, string url, bool isRemoved)
         {
             Id = id;
             Code = code;

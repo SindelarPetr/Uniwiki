@@ -26,7 +26,7 @@ namespace Uniwiki.Server.Persistence.Models
         public bool FeedbackProvided => Feedbacks.Any();
         public Guid Id { get; protected set; }
 
-        public ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty)
+        internal ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty)
         {
             Id = id;
             Email = email;

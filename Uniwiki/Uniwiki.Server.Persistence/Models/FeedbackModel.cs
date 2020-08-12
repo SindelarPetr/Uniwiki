@@ -12,7 +12,7 @@ namespace Uniwiki.Server.Persistence.Models
         bool IRemovableModel.IsRemoved { get; set; }
         public Guid Id { get; protected set; }
 
-        public FeedbackModel(Guid id, bool isRemoved, ProfileModel? user, int? rating, string text, DateTime creationTime)
+        internal FeedbackModel(Guid id, bool isRemoved, ProfileModel? user, int? rating, string text, DateTime creationTime)
         {
             Id = id;
             User = user;

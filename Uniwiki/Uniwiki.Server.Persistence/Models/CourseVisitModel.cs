@@ -10,7 +10,7 @@ namespace Uniwiki.Server.Persistence.Models
         public DateTime VisitDateTime { get; protected set; }
         public Guid Id { get; protected set; }
 
-        public CourseVisitModel(Guid id, CourseModel course, ProfileModel profile, DateTime visitDateTime)
+        internal CourseVisitModel(Guid id, CourseModel course, ProfileModel profile, DateTime visitDateTime)
         {
             Id = id;
             Course = course;

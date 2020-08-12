@@ -18,6 +18,20 @@ namespace Uniwiki.Server.Persistence.Models
 
         public Guid Id { get; protected set; }
 
+        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size, bool isRemoved)
+        {
+            Id = id;
+            Path = path;
+            NameWithoutExtension = nameWithoutExtension;
+            Extension = extension;
+            IsSaved = isSaved;
+            Profile = profile;
+            CourseId = courseId;
+            CreationTime = creationTime;
+            Size = size;
+            ((IRemovableModel)this).IsRemoved = isRemoved;
+        }
+
         private static FileType GetFileTypeFromExtension(string extension)
         {
             switch (extension)
@@ -38,21 +52,6 @@ namespace Uniwiki.Server.Persistence.Models
                     return FileType.Archive;
                 default: return FileType.Other;
             }
-        }
-
-
-        public PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size, bool isRemoved)
-        {
-            Id = id;
-            Path = path;
-            NameWithoutExtension = nameWithoutExtension;
-            Extension = extension;
-            IsSaved = isSaved;
-            Profile = profile;
-            CourseId = courseId;
-            CreationTime = creationTime;
-            Size = size;
-            ((IRemovableModel)this).IsRemoved = isRemoved;
         }
 
         protected PostFileModel()

@@ -17,7 +17,7 @@ namespace Uniwiki.Server.Persistence.Models
         bool IRemovableModel.IsRemoved { get; set; }
         public Guid Id { get; protected set; }
 
-        public StudyGroupModel(Guid id, UniversityModel university, string shortName, string longName, string url,
+        internal StudyGroupModel(Guid id, UniversityModel university, string shortName, string longName, string url,
             ProfileModel profile, Language primaryLanguage, bool isRemoved)
         {
             Id = id;
