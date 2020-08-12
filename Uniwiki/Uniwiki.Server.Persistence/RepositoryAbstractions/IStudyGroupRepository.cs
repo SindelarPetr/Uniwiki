@@ -6,7 +6,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IStudyGroupRepository : IIdRepository<StudyGroupModel, Guid>, IRemovableRepository<StudyGroupModel>
+    public interface IStudyGroupRepository : IRemovableRepositoryBase<StudyGroupModel, Guid>
     {
         StudyGroupModel GetStudyGroup(string studyGroupUrlName);
         IEnumerable<CourseModel> GetCourses(string studyGroupUrl);

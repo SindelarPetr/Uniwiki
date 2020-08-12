@@ -6,7 +6,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IPostFileRepository : IIdRepository<PostFileModel, Guid>, IRemovableModel
+    public interface IPostFileRepository : IRepositoryBase<PostFileModel, Guid>
     {
         //PostFileModel CreatePostFile(Guid id, string path, string fileName, string extension, ProfileModel profile, Guid courseId, DateTime creationTime, long size);
         void FileSaved(PostFileModel postFileModel);

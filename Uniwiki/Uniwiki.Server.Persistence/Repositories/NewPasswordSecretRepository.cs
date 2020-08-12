@@ -9,11 +9,11 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class NewPasswordSecretRepository : RepositoryBase<NewPasswordSecretModel>, INewPasswordSecretRepository
+    internal class NewPasswordSecretRepository : RepositoryBase<NewPasswordSecretModel, Guid>, INewPasswordSecretRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_NewPasswordSecretNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_NewPasswordSecretNotFound;
 
         public NewPasswordSecretRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.NewPasswordSecrets)

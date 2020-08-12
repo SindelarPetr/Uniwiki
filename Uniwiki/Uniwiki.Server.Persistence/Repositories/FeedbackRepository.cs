@@ -9,11 +9,11 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    class FeedbackRepository : RepositoryBase<FeedbackModel>, IFeedbackRepository
+    class FeedbackRepository : RepositoryBase<FeedbackModel, Guid>, IFeedbackRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_FeedbackNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_FeedbackNotFound;
 
         public FeedbackRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.Feedbacks)

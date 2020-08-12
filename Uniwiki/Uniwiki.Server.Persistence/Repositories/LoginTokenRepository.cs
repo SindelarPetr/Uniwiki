@@ -8,11 +8,11 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class LoginTokenRepository : RepositoryBase<LoginTokenModel>, ILoginTokenRepository
+    internal class LoginTokenRepository : RepositoryBase<LoginTokenModel, Guid>, ILoginTokenRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_LoginTokenNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_LoginTokenNotFound;
 
         public LoginTokenRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.LoginTokens)

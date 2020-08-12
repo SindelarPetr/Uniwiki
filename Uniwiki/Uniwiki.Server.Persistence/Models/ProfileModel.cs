@@ -6,7 +6,7 @@ using Uniwiki.Shared.ModelDtos;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class ProfileModel : IIdModel<Guid>
+    public class ProfileModel : ModelBase<Guid>
     {
         public string Email { get; protected set; }
         public string Password { get; protected set; }
@@ -24,11 +24,10 @@ namespace Uniwiki.Server.Persistence.Models
         public IEnumerable<CourseModel> RecentCourses { get; protected set; }
         public ICollection<FeedbackModel> Feedbacks { get; set; } = new List<FeedbackModel>();
         public bool FeedbackProvided => Feedbacks.Any();
-        public Guid Id { get; protected set; }
 
         internal ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty)
+            : base(id)
         {
-            Id = id;
             Email = email;
             Password = password;
             PasswordSalt = passwordSalt;

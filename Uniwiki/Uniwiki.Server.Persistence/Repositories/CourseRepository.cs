@@ -13,12 +13,12 @@ namespace Uniwiki.Server.Persistence.Repositories
 {
 
 
-    internal class CourseRepository : RepositoryBase<CourseModel>, ICourseRepository
+    internal class CourseRepository : RemovableRepositoryBase<CourseModel, Guid>, ICourseRepository
     {
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_CourseNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_CourseNotFound;
 
         public CourseRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.Courses)
         {

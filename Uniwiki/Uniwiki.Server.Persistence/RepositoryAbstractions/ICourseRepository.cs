@@ -5,7 +5,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface ICourseRepository : IRemovableRepository<CourseModel>, IIdRepository<CourseModel, Guid>
+    public interface ICourseRepository : IRemovableRepositoryBase<CourseModel, Guid>
     {
         /// <summary>
         /// Returns all courses which it will be able to find.

@@ -5,7 +5,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IUniversityRepository : IIdRepository<UniversityModel, Guid>, IRemovableRepository<UniversityModel>
+    public interface IUniversityRepository : IRemovableRepositoryBase<UniversityModel, Guid>
     {
         UniversityModel GetUniversityByUrlName(string universityUrlName);
         IEnumerable<UniversityModel> FindUniversities(string text);

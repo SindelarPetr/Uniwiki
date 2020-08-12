@@ -19,19 +19,20 @@ namespace Uniwiki.Server.Persistence.Models
     }
 
     // View
-    public class NewPostCategoryModel : IIdModel<PostCategoryModelId>
-    {
-        public PostCategoryModelId Id { get; }
-        public PostCategoryModel PostCategory { get; set; }
+    //public class NewPostCategoryModel : IdModel<PostCategoryModelId>
+    //{
+    //    public PostCategoryModelId Id { get; }
+    //    public PostCategoryModel PostCategory { get; set; }
 
-        public NewPostCategoryModel(PostCategoryModel postCategory)
-        {
-            PostCategory = postCategory;
-        }
-    }
+    //    public NewPostCategoryModel(PostCategoryModel postCategory)
+    //        : base(new PostCategoryModelId(postCategory.Name, postCategory.CourseId))
+    //    {
+    //        PostCategory = postCategory;
+    //    }
+    //}
 
 
-    public class PostCategoryModel : IIdModel<PostCategoryModelId>
+    public class PostCategoryModel : ModelBase<PostCategoryModelId>
     {
         public PostCategoryModelId Id => new PostCategoryModelId(Name, CourseId);
 
@@ -44,6 +45,7 @@ namespace Uniwiki.Server.Persistence.Models
         public ICollection<PostModel> Posts { get; set; } = new List<PostModel>();
 
         public PostCategoryModel(string name, Guid courseId)
+            : base(new PostCategoryModelId(name, courseId))
         {
             Name = name;
             CourseId = courseId;

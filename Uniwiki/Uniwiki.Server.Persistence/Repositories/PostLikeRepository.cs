@@ -8,11 +8,11 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    class PostLikeRepository : RepositoryBase<PostLikeModel>, IPostLikeRepository
+    class PostLikeRepository : RepositoryBase<PostLikeModel, PostLikeModelId>, IPostLikeRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_PostLikeNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_PostLikeNotFound;
 
         public PostLikeRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.PostLikes)
@@ -23,7 +23,7 @@ namespace Uniwiki.Server.Persistence.Repositories
         public void LikePost(PostModel post, ProfileModel profile, DateTime dateTime)
         {
             // Try to find existing like
-            var existingLikeId = PostLikeModel.GetId(post, profile);
+            var existingLikeId = new PostLikeModelId(post, profile);
             var existingLike = All.Find(existingLikeId);
 
             // If there is no like
@@ -52,7 +52,7 @@ namespace Uniwiki.Server.Persistence.Repositories
         public void UnlikePost(PostModel post, ProfileModel profile)
         {
             // Try to find an existing like
-            var existingLikeId = PostLikeModel.GetId(post, profile);
+            var existingLikeId = new PostLikeModelId(post, profile);
             var existingLike = All.Find(existingLikeId);
 
             // Check if there already is a like or its already unliked

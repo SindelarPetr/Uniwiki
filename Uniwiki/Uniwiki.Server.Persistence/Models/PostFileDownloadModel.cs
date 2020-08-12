@@ -3,16 +3,15 @@ using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class PostFileDownloadModel : IIdModel<Guid>, IRemovableModel
+    public class PostFileDownloadModel : ModelBase<Guid>
     {
         public LoginTokenModel Token { get; protected set; }
         public PostFileModel FileDownloaded { get; protected set; }
         public DateTime DownloadTime { get; protected set; }
-        public Guid Id { get; protected set; }
-
-        bool IRemovableModel.IsRemoved { get; set; }
+        
 
         internal PostFileDownloadModel(Guid id, LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
+            : base(id)
         {
             Id = id;
             Token = token;

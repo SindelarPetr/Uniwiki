@@ -4,7 +4,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IPostFileDownloadRepository : IIdRepository<PostFileDownloadModel, Guid>
+    public interface IPostFileDownloadRepository : IRepositoryBase<PostFileDownloadModel, Guid>
     {
         //PostFileDownloadModel AddDownload(LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime);
         PostFileDownloadModel? TryGetLatestDownload(LoginTokenModel token, PostFileModel fileDownloaded);

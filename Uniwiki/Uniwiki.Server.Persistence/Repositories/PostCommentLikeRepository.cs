@@ -9,11 +9,11 @@ using Uniwiki.Server.Persistence.Services;
 namespace Uniwiki.Server.Persistence.Repositories
 {
 
-    class PostCommentLikeRepository : RepositoryBase<PostCommentLikeModel>, IPostCommentLikeRepository
+    class PostCommentLikeRepository : RepositoryBase<PostCommentLikeModel, PostCommentLikeModelId>, IPostCommentLikeRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_PostCommentLikeNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_PostCommentLikeNotFound;
 
         public PostCommentLikeRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.PostCommentLikes)

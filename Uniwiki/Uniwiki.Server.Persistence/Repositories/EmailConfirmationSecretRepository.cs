@@ -9,11 +9,11 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class EmailConfirmationSecretRepository : RepositoryBase<EmailConfirmationSecretModel>, IEmailConfirmationSecretRepository
+    internal class EmailConfirmationSecretRepository : RepositoryBase<EmailConfirmationSecretModel, Guid>, IEmailConfirmationSecretRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.EmailConfirmationSecretNotFound;
+        public override string NotFoundByIdMessage => _textService.EmailConfirmationSecretNotFound;
 
         public EmailConfirmationSecretRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.EmailConfirmationSecrets)

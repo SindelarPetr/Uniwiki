@@ -3,9 +3,8 @@ using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class LoginTokenModel : IIdModel<Guid>
+    public class LoginTokenModel : ModelBase<Guid>
     {
-        public Guid Id { get; protected set; }
         public Guid PrimaryTokenId { get; protected set; }
         public ProfileModel Profile { get; protected set; }
         public DateTime CreationTime { get; protected set; }
@@ -13,6 +12,7 @@ namespace Uniwiki.Server.Persistence.Models
         public Guid SecondaryTokenId { get; protected set; }
 
         internal LoginTokenModel(Guid id, Guid primaryTokenId, Guid secondaryTokenId, ProfileModel profile, DateTime creationTime, DateTime expiration)
+            : base(id)
         {
             Id = id;
             PrimaryTokenId = primaryTokenId;

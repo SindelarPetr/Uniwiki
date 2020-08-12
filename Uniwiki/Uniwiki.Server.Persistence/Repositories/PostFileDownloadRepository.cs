@@ -8,11 +8,11 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class PostFileDownloadRepository : RepositoryBase<PostFileDownloadModel>, IPostFileDownloadRepository
+    internal class PostFileDownloadRepository : RepositoryBase<PostFileDownloadModel, Guid>, IPostFileDownloadRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_PostFileDownloadNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_PostFileDownloadNotFound;
 
         public PostFileDownloadRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.PostFileDownloads)

@@ -10,13 +10,11 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class PostFileRepository : RepositoryBase<PostFileModel>, IPostFileRepository
+    internal class PostFileRepository : RepositoryBase<PostFileModel, Guid>, IPostFileRepository
     {
         private readonly TextService _textService;
 
-        bool IRemovableModel.IsRemoved { get; set; }
-
-        public string NotFoundByIdMessage => _textService.PostFileNotFound;
+        public override string NotFoundByIdMessage => _textService.PostFileNotFound;
 
         public PostFileRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.PostFiles)

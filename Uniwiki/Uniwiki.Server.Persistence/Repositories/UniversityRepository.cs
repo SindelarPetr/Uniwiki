@@ -12,12 +12,12 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class UniversityRepository : RepositoryBase<UniversityModel>, IUniversityRepository
+    internal class UniversityRepository : RemovableRepositoryBase<UniversityModel, Guid>, IUniversityRepository
     {
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_UniversityNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_UniversityNotFound;
 
         public UniversityRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.Universities)
         {

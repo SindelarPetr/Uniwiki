@@ -5,7 +5,7 @@ using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class PostModel : IIdModel<Guid>, IRemovableModel
+    public class PostModel : RemovableModelBase<Guid>
     {
         public string? PostType { get; protected set; }
         public ProfileModel Author { get; protected set; }
@@ -17,19 +17,14 @@ namespace Uniwiki.Server.Persistence.Models
 
         public IEnumerable<PostLikeModel> Likes { get; protected set; }
         public IEnumerable<PostCommentModel> Comments { get; protected set; }
-        bool IRemovableModel.IsRemoved { get; set; }
 
-        public Guid Id { get; protected set; }
-
-        internal PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> files, bool isRemoved)
+        internal PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> files, bool isRemoved) : base(isRemoved, id)
         {
-            Id = id;
             PostType = postType;
             Author = author;
             Text = text;
             Course = course;
             CreationTime = creationTime;
-            ((IRemovableModel)this).IsRemoved = isRemoved;
             Files = files.ToArray();
         }
 

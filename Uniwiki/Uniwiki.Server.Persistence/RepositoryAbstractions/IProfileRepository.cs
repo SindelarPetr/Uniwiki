@@ -4,7 +4,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IProfileRepository : IIdRepository<ProfileModel, Guid>
+    public interface IProfileRepository : IRepositoryBase<ProfileModel, Guid>
     {
         //ProfileModel Register(string email, string name, string surname, string url, string password, byte[] passwordSalt, DateTime registrationTime, StudyGroupModel? homeFaculty);
         ProfileModel GetProfileByUrl(string url);

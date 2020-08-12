@@ -10,11 +10,11 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class PostRepository : RepositoryBase<PostModel>, IPostRepository
+    internal class PostRepository : RemovableRepositoryBase<PostModel, Guid>, IPostRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_PostNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_PostNotFound;
 
         public PostRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.Posts)

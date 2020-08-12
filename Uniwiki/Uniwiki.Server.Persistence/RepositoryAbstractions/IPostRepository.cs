@@ -5,7 +5,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IPostRepository : IIdRepository<PostModel, Guid>, IRemovableRepository<PostModel>
+    public interface IPostRepository : IRemovableRepositoryBase<PostModel, Guid>
     {
         PostModel EditPost(PostModel post, string text, string? postType, PostFileModel[] postFiles);
         IEnumerable<PostModel> FetchPosts(CourseModel course, string? postType, PostModel? lastPost, int requestPostsToFetch);

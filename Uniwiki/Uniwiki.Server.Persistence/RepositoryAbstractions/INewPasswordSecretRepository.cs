@@ -4,7 +4,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface INewPasswordSecretRepository : IIdRepository<NewPasswordSecretModel, Guid>
+    public interface INewPasswordSecretRepository : IRepositoryBase<NewPasswordSecretModel, Guid>
     {
         ProfileModel GetProfileForNewPasswordSecret(Guid secret);
         NewPasswordSecretModel? TryGetSecretForProfile(ProfileModel profile);

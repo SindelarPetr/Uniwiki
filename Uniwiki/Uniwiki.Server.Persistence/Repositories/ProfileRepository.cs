@@ -9,11 +9,11 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class ProfileRepository : RepositoryBase<ProfileModel>, IProfileRepository
+    internal class ProfileRepository : RepositoryBase<ProfileModel, Guid>, IProfileRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_UserNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_UserNotFound;
 
         public ProfileRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.Profiles)

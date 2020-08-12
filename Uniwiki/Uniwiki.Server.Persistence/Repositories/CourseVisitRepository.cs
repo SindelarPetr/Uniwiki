@@ -5,17 +5,16 @@ using System.Linq;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
-using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 using Uniwiki.Server.Persistence.Services;
 using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class CourseVisitRepository : RepositoryBase<CourseVisitModel>, ICourseVisitRepository
+    internal class CourseVisitRepository : RepositoryBase<CourseVisitModel, Guid>, ICourseVisitRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_CourseVisitNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_CourseVisitNotFound;
 
         public CourseVisitRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.CourseVisits)

@@ -4,7 +4,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public interface IPostLikeRepository : IIdRepository<PostLikeModel, Guid[]>
+    public interface IPostLikeRepository : IRepositoryBase<PostLikeModel, PostLikeModelId>
     {
         void LikePost(PostModel post, ProfileModel profile, DateTime dateTime);
         void UnlikePost(PostModel post, ProfileModel profile);

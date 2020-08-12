@@ -4,7 +4,7 @@ using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class CourseModel : IIdModel<Guid>, IRemovableModel
+    public class CourseModel : RemovableModelBase<Guid>
     {
         public string Code { get; protected set; }
         public string FullName { get; protected set; }
@@ -12,10 +12,9 @@ namespace Uniwiki.Server.Persistence.Models
         public ProfileModel Author { get; protected set; }
         public string Url { get; protected set; }
         public IEnumerable<PostModel> Posts { get; protected set; }
-        public Guid Id { get; protected set; }
-        bool IRemovableModel.IsRemoved { get; set; }
 
         internal CourseModel(Guid id, string code, string fullname, StudyGroupModel studyGroup, ProfileModel author, string url, bool isRemoved)
+            : base(isRemoved, id)
         {
             Id = id;
             Code = code;
@@ -23,7 +22,6 @@ namespace Uniwiki.Server.Persistence.Models
             StudyGroup = studyGroup;
             Author = author;
             Url = url;
-            ((IRemovableModel)this).IsRemoved = isRemoved;
         }
 
         protected CourseModel()

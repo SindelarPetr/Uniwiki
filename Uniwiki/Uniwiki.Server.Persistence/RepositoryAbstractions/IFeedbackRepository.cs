@@ -5,7 +5,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IFeedbackRepository : IIdRepository<FeedbackModel, Guid>
+    public interface IFeedbackRepository : IRepositoryBase<FeedbackModel, Guid>
     {
         double? GetAverageRating();
         int GetFeedbacksCount();

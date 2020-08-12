@@ -4,7 +4,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IEmailConfirmationSecretRepository : IIdRepository<EmailConfirmationSecretModel, Guid>
+    public interface IEmailConfirmationSecretRepository : IRepositoryBase<EmailConfirmationSecretModel, Guid>
     {
         //EmailConfirmationSecretModel GenerateEmailConfirmationSecret(ProfileModel profile, DateTime creationTime);
         void ConfirmEmail(EmailConfirmationSecretModel secret);

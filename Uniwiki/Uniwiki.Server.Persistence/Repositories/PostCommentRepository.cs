@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Shared.Exceptions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
-using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class PostCommentRepository : RepositoryBase<PostCommentModel>, IPostCommentRepository
+    internal class PostCommentRepository : RemovableRepositoryBase<PostCommentModel, Guid>, IPostCommentRepository
     {
         private readonly TextService _textService;
 
-        public string NotFoundByIdMessage => _textService.Error_PostCommentNotFound;
+        public override string NotFoundByIdMessage => _textService.Error_PostCommentNotFound;
 
         public PostCommentRepository(UniwikiContext uniwikiContext, TextService textService)
             : base(uniwikiContext, uniwikiContext.PostComments)
