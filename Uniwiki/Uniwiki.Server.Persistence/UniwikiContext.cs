@@ -23,7 +23,7 @@ namespace Uniwiki.Server.Persistence
         public DbSet<CourseVisitModel> CourseVisits => Set<CourseVisitModel>();
 
         public DbSet<CourseModel> Courses => Set<CourseModel>();
-         
+
         public DbSet<PostModel> Posts => Set<PostModel>();
 
         // TODO: Create the post file to be removable
@@ -72,10 +72,13 @@ namespace Uniwiki.Server.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<StudyGroupModel>()
-            .HasOne(a => a.Profile)
-            .WithOne(a => a.HomeFaculty)
-            .HasForeignKey<StudyGroupModel>(c => c.Id);
+            MapModels(modelBuilder);
+
+            modelBuilder.Entity<StudyGroupModel>(m =>
+            {
+                m.ToTable("StudyGroup");
+                m.HasOne(m => m.Profile).WithOne(a => a.HomeFaculty);
+            });
 
             modelBuilder.Entity<PostCommentModel>()
                 .HasMany(c => c.Likes)
@@ -188,7 +191,7 @@ namespace Uniwiki.Server.Persistence
         public Guid CommentId;
         public Guid ProfileId;
 
-        public PostCommentLikeModelId(PostCommentModel comment , ProfileModel profile)
+        public PostCommentLikeModelId(PostCommentModel comment, ProfileModel profile)
             : this(comment.Id, profile.Id) { }
 
         public PostCommentLikeModelId(Guid commentId, Guid profileId)

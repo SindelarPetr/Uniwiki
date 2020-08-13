@@ -17,21 +17,15 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
     {
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        private readonly IEmailService _emailService;
-        private readonly IEmailConfirmationSecretRepository _emailConfirmationSecretRepository;
         private readonly IProfileRepository _profileRepository;
         private readonly IInputValidationService _inputValidationService;
-        private readonly ITimeService _timeService;
         private readonly TextService _textService;
         private readonly IEmailConfirmationSenderService _emailConfirmationSenderService;
 
-        public ResendConfirmationEmailServerAction(IServiceProvider serviceProvider, IEmailService emailService, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, IInputValidationService inputValidationService, ITimeService timeService, TextService textService, IEmailConfirmationSenderService emailConfirmationSenderService) : base(serviceProvider)
+        public ResendConfirmationEmailServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IInputValidationService inputValidationService, TextService textService, IEmailConfirmationSenderService emailConfirmationSenderService) : base(serviceProvider)
         {
-            _emailService = emailService;
-            _emailConfirmationSecretRepository = emailConfirmationSecretRepository;
             _profileRepository = profileRepository;
             _inputValidationService = inputValidationService;
-            _timeService = timeService;
             _textService = textService;
             _emailConfirmationSenderService = emailConfirmationSenderService;
         }
