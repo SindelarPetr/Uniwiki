@@ -28,7 +28,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         protected override Task<ConfirmEmailResponseDto> ExecuteAsync(ConfirmEmailRequestDto request, RequestContext context)
         {
             // Get secret
-            var secret = _emailConfirmationSecretRepository.FindById(request.Secret);
+            var secret = _emailConfirmationSecretRepository.FindSecret(request.Secret);
 
             // If email was already confirmed, then return ok response, but dont issue login token
             if (secret.Profile.IsConfirmed)
