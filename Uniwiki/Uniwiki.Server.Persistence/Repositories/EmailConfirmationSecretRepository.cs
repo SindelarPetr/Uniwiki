@@ -29,7 +29,10 @@ namespace Uniwiki.Server.Persistence.Repositories
         public void ConfirmEmail(EmailConfirmationSecretModel secret)
         {
             var profile = secret.Profile;
+
             profile.SetAsConfirmed();
+
+            SaveChanges();
         }
 
         public void InvalidateSecrets(ProfileModel profile)
@@ -38,11 +41,13 @@ namespace Uniwiki.Server.Persistence.Repositories
             {
                 emailConfirmationSecretModel.Invalidate();
             }
+
+            SaveChanges();
         }
 
         public EmailConfirmationSecretModel? TryGetValidEmailConfirmationSecret(ProfileModel profile)
         {
-            return All.FirstOrDefault(s => s.Profile.Id == profile.Id && s.IsValid);
+            return All.FirstOrDefault(s => s.ProfileId == profile.Id && s.IsValid);
         }
 
         public EmailConfirmationSecretModel FindValidById(Guid secret)
@@ -60,6 +65,11 @@ namespace Uniwiki.Server.Persistence.Repositories
             SaveChanges();
 
             return emailConfirmationSecretModel;
+        }
+
+        public EmailConfirmationSecretModel FindSecret(Guid secret)
+        {
+            return All.Where(s => s.Secret == secret).Include(s => s.Profile).First();
         }
     }
 }
