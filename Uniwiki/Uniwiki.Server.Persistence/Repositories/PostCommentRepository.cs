@@ -30,6 +30,8 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             All.Add(postComment);
 
+            SaveChanges();
+
             return postComment;
         }
     }

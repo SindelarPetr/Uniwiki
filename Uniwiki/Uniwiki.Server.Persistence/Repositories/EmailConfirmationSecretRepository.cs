@@ -42,7 +42,7 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public EmailConfirmationSecretModel? TryGetValidEmailConfirmationSecret(ProfileModel profile)
         {
-            return All.FirstOrDefault(s => s.Profile == profile && s.IsValid);
+            return All.FirstOrDefault(s => s.Profile.Id == profile.Id && s.IsValid);
         }
 
         public EmailConfirmationSecretModel FindValidById(Guid secret)
@@ -56,6 +56,8 @@ namespace Uniwiki.Server.Persistence.Repositories
             EmailConfirmationSecretModel emailConfirmationSecretModel = new EmailConfirmationSecretModel(Guid.NewGuid(), profile, secret, creationTime, true);
 
             All.Add(emailConfirmationSecretModel);
+
+            SaveChanges();
 
             return emailConfirmationSecretModel;
         }

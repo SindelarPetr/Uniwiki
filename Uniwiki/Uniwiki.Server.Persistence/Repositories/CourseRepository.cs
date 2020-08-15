@@ -74,6 +74,8 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             All.Add(course);
 
+            SaveChanges();
+
             return course;
         }
     }

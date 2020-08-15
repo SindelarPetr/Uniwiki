@@ -48,6 +48,8 @@ namespace Uniwiki.Server.Persistence.Repositories
                 // Like it
                 existingLike.Like();
             }
+
+            SaveChanges();
         }
 
         public void UnlikeComment(PostCommentModel comment, ProfileModel profile)
@@ -67,6 +69,8 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             // Unlike it
             existingLike.Unlike();
+
+            SaveChanges();
         }
     }
 }

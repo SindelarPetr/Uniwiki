@@ -48,6 +48,8 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             All.Add(newPasswordSecretModel);
 
+            SaveChanges();
+
             return newPasswordSecretModel;
         }
     }

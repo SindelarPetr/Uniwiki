@@ -48,7 +48,7 @@ namespace Uniwiki.Server.Persistence.Repositories
                 throw new RequestException( _textService.Error_UniversityNotFound);
 
 
-            return uni?.StudyGroups;
+            return uni.StudyGroups;
         }
 
         public IEnumerable<UniversityModel> SearchUniversities(string text)
@@ -68,6 +68,8 @@ namespace Uniwiki.Server.Persistence.Repositories
             var university = new UniversityModel(Guid.NewGuid(), fullName, shortName, url, false);
 
             All.Add(university);
+
+            SaveChanges();
 
             return university;
         }

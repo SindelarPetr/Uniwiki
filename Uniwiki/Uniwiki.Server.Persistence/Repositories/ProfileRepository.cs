@@ -64,6 +64,8 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             All.Add(profile);
 
+            SaveChanges();
+
             return profile;
         }
     }

@@ -86,6 +86,8 @@ namespace Uniwiki.Server.Persistence.Repositories
             // Add the study group to the DB
             All.Add(studyGroup);
 
+            SaveChanges();
+
             return studyGroup;
         }
     }

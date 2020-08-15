@@ -32,6 +32,8 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             All.Add(postFileDownload);
 
+            SaveChanges();
+
             return postFileDownload;
         }
     }

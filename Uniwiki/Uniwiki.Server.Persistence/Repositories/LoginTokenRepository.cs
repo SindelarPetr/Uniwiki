@@ -32,6 +32,8 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             All.Add(loginToken);
 
+            SaveChanges();
+
             return loginToken;
         }
     }
