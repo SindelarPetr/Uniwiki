@@ -2,7 +2,7 @@
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions.Base
 {
-    public interface IRepositoryBase<TModel, TId> where TModel : ModelBase<TId>
+    public interface IRepositoryBase<TModel, TId> where TModel : ModelBase<TId> where TId : struct
     {
         string NotFoundByIdMessage { get; }
 

@@ -26,6 +26,7 @@ namespace Uniwiki.Server.Persistence
             where TRepository : RepositoryBase<TModel, TId>, TIRepository
             where TModel : ModelBase<TId>
             where TModelMap : ModelMapBase<TModel, TId>
+            where TId : struct
         {
             // To ensure consistency in the project, we will check whether all the types created for an entity have the right consistent type - this means that they are either all removable or all non-removable
             var modelIsRemovable = typeof(TModel) is RemovableModelBase<TId>;

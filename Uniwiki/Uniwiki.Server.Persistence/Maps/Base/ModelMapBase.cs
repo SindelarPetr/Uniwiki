@@ -8,7 +8,7 @@ using Uniwiki.Server.Persistence.Repositories.Base;
 namespace Uniwiki.Server.Persistence.Maps.Base
 {
 
-    public abstract class ModelMapBase<TModel, TId> : IModelMapBase  where TModel : ModelBase<TId>
+    public abstract class ModelMapBase<TModel, TId> : IModelMapBase  where TModel : ModelBase<TId> where TId : struct
     {
         private readonly string _tableName;
 
