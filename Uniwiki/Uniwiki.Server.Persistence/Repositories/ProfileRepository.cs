@@ -51,6 +51,8 @@ namespace Uniwiki.Server.Persistence.Repositories
         public void SetAdmin(ProfileModel profile)
         {
             profile.SetAuthenticationLevel(AuthenticationLevel.Admin);
+
+            SaveChanges();
         }
 
         public void EditHomeFaculty(ProfileModel user, StudyGroupModel? homeFaculty)

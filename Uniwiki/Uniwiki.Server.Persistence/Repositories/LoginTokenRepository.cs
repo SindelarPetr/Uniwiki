@@ -23,7 +23,7 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public LoginTokenModel? TryFindNonExpiredById(Guid tokenValue, DateTime searchTime)
         {
-            return All.FirstOrDefault(t => (t.PrimaryTokenId == tokenValue || t.SecondaryTokenId == tokenValue) && t.Expiration > searchTime);
+            return All.Include(t => t.Profile).FirstOrDefault(t => (t.PrimaryTokenId == tokenValue || t.SecondaryTokenId == tokenValue) && t.Expiration > searchTime);
         }
 
         public LoginTokenModel AddLoginToken(Guid primaryToken, Guid secondaryToken, ProfileModel profile, DateTime creationTime, DateTime expiration)
