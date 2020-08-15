@@ -70,9 +70,9 @@ namespace Uniwiki.Server.Persistence.Repositories
             return All.FirstOrDefault(g => g.Url == url);
         }
 
-        public bool IsStudyGroupNameUniq(UniversityModel university, string name)
+        public bool IsStudyGroupNameUniq(UniversityModel university, string nameForSearching)
         {
-            return university.StudyGroups.All(g => g.LongName.ToLower() != name.ToLower());
+            return All.Where(g => g.UniversityId == university.Id).All(g => g.LongNameForSearching != nameForSearching);
         }
 
         public StudyGroupModel AddStudyGroup(UniversityModel university, string shortName, string longName, string url, ProfileModel profile, Language primaryLanguage)
