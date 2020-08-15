@@ -1,6 +1,7 @@
 ﻿using Shared;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
 using Uniwiki.Shared.Services.Abstractions;
@@ -11,10 +12,7 @@ namespace Uniwiki.Shared.Services
     {
         public Language Language { get; private set; }
 
-        public string GetTranslation(string czech, string english)
-        {
-            throw new NotImplementedException();
-        }
+        public string GetTranslation(string czech, string english) => Language == Language.Czech ? czech : english;
 
         public void SetLanguage(Language language) => Language = language;
 
