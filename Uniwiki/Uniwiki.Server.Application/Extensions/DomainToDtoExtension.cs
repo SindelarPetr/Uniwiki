@@ -29,9 +29,9 @@ namespace Uniwiki.Server.Application.Extensions
             // If user is not authenticated, then dont include PostFiles
             var postFiles = clientProfile == null
                 ? new PostFileDto[0]
-                : postModel.Files.Select(f => f.ToDto()).ToArray();
+                : postModel.PostFiles.Select(f => f.ToDto()).ToArray();
 
-            return new PostDto(postModel.Id, postModel.Author.ToDto(), postModel.Text, postModel.CreationTime, postFiles, postModel.Files.Length, postModel.PostType, postModel.Likes.Count(), postModel.Likes.Any(l => l.Profile == clientProfile), postModel.Comments.Select(m => m.ToDto(clientProfile)).ToArray());
+            return new PostDto(postModel.Id, postModel.Author.ToDto(), postModel.Text, postModel.CreationTime, postFiles, postModel.PostFiles.Length, postModel.PostType, postModel.Likes.Count(), postModel.Likes.Any(l => l.Profile == clientProfile), postModel.Comments.Select(m => m.ToDto(clientProfile)).ToArray());
         }
 
         public static LoginTokenDto ToDto(this LoginTokenModel loginTokenModel) 

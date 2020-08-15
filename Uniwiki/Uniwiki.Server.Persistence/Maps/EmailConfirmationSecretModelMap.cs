@@ -6,6 +6,8 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class EmailConfirmationSecretModelMap : ModelMapBase<EmailConfirmationSecretModel, Guid>
     {
-        
+        public EmailConfirmationSecretModelMap() : base("EmailConfirmationSecrets")
+        {
+        }
     }
 }

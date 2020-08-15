@@ -23,8 +23,8 @@ namespace Uniwiki.Server.Application.ServerActions
                 post.Id,
                 post.Text,
                 post.PostType ?? "null",
-                post.Files.Length,
-                post.Files.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"),
+                post.PostFiles.Length,
+                post.PostFiles.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"),
                 request.Text,
                 request.PostType,
                 request.PostFiles.Count(),
@@ -70,10 +70,10 @@ namespace Uniwiki.Server.Application.ServerActions
             LogAction(_logger, post, request);
 
             // Update the names of the files
-            var postFiles = _postFileRepository.FindPostFilesAndUpdateNames(filesForSearch, profile).ToArray();
+            // TODO: var postFiles = _postFileRepository.UpdateNamesOfPostFiles().ToArray();
 
             // Edit the post
-            var edittedPost = _postRepository.EditPost(post, request.Text, request.PostType, postFiles);
+            var edittedPost = _postRepository.EditPost(post, request.Text, request.PostType, new PostFileModel[0]/*postFiles*/);
 
             // Create response
             var response = new EditPostResponseDto(edittedPost.ToDto(profile));

@@ -6,6 +6,8 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class FeedbackModelMap : RemovableModelMapBase<FeedbackModel, Guid>
     {
-        
+        public FeedbackModelMap() : base("Feedbacks")
+        {
+        }
     }
 }

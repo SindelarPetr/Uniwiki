@@ -34,8 +34,6 @@ namespace Uniwiki.Server.Persistence.Models
 
     public class PostCategoryModel : ModelBase<PostCategoryModelId>
     {
-        public PostCategoryModelId Id => new PostCategoryModelId(Name, CourseId);
-
         public string Name { get; protected set; }
 
         public Guid CourseId { get; protected set; }

@@ -12,7 +12,6 @@ namespace Uniwiki.Server.Persistence.Models
         public DateTime LikeTime { get; protected set; }
         public bool IsLiked { get; protected set; }
 
-        // Keep this internal
         internal PostCommentLikeModel(PostCommentModel comment, ProfileModel profile, DateTime likeTime, bool isLiked)
             : base(new PostCommentLikeModelId(comment, profile))
         {

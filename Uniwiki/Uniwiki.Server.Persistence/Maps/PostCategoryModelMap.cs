@@ -7,17 +7,17 @@ using Uniwiki.Server.Persistence.Repositories.Base;
 namespace Uniwiki.Server.Persistence.Models
 {
     // View
-    public class FilterPostCategoryModelMap : ModelMapBase<FilterPostCategoryModel, Guid>
-    {
-        public PostCategoryModelId Id { get; }
-        public PostCategoryModel PostCategory { get; set; }
-        public int PostsCount { get; set; }
+    //public class FilterPostCategoryModelMap : ModelMapBase<FilterPostCategoryModel, Guid>
+    //{
+    //    public PostCategoryModelId Id { get; }
+    //    public PostCategoryModel PostCategory { get; set; }
+    //    public int PostsCount { get; set; }
 
-        public FilterPostCategoryModel(PostCategoryModel postCategory)
-        {
-            PostCategory = postCategory;
-        }
-    }
+    //    public FilterPostCategoryModel(PostCategoryModel postCategory)
+    //    {
+    //        PostCategory = postCategory;
+    //    }
+    //}
 
     // View
     //public class NewPostCategoryModel : IdModel<PostCategoryModelId>
@@ -33,23 +33,23 @@ namespace Uniwiki.Server.Persistence.Models
     //}
 
 
-    public class PostCategoryModel : ModelBase<PostCategoryModelId>
-    {
-        public PostCategoryModelId Id => new PostCategoryModelId(Name, CourseId);
+    //public class PostCategoryModel : ModelBase<PostCategoryModelId>
+    //{
+    //    public PostCategoryModelId Id => new PostCategoryModelId(Name, CourseId);
 
-        public string Name { get; protected set; }
+    //    public string Name { get; protected set; }
 
-        public Guid CourseId { get; protected set; }
+    //    public Guid CourseId { get; protected set; }
         
-        public CourseModel Course { get; protected set; }
+    //    public CourseModel Course { get; protected set; }
 
-        public ICollection<PostModel> Posts { get; set; } = new List<PostModel>();
+    //    public ICollection<PostModel> Posts { get; set; } = new List<PostModel>();
 
-        public PostCategoryModel(string name, Guid courseId)
-            : base(new PostCategoryModelId(name, courseId))
-        {
-            Name = name;
-            CourseId = courseId;
-        }
-    }
+    //    public PostCategoryModel(string name, Guid courseId)
+    //        : base(new PostCategoryModelId(name, courseId))
+    //    {
+    //        Name = name;
+    //        CourseId = courseId;
+    //    }
+    //}
 }

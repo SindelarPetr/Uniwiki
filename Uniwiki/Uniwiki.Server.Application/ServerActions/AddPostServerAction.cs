@@ -17,17 +17,15 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly IProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
         private readonly IPostFileRepository _postFileRepository;
-        private readonly IPostTypeRepository _postTypeRepository;
         private readonly IPostRepository _postRepository;
-        protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
+        protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public AddPostServerAction(IServiceProvider serviceProvider, ICourseRepository courseRepository, IProfileRepository profileRepository, ITimeService timeService, IPostFileRepository postFileRepository, IPostTypeRepository postTypeRepository, IPostRepository postRepository) : base(serviceProvider)
+        public AddPostServerAction(IServiceProvider serviceProvider, ICourseRepository courseRepository, IProfileRepository profileRepository, ITimeService timeService, IPostFileRepository postFileRepository, IPostRepository postRepository) : base(serviceProvider)
         {
             _courseRepository = courseRepository;
             _profileRepository = profileRepository;
             _timeService = timeService;
             _postFileRepository = postFileRepository;
-            _postTypeRepository = postTypeRepository;
             _postRepository = postRepository;
         }
 
@@ -42,11 +40,27 @@ namespace Uniwiki.Server.Application.ServerActions
             // Get files for the post
             var files = request.PostFiles.Select(f => (f.Id, f.NameWithoutExtension));
 
-            // Get domain files
-            var postFiles = _postFileRepository.FindPostFilesAndUpdateNames(files, profile);
-
             // Add the post to the DB
-            var post = _postRepository.AddPost(request.PostType, profile, request.Text, course, _timeService.Now, postFiles);
+            var post = _postRepository.AddPost(request.PostType, profile, request.Text, course, _timeService.Now);
+
+            // TODO: ------------------ Move this to the PostFilesService
+            // Get post files from the DB
+            var postFiles = _postFileRepository.FindPostFiles(files, profile);
+
+            // Get the new post files
+            var newPostFiles = postFiles.Where(f => f.Post != null).ToArray();
+
+            // Get all files with changed names
+            var changedPostFiles = postFiles
+                .Select(pf => (PostFile:pf, files.First(f => f.Id == pf.Id).NameWithoutExtension))
+                .Where(p => p.NameWithoutExtension != p.PostFile.NameWithoutExtension);
+
+            // Update the names for the postFiles
+            postFiles = _postFileRepository.UpdateNamesOfPostFiles(changedPostFiles);
+
+            // Pair all the files to the new post
+            post = _postFileRepository.PairPostFilesWithPost(newPostFiles, post);
+            // ------------------
 
             // Create DTO
             var postDto = post.ToDto(profile);

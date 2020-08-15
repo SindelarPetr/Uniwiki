@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Uniwiki.Server.Persistence.Maps.Base;
 using Uniwiki.Server.Persistence.Models;
 
 namespace Uniwiki.Server.Persistence
 {
     internal class UniwikiContext : DbContext
     {
+        private readonly IServiceProvider _serviceProvider;
+
         public DbSet<LoginTokenModel> LoginTokens => Set<LoginTokenModel>();
 
         public DbSet<NewPasswordSecretModel> NewPasswordSecrets => Set<NewPasswordSecretModel>();
@@ -39,6 +43,11 @@ namespace Uniwiki.Server.Persistence
         public DbSet<PostFileDownloadModel> PostFileDownloads => Set<PostFileDownloadModel>();
 
         public DbSet<FeedbackModel> Feedbacks => Set<FeedbackModel>();
+
+        public UniwikiContext(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
         // TODO: Move to configuration
         public IEnumerable<string> DefaultPostTypesCz => new[]
@@ -72,30 +81,35 @@ namespace Uniwiki.Server.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            MapModels(modelBuilder);
+            var modelMaps = _serviceProvider.GetServices(typeof(IModelMapBase));
 
-            modelBuilder.Entity<StudyGroupModel>(m =>
+            foreach (var builder in modelMaps)
             {
-                m.ToTable("StudyGroup");
-                m.HasOne(m => m.Profile).WithOne(a => a.HomeFaculty);
-            });
+                ((IModelMapBase)builder).Map(modelBuilder);
+            }
 
-            modelBuilder.Entity<PostCommentModel>()
-                .HasMany(c => c.Likes)
-                .WithOne(l => l.Comment);
+            //modelBuilder.Entity<StudyGroupModel>(m =>
+            //{
+            //    m.ToTable("StudyGroup");
+            //    m.HasOne(a => a.Profile).WithOne(a => a.HomeFaculty);
+            //});
 
-            modelBuilder.Entity<PostCommentLikeModel>()
-                .HasKey(e => new PostCommentLikeModelId(e.CommentId, e.ProfileId));
+            //modelBuilder.Entity<PostCommentModel>()
+            //    .HasMany(c => c.Likes)
+            //    .WithOne(l => l.Comment);
 
-            modelBuilder.Entity<PostModel>()
-                .HasMany(p => p.Likes)
-                .WithOne(l => l.Post);
+            //modelBuilder.Entity<PostCommentLikeModel>()
+            //    .HasKey(e => new PostCommentLikeModelId(e.CommentId, e.ProfileId));
 
-            modelBuilder.Entity<PostLikeModel>()
-                .HasKey(e => new PostLikeModelId(e.PostId, e.ProfileId));
+            //modelBuilder.Entity<PostModel>()
+            //    .HasMany(p => p.Likes)
+            //    .WithOne(l => l.Post);
 
-            modelBuilder.Entity<PostCategoryModel>()
-                .HasKey(m => new PostCategoryModelId(m.Name, m.CourseId));
+            //modelBuilder.Entity<PostLikeModel>()
+            //    .HasKey(e => new PostLikeModelId(e.PostId, e.ProfileId));
+
+            //modelBuilder.Entity<PostCategoryModel>()
+            //    .HasKey(m => new PostCategoryModelId(m.Name, m.CourseId));
         }
 
     }

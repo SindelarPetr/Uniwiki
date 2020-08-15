@@ -55,9 +55,9 @@ namespace Uniwiki.Server.Persistence.Repositories
             return FetchPosts(course, lastPost, 1).Any();
         }
 
-        public PostModel AddPost(string? postType, ProfileModel profile, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> postFiles)
+        public PostModel AddPost(string? postType, ProfileModel profile, string text, CourseModel course, DateTime creationTime)
         {
-            var post = new PostModel(Guid.NewGuid(), postType, profile, text, course, creationTime, postFiles, false);
+            var post = new PostModel(Guid.NewGuid(), postType, profile, text, course, creationTime, false);
 
             All.Add(post);
 

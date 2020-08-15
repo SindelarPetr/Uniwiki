@@ -10,7 +10,8 @@ namespace Uniwiki.Server.Persistence.Models
         public ProfileModel Profile { get; protected set; }
         public string Text { get; protected set; }
         public DateTime CreationTime { get; protected set; }
-        public IEnumerable<PostCommentLikeModel> Likes { get; protected set; }
+        public ICollection<PostCommentLikeModel> Likes { get; protected set; }
+            = new List<PostCommentLikeModel>();
 
         internal PostCommentModel(Guid id, ProfileModel profile, PostModel post, string text, DateTime creationTime, bool isRemoved)
             : base(isRemoved, id)

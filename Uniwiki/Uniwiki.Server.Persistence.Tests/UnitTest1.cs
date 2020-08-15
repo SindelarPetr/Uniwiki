@@ -11,7 +11,7 @@ using Uniwiki.Shared.Tests.FakeServices;
 namespace Uniwiki.Server.Persistence.Tests
 {
     [TestClass]
-    public abstract class RepositoryBase<TRepository, TModel, TId> 
+    public abstract class RepositoryTestBase<TRepository, TModel, TId> 
     {
         private ServiceProvider _baseServiceProvider = null!;
         protected IServiceProvider ServiceProvider => _scope.ServiceProvider;
@@ -45,7 +45,7 @@ namespace Uniwiki.Server.Persistence.Tests
     }
 
     [TestClass]
-    public class BasicTest
+    public class BasicTest 
     {
         [TestMethod]
         public void TestMethod1()
@@ -54,6 +54,11 @@ namespace Uniwiki.Server.Persistence.Tests
             var feedbackRating = 2;
             ProfileModel? feedbackUser = null;
 
+            ServiceCollection services = new ServiceCollection();
+            services.AddUniwikiServerPersistence();
+
+            var timeService = new FakeTimeService(new DateTime(2020, 3, 12));
+            services.AddSingleton<ITimeService>(timeService);
             var provider = services.BuildServiceProvider();
 
             // Create a new feedback          

@@ -14,6 +14,7 @@ namespace Uniwiki.Server.Persistence.Models
         public Guid CourseId { get; protected set; }
         public DateTime CreationTime { get; protected set; }
         public long Size { get; protected set; }
+        public PostModel? Post { get; protected set; }
 
         internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size, bool isRemoved)
             : base(isRemoved, id)
@@ -61,9 +62,14 @@ namespace Uniwiki.Server.Persistence.Models
             IsSaved = true;
         }
 
-        internal void SetFileName(string newFileName)
+        internal void SetFileNameWithoutExtension(string newFileNameWithoutExtension)
         {
-            NameWithoutExtension = newFileName;
+            NameWithoutExtension = newFileNameWithoutExtension;
+        }
+
+        internal void SetPost(PostModel post)
+        {
+            Post = post;
         }
     }
 }

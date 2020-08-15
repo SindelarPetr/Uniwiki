@@ -6,23 +6,8 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class PostFileDownloadModelMap : ModelMapBase<PostFileDownloadModel, Guid>
     {
-        public LoginTokenModel Token { get; protected set; }
-        public PostFileModel FileDownloaded { get; protected set; }
-        public DateTime DownloadTime { get; protected set; }
-        
-
-        internal PostFileDownloadModel(Guid id, LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
-            : base(id)
+        public PostFileDownloadModelMap() : base("PostFileDownloads")
         {
-            Id = id;
-            Token = token;
-            FileDownloaded = fileDownloaded;
-            DownloadTime = downloadTime;
-        }
-
-        protected PostFileDownloadModel()
-        {
-
         }
     }
 }

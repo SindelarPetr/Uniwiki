@@ -7,8 +7,10 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class LoginTokenModelMap : ModelMapBase<LoginTokenModel, Guid>
     {
-        public LoginTokenModelMap() : base("LoginTokens", ...)
-        {
+
+        public LoginTokenModelMap() : base("LoginTokens") 
+        {         
+        
         }
     }
 }

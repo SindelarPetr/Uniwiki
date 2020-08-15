@@ -21,8 +21,10 @@ namespace Uniwiki.Server.Persistence.Models
         public string FamilyName { get; protected set; }
         public string Url { get; protected set; }
         public string ProfilePictureSrc { get; protected set; }
-        public IEnumerable<CourseModel> RecentCourses { get; protected set; }
-        public ICollection<FeedbackModel> Feedbacks { get; set; } = new List<FeedbackModel>();
+        public ICollection<CourseModel> RecentCourses { get; protected set; } 
+            = new List<CourseModel>();
+        public ICollection<FeedbackModel> Feedbacks { get; set; } 
+            = new List<FeedbackModel>();
         public bool FeedbackProvided => Feedbacks.Any();
 
         internal ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty)

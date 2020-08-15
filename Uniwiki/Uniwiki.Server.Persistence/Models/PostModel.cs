@@ -13,19 +13,21 @@ namespace Uniwiki.Server.Persistence.Models
         public CourseModel Course { get; protected set; }
         public DateTime CreationTime { get; protected set; }
 
-        public PostFileModel[] Files { get; protected set; }
+        public PostFileModel[] PostFiles { get; protected set; }
 
-        public IEnumerable<PostLikeModel> Likes { get; protected set; }
-        public IEnumerable<PostCommentModel> Comments { get; protected set; }
+        public ICollection<PostLikeModel> Likes { get; protected set; }
+            = new List<PostLikeModel>();
+        
+        public ICollection<PostCommentModel> Comments { get; protected set; }
+            = new List<PostCommentModel>();
 
-        internal PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, IEnumerable<PostFileModel> files, bool isRemoved) : base(isRemoved, id)
+        internal PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, bool isRemoved) : base(isRemoved, id)
         {
             PostType = postType;
             Author = author;
             Text = text;
             Course = course;
             CreationTime = creationTime;
-            Files = files.ToArray();
         }
 
         protected PostModel()
@@ -37,7 +39,12 @@ namespace Uniwiki.Server.Persistence.Models
         {
             Text = text;
             PostType = postType;
-            Files = postFiles;
+            PostFiles = postFiles;
+        }
+
+        internal void SetPostFiles(PostFileModel[] postFileModels)
+        {
+            PostFiles = postFileModels;
         }
     }
 }
