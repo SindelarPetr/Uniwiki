@@ -8,19 +8,20 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class ProfileModel : ModelBase<Guid>
     {
-        public string Email { get; protected set; }
-        public string Password { get; protected set; }
-        public byte[] PasswordSalt { get; protected set; }
+        public string Email { get; protected set; } = null!;
+        public string Password { get; protected set; } = null!;
+        public byte[] PasswordSalt { get; protected set; } = null!;
         public DateTime CreationDate { get; protected set; }
         public bool IsConfirmed { get; protected set; }
         public AuthenticationLevel AuthenticationLevel { get; protected set; }
+        public Guid? HomeFacultyId { get; protected set; }
         public StudyGroupModel? HomeFaculty { get; protected set; }
 
         public string FullName => FirstName + " " + FamilyName;
-        public string FirstName { get; protected set; }
-        public string FamilyName { get; protected set; }
-        public string Url { get; protected set; }
-        public string ProfilePictureSrc { get; protected set; }
+        public string FirstName { get; protected set; } = null!;
+        public string FamilyName { get; protected set; } = null!;
+        public string Url { get; protected set; } = null!;
+        public string ProfilePictureSrc { get; protected set; } = null!;
         public ICollection<CourseModel> RecentCourses { get; protected set; } 
             = new List<CourseModel>();
         public ICollection<FeedbackModel> Feedbacks { get; set; } 
@@ -36,6 +37,7 @@ namespace Uniwiki.Server.Persistence.Models
             CreationDate = creationDate;
             IsConfirmed = isConfirmed;
             AuthenticationLevel = authenticationLevel;
+            HomeFacultyId = homeFaculty?.Id;
             HomeFaculty = homeFaculty;
             ProfilePictureSrc = profilePictureSrc;
             FirstName = firstName;
@@ -60,14 +62,8 @@ namespace Uniwiki.Server.Persistence.Models
             PasswordSalt = passwordSalt;
         }
 
-        internal void SetAuthenticationLevel(AuthenticationLevel authenticationLevel)
-        {
-            AuthenticationLevel = authenticationLevel;
-        }
+        internal void SetAuthenticationLevel(AuthenticationLevel authenticationLevel) => AuthenticationLevel = authenticationLevel;
 
-        internal void SetHomeFaculty(StudyGroupModel? homeFaculty)
-        {
-            HomeFaculty = homeFaculty;
-        }
+        internal void SetHomeFaculty(StudyGroupModel? homeFaculty) => HomeFaculty = homeFaculty;
     }
 }

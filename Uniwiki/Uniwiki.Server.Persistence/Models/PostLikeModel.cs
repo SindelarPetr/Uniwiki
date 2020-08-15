@@ -6,9 +6,9 @@ namespace Uniwiki.Server.Persistence.Models
     public class PostLikeModel : ModelBase<PostLikeModelId>
     {
         public Guid PostId { get; protected set; }
-        public PostModel Post { get; protected set; }
+        public PostModel Post { get; protected set; } = null!;
         public Guid ProfileId { get; protected set; }
-        public ProfileModel Profile { get; protected set; }
+        public ProfileModel Profile { get; protected set; } = null!;
         public DateTime DateTime { get; protected set; }
         public bool IsLiked { get; protected set; }
 

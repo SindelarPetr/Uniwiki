@@ -15,7 +15,9 @@ namespace Uniwiki.Server.Persistence.Models
         internal PostCommentLikeModel(PostCommentModel comment, ProfileModel profile, DateTime likeTime, bool isLiked)
             : base(new PostCommentLikeModelId(comment, profile))
         {
+            CommentId = comment.Id;
             Comment = comment;
+            ProfileId = profile.Id;
             Profile = profile;
             LikeTime = likeTime;
             IsLiked = isLiked;

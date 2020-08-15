@@ -5,7 +5,8 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class NewPasswordSecretModel : ModelBase<Guid>
     {
-        public ProfileModel Profile { get; protected set; }
+        public Guid ProfileId { get; protected set; }
+        public ProfileModel Profile { get; protected set; } = null!;
         public DateTime CreationTime { get; protected set; }
         public DateTime ExpirationTime { get; protected set; }
         public bool IsValid { get; protected set; }
@@ -14,6 +15,7 @@ namespace Uniwiki.Server.Persistence.Models
         internal NewPasswordSecretModel(Guid id, ProfileModel profile, Guid secret, DateTime creationTime, DateTime expirationTime, bool isValid)
             : base(id)
         {
+            ProfileId = profile.Id;
             Profile = profile;
             Secret = secret;
             CreationTime = creationTime;

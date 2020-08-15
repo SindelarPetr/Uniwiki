@@ -5,26 +5,31 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class PostFileModel : RemovableModelBase<Guid>
     {
-        public string Path { get; protected set; }
+        public string Path { get; protected set; } = null!;
         public string OriginalFullName => $"{NameWithoutExtension}{Extension}";
-        public string NameWithoutExtension { get; protected set; }
-        public string Extension { get; protected set; }
+        public string NameWithoutExtension { get; protected set; } = null!;
+        public string Extension { get; protected set; } = null!;
         public bool IsSaved { get; protected set; }
-        public ProfileModel Profile { get; protected set; }
+        public Guid ProfileId { get; protected set; }
+        public ProfileModel Profile { get; protected set; } = null!;
         public Guid CourseId { get; protected set; }
+        public CourseModel Course { get; protected set; } = null!;
         public DateTime CreationTime { get; protected set; }
         public long Size { get; protected set; }
+        public Guid? PostId { get; protected set; }
         public PostModel? Post { get; protected set; }
 
-        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size, bool isRemoved)
+        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, CourseModel course, DateTime creationTime, long size, bool isRemoved)
             : base(isRemoved, id)
         {
             Path = path;
             NameWithoutExtension = nameWithoutExtension;
             Extension = extension;
             IsSaved = isSaved;
+            ProfileId = profile.Id;
             Profile = profile;
-            CourseId = courseId;
+            CourseId = course.Id;
+            Course = course;
             CreationTime = creationTime;
             Size = size;
         }

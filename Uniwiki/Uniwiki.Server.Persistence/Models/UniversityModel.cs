@@ -9,16 +9,17 @@ namespace Uniwiki.Server.Persistence.Models
         /// <summary>
         /// e. g. 'IT University of Copenhagen'
         /// </summary>
-        public string FullName { get; protected set; }
+        public string FullName { get; protected set; } = null!;
 
         /// <summary>
         /// e. g. 'ITU'
         /// </summary>
-        public string ShortName { get; protected set; }
+        public string ShortName { get; protected set; } = null!;
 
-        public string Url { get; protected set; }
+        public string Url { get; protected set; } = null!;
 
-        public IEnumerable<StudyGroupModel> StudyGroups { get; protected set; }
+        public ICollection<StudyGroupModel> StudyGroups { get; protected set; }
+        = new List<StudyGroupModel>();
 
         internal UniversityModel(Guid id, string fullName, string shortName, string url, bool isRemoved) : base(isRemoved, id)
         {

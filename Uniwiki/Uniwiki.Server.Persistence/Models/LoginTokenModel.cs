@@ -6,7 +6,8 @@ namespace Uniwiki.Server.Persistence.Models
     public class LoginTokenModel : ModelBase<Guid>
     {
         public Guid PrimaryTokenId { get; protected set; }
-        public ProfileModel Profile { get; protected set; }
+        public Guid ProfileId { get; protected set; }
+        public ProfileModel Profile { get; protected set; } = null!;
         public DateTime CreationTime { get; protected set; }
         public DateTime Expiration { get; protected set; }
         public Guid SecondaryTokenId { get; protected set; }
@@ -15,6 +16,7 @@ namespace Uniwiki.Server.Persistence.Models
             : base(id)
         {
             PrimaryTokenId = primaryTokenId;
+            ProfileId = profile.Id;
             Profile = profile;
             CreationTime = creationTime;
             Expiration = expiration;
