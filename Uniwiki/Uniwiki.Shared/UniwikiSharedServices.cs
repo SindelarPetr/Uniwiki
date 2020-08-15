@@ -23,6 +23,7 @@ namespace Uniwiki.Shared
             services.AddValidatorsAndStandardizers();
             services.AddSingleton<Constants>();
             services.AddScoped<ILanguageService, LanguageService>();
+            services.AddScoped<TextServiceShared>();
         }
 
         private static void AddValidatorsAndStandardizers(this IServiceCollection services)
