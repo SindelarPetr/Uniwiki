@@ -40,7 +40,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uniwiki.Client.Host", "Uniw
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Tests", "Shared.Tests\Shared.Tests.csproj", "{B7F92039-5746-4AE0-842D-EA3CA4020AA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uniwiki.Server.Persistence.Tests", "Uniwiki.Server.Persistence.Tests\Uniwiki.Server.Persistence.Tests.csproj", "{42EBDECD-78AF-41B3-AAB7-67C6D9F75687}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uniwiki.Server.Persistence.Tests", "Uniwiki.Server.Persistence.Tests\Uniwiki.Server.Persistence.Tests.csproj", "{42EBDECD-78AF-41B3-AAB7-67C6D9F75687}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{95DCE644-02DA-4D2B-9D58-0BDCFE4860F2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.editorconfig.inferred = .editorconfig.inferred
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

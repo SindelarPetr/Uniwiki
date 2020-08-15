@@ -24,11 +24,12 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly IUploadFileService _uploadFileService;
         private readonly ILogger<UploadPostFileServerAction> _logger;
         private readonly IFileHelperService _fileHelperService;
+        private readonly ICourseRepository _courseRepository;
         private readonly TextService _textService;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public UploadPostFileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService, TextService textService) : base(serviceProvider)
+        public UploadPostFileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService, ICourseRepository courseRepository, TextService textService) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postFileRepository = postFileRepository;
@@ -36,6 +37,7 @@ namespace Uniwiki.Server.Application.ServerActions
             _uploadFileService = uploadFileService;
             _logger = logger;
             _fileHelperService = fileHelperService;
+            _courseRepository = courseRepository;
             _textService = textService;
         }
 
@@ -48,14 +50,16 @@ namespace Uniwiki.Server.Application.ServerActions
             var file = _uploadFileService.GetFile();
 
             // Create id for the file (which we use as the name for it as well)
-            Guid id = Guid.NewGuid();
+            var id = Guid.NewGuid();
 
             // Create path for saving the file
             var dirPath = _uploadFileService.PostFilesDirectoryPath;
 
             // Create uploads directory, if it does not exist
             if (!Directory.Exists(dirPath))
+            {
                 Directory.CreateDirectory(dirPath);
+            }
 
             // Path to file
             var path = Path.Combine(dirPath, id.ToString());
@@ -72,8 +76,11 @@ namespace Uniwiki.Server.Application.ServerActions
             // Log information about the file
             _logger.LogInformation("Writing the file record to the DB: FileId: '{FileId}', FileName: '{FileName}', Size: {Size}", id, originalName, file.Length);
 
+            // Find the course for the file
+            var course = _courseRepository.FindById(request.CourseId);
+
             // Create a new file record in the DB
-            var postFileModel = _postFileRepository.AddPostFile(path, fileName, extension, false, profile, request.CourseId, creationTime, file.Length);
+            var postFileModel = _postFileRepository.AddPostFile(path, fileName, extension, false, profile, course, creationTime, file.Length);
 
             // Log information about the file
             _logger.LogInformation("Copying the file to the file system: FileId: '{FileId}'", id);
@@ -81,10 +88,8 @@ namespace Uniwiki.Server.Application.ServerActions
             try
             {
                 // Save the file
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+                using var stream = new FileStream(path, FileMode.Create);
+                await file.CopyToAsync(stream);
             }
             catch (Exception exception)
             {

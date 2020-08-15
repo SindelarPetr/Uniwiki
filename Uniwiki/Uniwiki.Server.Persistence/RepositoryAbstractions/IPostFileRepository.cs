@@ -13,7 +13,7 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 
         IEnumerable<PostFileModel> FindPostFiles(IEnumerable<(Guid id, string fileName)> files, ProfileModel profile);
         
-        PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size);
+        PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, CourseModel course, DateTime creationTime, long size);
         
         IEnumerable<PostFileModel> UpdateNamesOfPostFiles(IEnumerable<(PostFileModel postFile, string newFileName)> files);
         

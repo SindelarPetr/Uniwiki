@@ -31,14 +31,16 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             var fileModels = files.Select(f =>
                 (
-                    postFile: All.FirstOrDefault(p => p.Id == f.id && p.Profile == profile),
-                    fileName: f.fileName
+                    postFile: All.FirstOrDefault(p => p.Id == f.id && p.Profile == profile), 
+                    f.fileName
                 )
                ).ToArray();
 
             var notFoundNames = fileModels.Where(p => p.postFile == null).Select(p => p.fileName).ToArray();
             if (notFoundNames.Any())
+            {
                 throw new RequestException(_textService.Error_FilesNotFound(notFoundNames));
+            }
 
             // Update names of the file models
             foreach (var fileModel in fileModels)
@@ -50,9 +52,9 @@ namespace Uniwiki.Server.Persistence.Repositories
             return fileModels.Select(f => f.postFile);
         }
 
-        public PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, Guid courseId, DateTime creationTime, long size)
+        public PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, CourseModel course, DateTime creationTime, long size)
         {
-            var postFile = new PostFileModel(Guid.NewGuid(), path, nameWithoutExtension, extension, isSaved, profile, courseId, creationTime, size, false);
+            var postFile = new PostFileModel(Guid.NewGuid(), path, nameWithoutExtension, extension, isSaved, profile, course, creationTime, size, false);
 
             All.Add(postFile);
 
@@ -72,18 +74,17 @@ namespace Uniwiki.Server.Persistence.Repositories
             var fileModels = files.Select(f =>
                 (
                     postFile: All.FirstOrDefault(p => p.Id == f.id && p.Profile == profile), 
-                    fileName: f.fileName
+                    f.fileName
                 )
                ).ToArray();
 
             // Find which postFiles are null.
             var notFoundNames = fileModels.Where(p => p.postFile == null).Select(p => p.fileName).ToArray();
 
-            // Throw the exception for all not found postFiles.
-            if (notFoundNames.Any())
-                throw new RequestException(_textService.Error_FilesNotFound(notFoundNames));
-
-            return fileModels.Select(pf => pf.postFile);
+            // Throw the exception for all not found postFiles or return the file models
+            return notFoundNames.Any()
+                ? throw new RequestException(_textService.Error_FilesNotFound(notFoundNames))
+                : fileModels.Select(pf => pf.postFile);
         }
 
         public IEnumerable<PostFileModel> UpdateNamesOfPostFiles(IEnumerable<(PostFileModel postFile, string newFileName)> files)
