@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Server.Appliaction.ServerActions;
 using Shared;
 using Shared.Services.Abstractions;
@@ -20,6 +21,7 @@ namespace Uniwiki.Server.Application.Services
 
     internal class DataManipulationService : IDataManipulationService
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly AddCourseServerAction _addCourseServerAction;
         private readonly RegisterServerAction _registerServerAction;
         private readonly ConfirmEmailServerAction _confirmEmailServerAction;
@@ -27,7 +29,6 @@ namespace Uniwiki.Server.Application.Services
         private readonly AddCommentServerAction _addCommentServerAction;
         private readonly LikePostCommentServerAction _likePostCommentServerAction;
         private readonly LikePostServerAction _likePostServerAction;
-        private readonly IUniversityRepository _universityRepository;
         private readonly AddStudyGroupServerAction _addStudyGroupServerAction;
         private readonly AddPostServerAction _addPostServerAction;
         private readonly ILoginTokenRepository _loginTokenRepository;
@@ -38,8 +39,9 @@ namespace Uniwiki.Server.Application.Services
         private readonly AddUniversityServerAction _addUniversityServerAction;
         private readonly RequestContext _anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid().ToString(), Language.English, new System.Net.IPAddress(0x2414188));
 
-        public DataManipulationService(AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, IUniversityRepository universityRepository, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService, IEmailService emailService, AddUniversityServerAction addUniversityServerAction)
+        public DataManipulationService(IServiceProvider serviceProvider, AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService, IEmailService emailService, AddUniversityServerAction addUniversityServerAction)
         {
+            _serviceProvider = serviceProvider;
             _addCourseServerAction = addCourseServerAction;
             _registerServerAction = registerServerAction;
             _confirmEmailServerAction = confirmEmailServerAction;
@@ -47,7 +49,6 @@ namespace Uniwiki.Server.Application.Services
             _addCommentServerAction = addCommentServerAction;
             _likePostCommentServerAction = likePostCommentServerAction;
             _likePostServerAction = likePostServerAction;
-            _universityRepository = universityRepository;
             _addStudyGroupServerAction = addStudyGroupServerAction;
             _addPostServerAction = addPostServerAction;
             _loginTokenRepository = loginTokenRepository;
@@ -72,30 +73,30 @@ namespace Uniwiki.Server.Application.Services
             var martinContext = await RegisterUser("f@f.cz", "Martin", "Novák", "aaaaaa");
 
             // Universities
-            var uniCvut = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("České vysoké učení technické v Praze", "ČVUT", "cvut"), lucieContext)).University;
-            var uniVse = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("Vysoká škola ekonomická", "VŠE", "vse"), lucieContext)).University;
-            var uniCzu = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("Česká zemědělská universita", "ČZU", "czu"), lucieContext)).University;
-            var uniHse = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("Higher school of economics", "HSE", "hse"), lucieContext)).University;
-            var uniUof = (await _addUniversityServerAction.ExecuteActionAsync(new AddUniversityRequestDto("University of Oxford", "UOF", "uof"), lucieContext)).University;
+            var uniCvut = (await Scoped<AddUniversityServerAction>().ExecuteActionAsync(new AddUniversityRequestDto("České vysoké učení technické v Praze", "ČVUT", "cvut"), lucieContext)).University;
+            var uniVse = (await Scoped<AddUniversityServerAction>().ExecuteActionAsync(new AddUniversityRequestDto("Vysoká škola ekonomická", "VŠE", "vse"), lucieContext)).University;
+            var uniCzu = (await Scoped<AddUniversityServerAction>().ExecuteActionAsync(new AddUniversityRequestDto("Česká zemědělská universita", "ČZU", "czu"), lucieContext)).University;
+            var uniHse = (await Scoped<AddUniversityServerAction>().ExecuteActionAsync(new AddUniversityRequestDto("Higher school of economics", "HSE", "hse"), lucieContext)).University;
+            var uniUof = (await Scoped<AddUniversityServerAction>().ExecuteActionAsync(new AddUniversityRequestDto("University of Oxford", "UOF", "uof"), lucieContext)).University;
 
             // Study groups (faculties)
-            var fitCvut = (await _addStudyGroupServerAction.ExecuteActionAsync(
+            var fitCvut = (await Scoped<AddStudyGroupServerAction>().ExecuteActionAsync(
                 new AddStudyGroupRequestDto("Fakulta informačních technologií", "FIT", uniCvut.Id, Language.Czech), lucieContext)).StudyGroupDto;
-            var ecoHse = (await _addStudyGroupServerAction.ExecuteActionAsync(
+            var ecoHse = (await Scoped<AddStudyGroupServerAction>().ExecuteActionAsync(
                 new AddStudyGroupRequestDto("Faculty of Economic Sciences", "FES", uniHse.Id, Language.English), lucieContext)).StudyGroupDto;
-            var lawHse = (await _addStudyGroupServerAction.ExecuteActionAsync(
+            var lawHse = (await Scoped<AddStudyGroupServerAction>().ExecuteActionAsync(
                 new AddStudyGroupRequestDto("Faculty of Law", "FL", uniHse.Id, Language.English), lucieContext)).StudyGroupDto;
-            var weHse = (await _addStudyGroupServerAction.ExecuteActionAsync(
+            var weHse = (await Scoped<AddStudyGroupServerAction>().ExecuteActionAsync(
                 new AddStudyGroupRequestDto("Faculty of World Economy and International Affairs", "WE", uniHse.Id, Language.English), lucieContext)).StudyGroupDto;
-            var fcsHse = (await _addStudyGroupServerAction.ExecuteActionAsync(
+            var fcsHse = (await Scoped<AddStudyGroupServerAction>().ExecuteActionAsync(
                 new AddStudyGroupRequestDto("Faculty of Computer Science", "FCS", uniHse.Id, Language.English), lucieContext)).StudyGroupDto;
-            var fmHse = (await _addStudyGroupServerAction.ExecuteActionAsync(
+            var fmHse = (await Scoped<AddStudyGroupServerAction>().ExecuteActionAsync(
                 new AddStudyGroupRequestDto("Faculty of Mathematics", "FM", uniHse.Id, Language.English), lucieContext)).StudyGroupDto;
-            var fssHse = (await _addStudyGroupServerAction.ExecuteActionAsync(
+            var fssHse = (await Scoped<AddStudyGroupServerAction>().ExecuteActionAsync(
                 new AddStudyGroupRequestDto("Faculty of Social Sciences", "FSS", uniHse.Id, Language.English), lucieContext)).StudyGroupDto;
-            var fhHse = (await _addStudyGroupServerAction.ExecuteActionAsync(
+            var fhHse = (await Scoped<AddStudyGroupServerAction>().ExecuteActionAsync(
                 new AddStudyGroupRequestDto("Faculty of Humanities", "FH", uniHse.Id, Language.English), lucieContext)).StudyGroupDto;
-            var fbmHse = (await _addStudyGroupServerAction.ExecuteActionAsync(
+            var fbmHse = (await Scoped<AddStudyGroupServerAction>().ExecuteActionAsync(
                 new AddStudyGroupRequestDto("Faculty of Business and Management", "FBM", uniHse.Id, Language.English), lucieContext)).StudyGroupDto;
 
             // Courses
@@ -253,7 +254,7 @@ namespace Uniwiki.Server.Application.Services
             await _addPostServerAction.ExecuteActionAsync(new AddPostRequestDto("For studying I recommend this site https://corporatefinanceinstitute.com/resources/knowledge/trading-investing/financial-markets/ It helped me more than the course material, even though some are missing there.", postTypeStudyMaterialEn, hseWeFm.Id, new PostFileDto[0]), ivanaContext);
             await _addPostServerAction.ExecuteActionAsync(new AddPostRequestDto("This is the most important part of the text she gave us to read, you dont really need to read it all:\n\nTypes of Financial Markets\r\nMost people think about the stock market when talking about financial markets. They don't realize there are many kinds that accomplish different goals. Markets exchange a variety of products to help raise liquidity. Each market relies on each other to create confidence in investors. The interconnectedness of these markets means when one suffers, other markets will react accordingly.\r\n\r\nThe Stock Market\r\nThis market is a series of exchanges where successful corporations go to raise large amounts of cash to expand. Stocks are shares of ownership of a public corporation that are sold to investors through broker-dealers. The investors profit when companies increase their earnings. This keeps the U.S. economy growing. It's easy to buy stocks, but it takes a lot of knowledge to buy stocks in the right company.\r\n\r\nTo a lot of people, the Dow is the stock market. The Dow is the nickname for the Dow Jones Industrial Average. The DJIA is just one way of tracking the performance of a group of stocks. There is also the Dow Jones Transportation Average and the Dow Jones Utilities Average. Many investors ignore the Dow and instead focus on the Standard & Poor's 500 index or other indices to track the progress of the stock market. The stocks that make up these averages are traded on the world's stock exchanges, two of which include the New York Stock Exchange (NYSE) and the Nasdaq.", postTypeStudyMaterialEn, hseWeFm.Id, new PostFileDto[0]), petrContext);
 
-          await _addPostServerAction.ExecuteActionAsync(new AddPostRequestDto("The homework is not that hard as it seems just use the materials posted here and you will be more than fine.", postTypeHomeworkEn, hseWeFm.Id, new PostFileDto[0]), ivanaContext);
+            await _addPostServerAction.ExecuteActionAsync(new AddPostRequestDto("The homework is not that hard as it seems just use the materials posted here and you will be more than fine.", postTypeHomeworkEn, hseWeFm.Id, new PostFileDto[0]), ivanaContext);
             await _addPostServerAction.ExecuteActionAsync(new AddPostRequestDto("Dont spend too much time on the homework, focus more on studying for the exam!", postTypeHomeworkEn, hseWeFm.Id, new PostFileDto[0]), terezieContext);
             await _addPostServerAction.ExecuteActionAsync(new AddPostRequestDto("The course itself is nice, but they could improve the way how they actually teach that.", postTypeExperienceEn, hseWeFm.Id, new PostFileDto[0]), martinContext);
 
@@ -295,19 +296,31 @@ namespace Uniwiki.Server.Application.Services
 
         public async Task<RequestContext> RegisterUser(string email, string name, string surname, string password, bool isAdmin = false)
         {
-            var userDto = (await _registerServerAction.ExecuteActionAsync(new RegisterRequestDto(email, name + " " + surname, password, password, true, null, new CourseDto[0]), _anonymousContext)).UserProfile;
-            var user = _profileRepository.FindById(userDto.Id);
+            var userDto = (await Scoped<RegisterServerAction>().ExecuteActionAsync(new RegisterRequestDto(email, name + " " + surname, password, password, true, null, new CourseDto[0]), _anonymousContext)).UserProfile;
+
+            var user = Scoped<IProfileRepository>().FindById(userDto.Id);
 
             if (isAdmin)
                 _profileRepository.SetAdmin(user);
 
-            var emailSecret = _emailConfirmationSecretRepository.TryGetValidEmailConfirmationSecret(user);
-            await _confirmEmailServerAction.ExecuteActionAsync(new ConfirmEmailRequestDto(emailSecret.Id),
-                _anonymousContext);
-            var loginTokenDto = (await _loginServerAction.ExecuteActionAsync(new LoginRequestDto(email, password, new CourseDto[0]), _anonymousContext)).LoginToken;
-            var token = _loginTokenRepository.TryFindNonExpiredById(loginTokenDto.PrimaryTokenId, _timeService.Now);
+            var emailSecret = Scoped<IEmailConfirmationSecretRepository>().TryGetValidEmailConfirmationSecret(user);
             
-            return new RequestContext(token, isAdmin ? AuthenticationLevel.Admin : AuthenticationLevel.PrimaryToken, Guid.NewGuid().ToString(), Language.English, _anonymousContext.IpAddress);
+            await Scoped<ConfirmEmailServerAction>().ExecuteActionAsync(new ConfirmEmailRequestDto(emailSecret.Secret),
+                _anonymousContext);
+            
+            var loginTokenDto = (await Scoped<LoginServerAction>().ExecuteActionAsync(new LoginRequestDto(email, password, new CourseDto[0]), _anonymousContext)).LoginToken;
+            
+            var token = Scoped<ILoginTokenRepository>().TryFindNonExpiredById(loginTokenDto.PrimaryTokenId, _timeService.Now);
+
+            var context = new RequestContext(token, isAdmin ? AuthenticationLevel.Admin : AuthenticationLevel.PrimaryToken, Guid.NewGuid().ToString(), Language.English, _anonymousContext.IpAddress);
+
+            return context;
+        }
+
+        private TDependency Scoped<TDependency>()
+        {
+            var scope = _serviceProvider.CreateScope();
+            return scope.ServiceProvider.GetRequiredService<TDependency>();
         }
 
         public Task<AddCourseResponseDto> CreateCourse(string code, string name, StudyGroupDto studyGroup, RequestContext requestContext)
