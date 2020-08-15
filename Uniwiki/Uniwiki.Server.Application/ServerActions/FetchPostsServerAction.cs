@@ -13,14 +13,12 @@ namespace Uniwiki.Server.Application.ServerActions
     {
         private readonly ICourseRepository _courseRepository;
         private readonly IPostRepository _postRepository;
-        private readonly IPostTypeRepository _postTypeRepository;
         private readonly IProfileRepository _profileRepository;
 
-        public FetchPostsServerAction(IServiceProvider serviceProvider, ICourseRepository courseRepository, IPostRepository postRepository, IPostTypeRepository postTypeRepository, IProfileRepository profileRepository) : base(serviceProvider)
+        public FetchPostsServerAction(IServiceProvider serviceProvider, ICourseRepository courseRepository, IPostRepository postRepository, IProfileRepository profileRepository) : base(serviceProvider)
         {
             _courseRepository = courseRepository;
             _postRepository = postRepository;
-            _postTypeRepository = postTypeRepository;
             _profileRepository = profileRepository;
         }
 
