@@ -16,7 +16,6 @@ namespace Uniwiki.Server.Persistence.Models
         internal CourseModel(Guid id, string code, string fullname, StudyGroupModel studyGroup, ProfileModel author, string url, bool isRemoved)
             : base(isRemoved, id)
         {
-            Id = id;
             Code = code;
             FullName = fullname;
             StudyGroup = studyGroup;

@@ -13,7 +13,6 @@ namespace Uniwiki.Server.Persistence.Models
         internal PostFileDownloadModel(Guid id, LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
             : base(id)
         {
-            Id = id;
             Token = token;
             FileDownloaded = fileDownloaded;
             DownloadTime = downloadTime;

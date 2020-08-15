@@ -14,7 +14,6 @@ namespace Uniwiki.Server.Persistence.Models
         internal LoginTokenModel(Guid id, Guid primaryTokenId, Guid secondaryTokenId, ProfileModel profile, DateTime creationTime, DateTime expiration)
             : base(id)
         {
-            Id = id;
             PrimaryTokenId = primaryTokenId;
             Profile = profile;
             CreationTime = creationTime;
