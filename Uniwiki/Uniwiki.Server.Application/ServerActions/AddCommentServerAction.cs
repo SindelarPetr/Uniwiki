@@ -32,17 +32,14 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<AddCommentResponseDto> ExecuteAsync(AddCommentRequestDto request, RequestContext context)
         {
-            // Get profile
-            var profile = _profileRepository.FindById(context.User.Id);
-
             // Get post
             var post = _postRepository.FindById(request.PostId, _textService.Error_PostNotFound);
 
             // Create the comment
-            _postCommentRepository.AddPostComment(profile, post, request.CommentText, _timeService.Now);
+            _postCommentRepository.AddPostComment(context.User!, post, request.CommentText, _timeService.Now);
 
             // Create response
-            var response = new AddCommentResponseDto(post.ToDto(profile));
+            var response = new AddCommentResponseDto(post.ToDto(context.User));
 
             return Task.FromResult(response);
         }

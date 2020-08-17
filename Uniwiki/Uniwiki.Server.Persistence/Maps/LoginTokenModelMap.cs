@@ -12,5 +12,15 @@ namespace Uniwiki.Server.Persistence.Models
         {         
         
         }
+
+        public override void Map(EntityTypeBuilder<LoginTokenModel> builder)
+        {
+            base.Map(builder);
+
+            builder
+                .HasOne(m => m.Profile)
+                .WithMany()
+                .HasForeignKey(m => m.ProfileId);
+        }
     }
 }

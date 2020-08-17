@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Uniwiki.Server.Persistence.ModelIds;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.Services;
@@ -24,7 +25,7 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             // Try to find existing like
             var existingLikeId = new PostLikeModelId(post, profile);
-            var existingLike = All.Find(existingLikeId);
+            var existingLike = All.Find(existingLikeId.GetKeyValues());
 
             // If there is no like
             if (existingLike == null)
@@ -55,7 +56,7 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             // Try to find an existing like
             var existingLikeId = new PostLikeModelId(post, profile);
-            var existingLike = All.Find(existingLikeId);
+            var existingLike = All.Find(existingLikeId.GetKeyValues());
 
             // Check if there already is a like or its already unliked
             if (existingLike == null || existingLike.IsLiked == false)

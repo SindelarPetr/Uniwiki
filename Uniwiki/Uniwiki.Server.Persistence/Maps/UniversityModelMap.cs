@@ -15,7 +15,7 @@ namespace Uniwiki.Server.Persistence.Models
         {
             base.Map(builder);
 
-            builder.HasMany(m => m.StudyGroups).WithOne(m => m.University);
+            builder.HasMany(m => m.StudyGroups).WithOne(m => m.University).HasForeignKey(g => g.UniversityId);
         }
     }
 }

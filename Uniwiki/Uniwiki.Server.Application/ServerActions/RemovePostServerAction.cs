@@ -27,7 +27,7 @@ namespace Uniwiki.Server.Application.ServerActions
         protected override Task<RemovePostResponseDto> ExecuteAsync(RemovePostRequestDto request, RequestContext context)
         {
             // Get profile
-            var profile = _profileRepository.FindById(context.User.Id);
+            var profile = _profileRepository.FindById(context.User!.Id);
 
             // Get post
             var post = _postRepository.FindById(request.PostId);

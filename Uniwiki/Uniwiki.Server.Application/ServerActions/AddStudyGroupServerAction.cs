@@ -14,7 +14,6 @@ namespace Uniwiki.Server.Application.ServerActions
 {
     internal class AddStudyGroupServerAction : ServerActionBase<AddStudyGroupRequestDto, AddStudyGroupResponseDto>
     {
-        private readonly IProfileRepository _profileRepository;
         private readonly IUniversityRepository _universityRepository;
         private readonly IStudyGroupRepository _studyGroupRepository;
         private readonly IStringStandardizationService _stringStandardizationService;
@@ -23,7 +22,6 @@ namespace Uniwiki.Server.Application.ServerActions
 
         public AddStudyGroupServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IUniversityRepository universityRepository, IStudyGroupRepository studyGroupRepository, IStringStandardizationService stringStandardizationService, TextService textService) : base(serviceProvider)
         {
-            _profileRepository = profileRepository;
             _universityRepository = universityRepository;
             _studyGroupRepository = studyGroupRepository;
             _stringStandardizationService = stringStandardizationService;
@@ -35,9 +33,6 @@ namespace Uniwiki.Server.Application.ServerActions
             var longName = request.StudyGroupName;
             var shortName = request.StudyGroupShortcut;
             var universityId = request.UniversityId;
-
-            // Get profile
-            var profile = _profileRepository.FindById(context.User.Id);
             
             // Get university
             var university = _universityRepository.FindById(universityId);
@@ -50,7 +45,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var studyGroupUrl = _stringStandardizationService.CreateUrl(shortName, url => _studyGroupRepository.TryGetStudyGroup(url) == null);
 
             // Create the study group
-            var studyGroup = _studyGroupRepository.AddStudyGroup(university, shortName, longName, studyGroupUrl, profile, request.PrimaryLanguage);
+            var studyGroup = _studyGroupRepository.AddStudyGroup(university, shortName, longName, studyGroupUrl, context.User!, request.PrimaryLanguage);
 
             // Create study group DTO
             var studyGroupDto = studyGroup.ToDto();

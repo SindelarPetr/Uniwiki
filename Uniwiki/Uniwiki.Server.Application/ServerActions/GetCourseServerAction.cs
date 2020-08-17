@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
+using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
@@ -20,14 +21,15 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly IPostTypeRepository _postTypeRepository;
         private readonly ICourseVisitRepository _courseVisitRepository;
         private readonly ITimeService _timeService;
+        private readonly IPostCategoryService _postCategoryService;
 
-        public GetCourseServerAction(IServiceProvider serviceProvider, ICourseRepository courseRepository, IPostRepository postRepository, IPostTypeRepository postTypeRepository, ICourseVisitRepository courseVisitRepository, ITimeService timeService) : base (serviceProvider)
+        public GetCourseServerAction(IServiceProvider serviceProvider, ICourseRepository courseRepository, IPostRepository postRepository, ICourseVisitRepository courseVisitRepository, ITimeService timeService, IPostCategoryService postCategoryService) : base (serviceProvider)
         {
             _courseRepository = courseRepository;
             _postRepository = postRepository;
-            _postTypeRepository = postTypeRepository;
             _courseVisitRepository = courseVisitRepository;
             _timeService = timeService;
+            _postCategoryService = postCategoryService;
         }
 
         protected override Task<GetCourseResponseDto> ExecuteAsync(GetCourseRequestDto request, RequestContext context)
@@ -36,10 +38,10 @@ namespace Uniwiki.Server.Application.ServerActions
             var profile = context.User;
 
             // Get course for the request
-            var course = _courseRepository.GetCourse(request.UniversityUrl, request.StudyGroupUrl, request.CourseUrl);
+            var course = _courseRepository.GetCourseFromUrl(request.UniversityUrl, request.StudyGroupUrl, request.CourseUrl);
 
-            // Get post type counts // TODO: FIX
-            var filterPostTypes = new FilterPostTypeDto[0]; // _postTypeRepository.GetFilterPostTypes(course).Select(pair => new FilterPostTypeDto(pair.Item1, pair.Item2)).ToArray();
+            // Get category counts for filtering
+            var filterPostTypes = _postCategoryService.GetFilterCategories(course).Select(pair => new FilterPostTypeDto(pair.Item1, pair.Item2)).ToArray();
 
             // Get posts for the course
             var posts = request.ShowAll 
@@ -54,7 +56,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var postDtos = posts.Select(p => p.ToDto(profile)).ToArray();
 
             // Post types // TODO: FIX
-            var postTypesForNewPost = new string[0]; // _postTypeRepository.GetPostTypesForNewPost(course).ToArray();
+            var postTypesForNewPost = _postCategoryService.GetCategoriesForNewPost(course); // _postTypeRepository.GetPostTypesForNewPost(course).ToArray();
 
             // Convert course to Dto
             var courseDto = course.ToDto();

@@ -27,7 +27,7 @@ namespace Shared.Services
         private string CreateUrl(string text, int? salt)
         {
             text = RemoveAccents(text);
-            text = RemoveNonEnglishLetters(text, true);
+            text = RemoveNonEnglishLettersKeepNumbers(text, true);
             text = OptimizeWhiteSpaces(text, "-");
             text = text.Trim('-');
             text = text.ToLower();
@@ -73,9 +73,9 @@ namespace Shared.Services
             return OptimizeWhiteSpaces(name).FirstCharToUpper();
         }
 
-        public string RemoveNonEnglishLetters(string text, bool preserveWhiteSpace) 
-            => text.Aggregate("", 
-                (acc, letter) => IsEnglishLetter(letter) || (preserveWhiteSpace && char.IsWhiteSpace(letter)) ? acc + letter : acc);
+        public string RemoveNonEnglishLettersKeepNumbers(string text, bool preserveWhiteSpace)
+            => text.Aggregate("",
+                (acc, letter) => IsEnglishLetter(letter) || char.IsDigit(letter) || (preserveWhiteSpace && char.IsWhiteSpace(letter)) ? acc + letter : acc);
 
         public bool IsEnglishLetter(char letter) 
             => (letter >= 'A' && letter <= 'Z') || (letter >= 'a' && letter <= 'z');

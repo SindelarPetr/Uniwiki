@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Uniwiki.Server.Persistence.ModelIds;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.Services;
@@ -25,12 +26,12 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             // Try to find an existing like
             var existingLikeId = new PostCommentLikeModelId(comment, profile);
-            var existingLike = All.Find(existingLikeId);
+            var existingLike = All.Find(existingLikeId.GetKeyValues());
 
             // Check if there already is a like
             if (existingLike == null)
             {
-                // TODO: Create a new like 
+                // Create a new like 
                 var newLike = new PostCommentLikeModel(comment, profile, likeTime, true);
 
                 // Add it to the DB
@@ -58,7 +59,7 @@ namespace Uniwiki.Server.Persistence.Repositories
             var existingLikeId = new PostCommentLikeModelId(comment, profile);
 
             // 
-            var existingLike = All.Find(existingLikeId);
+            var existingLike = All.Find(existingLikeId.GetKeyValues());
 
             // Check if there already is a like or its already unliked
             if (existingLike == null || existingLike.IsLiked == false)

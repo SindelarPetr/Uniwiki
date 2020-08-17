@@ -17,6 +17,14 @@ namespace Uniwiki.Server.Persistence.Models
         public override void Map(EntityTypeBuilder<CourseModel> builder)
         {
             base.Map(builder);
+
+            builder
+                .HasOne(m => m.Author)
+                .WithMany()
+                .HasForeignKey(m => m.AuthorId);
+
+            // Index over url address
+            builder.HasIndex(m => new { courseUrl = m.Url, m.StudyGroupUrl, m.UniversityUrl });
         }
     }
 }

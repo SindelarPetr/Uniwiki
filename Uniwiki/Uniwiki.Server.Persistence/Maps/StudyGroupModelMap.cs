@@ -18,8 +18,15 @@ namespace Uniwiki.Server.Persistence.Models
         {
             base.Map(builder);
 
-            builder.HasOne(m => m.Profile).WithMany();
-            builder.HasMany(m => m.Courses).WithOne();
+            builder
+                .HasOne(m => m.Profile)
+                .WithMany()
+                .HasForeignKey(m => m.ProfileId);
+
+            builder
+                .HasMany(m => m.Courses)
+                .WithOne()
+                .HasForeignKey(c => c.StudyGroupId);
         }
     }
 }

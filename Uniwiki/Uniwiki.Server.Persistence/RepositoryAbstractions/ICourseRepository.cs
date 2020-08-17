@@ -13,12 +13,13 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         IEnumerable<CourseModel> TryGetCourses(IEnumerable<(string courseUrl, string studyGroupUrl, string universityUrl)> urls);
 
         /// <returns>The found course.</returns>
-        CourseModel GetCourse(string universityUrl, string studyGroupUrl, string courseUrl);
+        CourseModel GetCourseFromUrl(string universityUrl, string studyGroupUrl, string courseUrl);
         IEnumerable<CourseModel> SearchCourses(string text);
         IEnumerable<CourseModel> SearchCoursesFromStudyGroup(string text, StudyGroupModel studyGroup);
         IEnumerable<CourseModel> SearchCoursesFromUniversity(string text, UniversityModel university);
         bool IsUrlUnique(StudyGroupModel studyGroup, string url);
         bool IsNameUnique(StudyGroupModel studyGroup, string name);
-        CourseModel AddCourse(string code, string name, StudyGroupModel faculty, ProfileModel author, string url);
+        CourseModel GetCourseWithStudyGroupAndUniversity(Guid id);
+        CourseModel AddCourse(string code, string fullName, ProfileModel author, StudyGroupModel faculty, string universityUrl, string url);
     }
 }

@@ -13,5 +13,7 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         IEnumerable<PostModel> FetchPosts(CourseModel course, PostModel? lastPost, int requestPostsToFetch);
         bool CanFetchMore(CourseModel course, PostModel? lastPost);
         PostModel AddPost(string? postType, ProfileModel profile, string text, CourseModel course, DateTime creationTime);
+        (string Category, int Count)[] GetFilterCategories(CourseModel course);
+        string[] GetNewPostCategories(CourseModel course);
     }
 }

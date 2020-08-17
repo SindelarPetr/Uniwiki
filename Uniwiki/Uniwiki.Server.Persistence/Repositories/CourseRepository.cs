@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using Shared.Extensions;
 using Shared.Services.Abstractions;
@@ -26,28 +27,33 @@ namespace Uniwiki.Server.Persistence.Repositories
             _textService = textService;
         }
 
-        public CourseModel GetCourse(string universityUrl, string studyGroupUrl, string courseUrl)
+        public CourseModel GetCourseFromUrl(string universityUrl, string studyGroupUrl, string courseUrl)
         {
             return All.FirstOrDefault(c =>
                 c.StudyGroup.University.Url == universityUrl.Neutralize() &&
-                c.StudyGroup.Url == studyGroupUrl.Neutralize() && c.Url == courseUrl.Neutralize()) ?? throw new RequestException(_textService.Error_CourseNotFound);
+                c.StudyGroup.Url == studyGroupUrl.Neutralize() && c.Url == courseUrl.Neutralize()) 
+                ?? throw new RequestException(_textService.Error_CourseNotFound);
         }
+
+
 
         public IEnumerable<CourseModel> SearchCourses(string text)
         {
-            return All.Where(c =>
-                _stringStandardizationService.StandardizeSearchText(c.Code).Contains(text) ||
-                _stringStandardizationService.StandardizeSearchText(c.FullName).Contains(text));
+            return All
+                .Include(c => c.StudyGroup)
+                .ThenInclude(g => g.University)
+                .Where(c => c.CodeStandardized.Contains(text) || c.FullNameStandardized.Contains(text));
         }
 
         public IEnumerable<CourseModel> SearchCoursesFromStudyGroup(string text, StudyGroupModel studyGroup)
         {
-            return SearchCourses(text).Where(c => c.StudyGroup == studyGroup);
+            return SearchCourses(text)
+                .Where(c => c.StudyGroupId == studyGroup.Id);
         }
 
         public IEnumerable<CourseModel> SearchCoursesFromUniversity(string text, UniversityModel university)
         {
-            return SearchCourses(text).Where(c => c.StudyGroup.University == university);
+            return SearchCourses(text).Where(c => c.StudyGroup.UniversityId == university.Id);
         }
 
         public bool IsUrlUnique(StudyGroupModel studyGroup, string url)
@@ -68,9 +74,12 @@ namespace Uniwiki.Server.Persistence.Repositories
                 .Where(c => c != null);
         }
 
-        public CourseModel AddCourse(string code, string name, StudyGroupModel faculty, ProfileModel author, string url)
+        public CourseModel AddCourse(string code, string fullName, ProfileModel author, StudyGroupModel faculty, string universityUrl, string url)
         {
-            var course = new CourseModel(Guid.NewGuid(), code, name, faculty, author, url, false);
+            var codeStandardized = _stringStandardizationService.StandardizeSearchText(code);
+            var fullNameStandardized = _stringStandardizationService.StandardizeSearchText(fullName);
+
+            var course = new CourseModel(Guid.NewGuid(), code, codeStandardized, fullName, fullNameStandardized, author, faculty, universityUrl, url, false);
 
             All.Add(course);
 
@@ -78,5 +87,12 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             return course;
         }
+
+        public CourseModel GetCourseWithStudyGroupAndUniversity(Guid courseId)
+        => All
+            .Where(c => c.Id == courseId)
+            .Include(c => c.StudyGroup)
+            .ThenInclude(g => g.University)
+            .First();
     }
 }

@@ -44,7 +44,7 @@ namespace Uniwiki.Server.Application.ServerActions
         protected override async Task<UploadPostFileResponseDto> ExecuteAsync(UploadPostFileRequestDto request, RequestContext context)
         {
             // Get the user
-            var profile = _profileRepository.FindById(context.User.Id);
+            var profile = _profileRepository.FindById(context.User!.Id);
 
             // Get the file
             var file = _uploadFileService.GetFile();

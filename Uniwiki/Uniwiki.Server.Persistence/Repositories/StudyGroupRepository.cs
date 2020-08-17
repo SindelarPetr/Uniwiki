@@ -30,6 +30,15 @@ namespace Uniwiki.Server.Persistence.Repositories
             return TryGetStudyGroup(facultyUrlName) ?? throw new RequestException(_textService.Error_NoFacultyWithUrl(facultyUrlName));
         }
 
+        public StudyGroupModel GetStudyGroupWithUniversity(Guid studyGroupId)
+        {
+            return All
+                .Where(g => g.Id == studyGroupId)
+                .Include(g => g.University)
+                .FirstOrDefault() 
+                ?? throw new RequestException(_textService.FacultyNotFound);
+        }
+
         public IEnumerable<CourseModel> GetCourses(string studyGroupUrl)
         {
             return GetStudyGroup(studyGroupUrl).Courses.OrderBy(c => c.FullName);

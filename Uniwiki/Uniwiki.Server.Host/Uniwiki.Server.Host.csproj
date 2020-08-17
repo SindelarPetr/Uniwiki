@@ -5,6 +5,7 @@
     <!--<DisableImplicitComponentsAnalyzers>true</DisableImplicitComponentsAnalyzers>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>-->
+    <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <UserSecretsId>d420c30c-badd-4ef0-bd8e-c2d8a9ffa9ed</UserSecretsId>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

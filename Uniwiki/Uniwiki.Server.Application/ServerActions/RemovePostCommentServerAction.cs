@@ -23,21 +23,18 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<RemovePostCommentResponseDto> ExecuteAsync(RemovePostCommentRequestDto request, RequestContext context)
         {
-            // Get profile
-            var profile = _profileRepository.FindById(context.User.Id);
-
             // Get the comment to remove
             var comment = _postCommentRepository.FindById(request.PostCommentId);
 
             // Check if user is removing his own comment
-            if(comment.Profile != profile)
+            if(comment.Profile != context.User!)
                 throw new RequestException("You cannot remove a comment which is not yours.");
             
             // Remove the comment
             _postCommentRepository.Remove(comment);
             
             // Create the response
-            var response = new RemovePostCommentResponseDto(comment.Post.ToDto(profile));
+            var response = new RemovePostCommentResponseDto(comment.Post.ToDto(context.User));
 
             return Task.FromResult(response);
         }

@@ -65,5 +65,28 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             return post;
         }
+
+        public (string Category, int Count)[] GetFilterCategories(CourseModel course)
+        {
+            return All
+                .Where(p => p.CourseId == course.Id)
+                .GroupBy(p => p.PostType)
+                .Select(g =>  new { Category = g.Key, Count = g.Count() })
+                .ToArray()
+                .Select(g => (g.Category, g.Count))
+                .ToArray();
+        }
+
+        public string[] GetNewPostCategories(CourseModel course)
+        {
+            return All
+                .Where(p => p.CourseId == course.Id && p.PostType != null)
+                .Select(p => p.PostType)
+                .Distinct()
+                .ToArray()
+                .Select(t => t!)
+                .Concat()
+                .ToArray();
+        }
     }
 }

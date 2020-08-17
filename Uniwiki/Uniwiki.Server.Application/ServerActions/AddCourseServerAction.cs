@@ -38,11 +38,8 @@ namespace Uniwiki.Server.Application.ServerActions
             var code = request.CourseCode;
             var studyGroupId = request.StudyGroupId;
 
-            // Get author
-            var author = _profileRepository.FindById(context.User.Id);
-
-            // Get study group
-            var faculty = _studyGroupRepository.FindById(studyGroupId);
+            // Get study group with university
+            var faculty = _studyGroupRepository.GetStudyGroupWithUniversity(studyGroupId);
 
             // Check if the course name is unique
             if(!_courseRepository.IsNameUnique(faculty, name))
@@ -52,7 +49,9 @@ namespace Uniwiki.Server.Application.ServerActions
             var url = _stringStandardizationService.CreateUrl(name, u => _courseRepository.IsUrlUnique(faculty, u));
 
             // Create the course
-            var course = _courseRepository.AddCourse(code, name, faculty, author, url);
+            var course = _courseRepository.AddCourse(code, name, context.User!, faculty, faculty.University.Url, url);
+
+            course = _courseRepository.GetCourseWithStudyGroupAndUniversity(course.Id);
 
             // Create course DTO
             var courseDto = course.ToDto();

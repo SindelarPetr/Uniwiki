@@ -23,7 +23,7 @@ namespace Uniwiki.Server.Application.ServerActions
                 post.Id,
                 post.Text,
                 post.PostType ?? "null",
-                post.PostFiles.Length,
+                post.PostFiles.Count,
                 post.PostFiles.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"),
                 request.Text,
                 request.PostType,
@@ -56,14 +56,11 @@ namespace Uniwiki.Server.Application.ServerActions
             // Get post to edit
             var post = _postRepository.FindById(postId);
 
-            // Get user profile
-            var profile = _profileRepository.FindById(context.User.Id);
-
             // Find all files from the request in DB
             var filesForSearch = request.PostFiles.Select(f => (f.Id, f.NameWithoutExtension));
 
             // Check if the post belongs to the right user
-            if (post.Author.Id != context.User.Id)
+            if (post.Author.Id != context.User!.Id)
                 throw new RequestException(_textService.Error_CouldNotEditPost);
 
             // Log the change
@@ -76,7 +73,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var edittedPost = _postRepository.EditPost(post, request.Text, request.PostType, new PostFileModel[0]/*postFiles*/);
 
             // Create response
-            var response = new EditPostResponseDto(edittedPost.ToDto(profile));
+            var response = new EditPostResponseDto(edittedPost.ToDto(context.User!));
 
             return Task.FromResult(response);
         }

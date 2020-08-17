@@ -17,21 +17,17 @@ namespace Uniwiki.Server.Application.ServerActions
     {
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        private readonly IUniversityRepository _universityRepository;
         private readonly IStudyGroupRepository _studyGroupRepository;
         private readonly ICourseRepository _courseRepository;
         private readonly IStringStandardizationService _stringStandardizationService;
-        private readonly IProfileRepository _profileRepository;
         private readonly ICourseVisitRepository _courseVisitRepository;
         private readonly ILogger<GetSearchResultsServerAction> _logger;
 
-        public GetSearchResultsServerAction(IServiceProvider serviceProvider, IUniversityRepository universityRepository, IStudyGroupRepository studyGroupRepository, ICourseRepository courseRepository, IStringStandardizationService stringStandardizationService, IProfileRepository profileRepository, ICourseVisitRepository courseVisitRepository, ILogger<GetSearchResultsServerAction> logger) : base(serviceProvider)
+        public GetSearchResultsServerAction(IServiceProvider serviceProvider, IStudyGroupRepository studyGroupRepository, ICourseRepository courseRepository, IStringStandardizationService stringStandardizationService, ICourseVisitRepository courseVisitRepository, ILogger<GetSearchResultsServerAction> logger) : base(serviceProvider)
         {
-            _universityRepository = universityRepository;
             _studyGroupRepository = studyGroupRepository;
             _courseRepository = courseRepository;
             _stringStandardizationService = stringStandardizationService;
-            _profileRepository = profileRepository;
             _courseVisitRepository = courseVisitRepository;
             _logger = logger;
         }
@@ -44,72 +40,45 @@ namespace Uniwiki.Server.Application.ServerActions
             // Log the search text
             _logger.LogInformation("Searching for text: '{Text}', standardized: '{StandardizedText}'", request.SearchedText, searchText);
 
-            UniversityDto[] universityDtos;
-            StudyGroupDto[] studyGroupDtos;
+            // Which should be found
             CourseDto[] courseDtos;
+
+            // Recent courses for the user
             CourseDto[] recentCourseDtos = new CourseDto[0];
 
+            // Find the recent courses if the user is authenticated and did not type any text
+            if (context.IsAuthenticated && string.IsNullOrWhiteSpace(searchText))
+            {
+                recentCourseDtos = _courseVisitRepository.GetRecentCourses(context.User).Select(c => c.ToDto()).ToArray();
+            }
 
+            // Check if the user wants to filter by study group
             var studyGroup = request.StudyGroupId != null
                 ? _studyGroupRepository.FindById(request.StudyGroupId.Value)
                 : null;
 
-            var university = request.UniversityId != null 
-                ? _universityRepository.FindById(request.UniversityId.Value) 
-                : null;
-
-            // Show recent courses to authenticated users, who did not type any search text
-            if (context.IsAuthenticated && string.IsNullOrWhiteSpace(searchText))
-            {
-                var profile = _profileRepository.FindById(context.User.Id);
-                recentCourseDtos = _courseVisitRepository.GetRecentCourses(studyGroup, profile).Select(c => c.ToDto()).ToArray();
-            }
-
+            // User selected a study group
             if (studyGroup != null)
             {
-                universityDtos = new UniversityDto[0];
-                studyGroupDtos = new StudyGroupDto[0];
                 courseDtos = _courseRepository.SearchCoursesFromStudyGroup(searchText, studyGroup).Select(c => c.ToDto()).ToArray();
             }
-            else
+            else // User did not select a study group
             {
-                if (university == null)
+                // If the user did not type any text
+                if (string.IsNullOrWhiteSpace(searchText))
                 {
-                    if (string.IsNullOrWhiteSpace(searchText))
-                    {
-                        universityDtos = _universityRepository.GetUniversities().Select(u => u.ToDto()).ToArray();
-                        studyGroupDtos = new StudyGroupDto[0];
-                        courseDtos = new CourseDto[0];
-                    }
-                    else
-                    {
-                        universityDtos = _universityRepository.SearchUniversities(searchText).Select(u => u.ToDto())
-                            .ToArray();
-                        studyGroupDtos = _studyGroupRepository.SearchStudyGroups(searchText).Select(g => g.ToDto())
-                            .ToArray();
-                        courseDtos = _courseRepository.SearchCourses(searchText).Select(c => c.ToDto()).ToArray();
-                    }
+                    // Return empty results
+                    courseDtos = new CourseDto[0];
                 }
-                else
+                else // The user typed some text
                 {
-                    universityDtos = new UniversityDto[0];
-
-                    if (String.IsNullOrWhiteSpace(searchText))
-                    {
-                        studyGroupDtos = _studyGroupRepository.SearchStudyGroupsOfUniversity(searchText, university).Select(g => g.ToDto()).ToArray();
-                        courseDtos = new CourseDto[0];
-                    }
-                    else
-                    {
-                        studyGroupDtos = _studyGroupRepository.SearchStudyGroupsOfUniversity(searchText, university)
-                            .Select(g => g.ToDto()).ToArray();
-                        courseDtos = _courseRepository.SearchCoursesFromUniversity(searchText, university)
-                            .Select(c => c.ToDto()).ToArray();
-                    }
+                    // Find the courses
+                    courseDtos = _courseRepository.SearchCourses(searchText).Select(c => c.ToDto()).ToArray();
                 }
             }
 
-            var response = new GetSearchResultsResponseDto(recentCourseDtos, universityDtos, studyGroupDtos, courseDtos);
+            // Create the response
+            var response = new GetSearchResultsResponseDto(recentCourseDtos, courseDtos);
 
             return Task.FromResult(response);
         }

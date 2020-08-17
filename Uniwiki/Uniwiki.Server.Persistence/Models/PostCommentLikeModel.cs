@@ -1,4 +1,5 @@
 ﻿using System;
+using Uniwiki.Server.Persistence.ModelIds;
 using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models

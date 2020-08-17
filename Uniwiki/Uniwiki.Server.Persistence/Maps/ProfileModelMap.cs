@@ -12,15 +12,22 @@ namespace Uniwiki.Server.Persistence.Models
     {
         public ProfileModelMap() : base("Profiles")
         {
+
         }
 
         public override void Map(EntityTypeBuilder<ProfileModel> builder)
         {
             base.Map(builder);
 
-            builder.HasOne(m => m.HomeFaculty).WithMany();
-            builder.HasMany(m => m.Feedbacks).WithOne();
-            builder.HasMany(m => m.RecentCourses).WithOne();
+            builder
+                .HasOne(m => m.HomeFaculty)
+                .WithMany()
+                .HasForeignKey(m => m.HomeFacultyId);
+
+            builder
+                .HasMany(m => m.RecentCourses)
+                .WithOne(v => v.Profile)
+                .HasForeignKey(v => v.ProfileId);
         }
     }
 }

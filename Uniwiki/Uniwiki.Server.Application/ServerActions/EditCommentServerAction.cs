@@ -27,21 +27,18 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<EditCommentResponseDto> ExecuteAsync(EditCommentRequestDto request, RequestContext context)
         {
-            // Get the user
-            var profile = _profileRepository.FindById(context.User.Id);
-
             // Get the comment
             var comment = _postCommentRepository.FindById(request.PostCommentId);
 
             // Check if the user is editting his own comment
-            if(profile != comment.Profile)
+            if(context.User! != comment.Profile)
                 throw new RequestException(_textService.EditComment_YouCannotRemoveSomeoneElsesComment);
 
             // Edit the comment
             var edittedComment = _postCommentRepository.EditComment(comment, request.Text);
             
             // Create result
-            var result = new EditCommentResponseDto(edittedComment.ToDto(profile));
+            var result = new EditCommentResponseDto(edittedComment.ToDto(context.User));
 
             return Task.FromResult(result);
         }

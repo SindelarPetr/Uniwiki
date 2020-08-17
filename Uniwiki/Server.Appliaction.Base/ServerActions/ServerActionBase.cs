@@ -28,10 +28,10 @@ namespace Server.Appliaction.ServerActions
             _textService = serviceProvider.GetService<TextService>();
         }
 
-        public virtual async Task<TResponse> ExecuteActionAsync(TRequest request, RequestContext context)
+        public async virtual Task<TResponse> ExecuteActionAsync(TRequest request, RequestContext context)
             => (TResponse) await ExecuteActionAsync((IRequest) request, context);
 
-        public virtual async Task<IResponse> ExecuteActionAsync(IRequest request, RequestContext context)
+        public async virtual Task<IResponse> ExecuteActionAsync(IRequest request, RequestContext context)
         {
             // If user has too low authentication level, throw error
             ThrowIfNotAuthenticated(context.AuthenticationLevel);

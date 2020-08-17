@@ -22,12 +22,16 @@ namespace Uniwiki.Server.Persistence.Repositories
             _textService = textService;
         }
 
-        public IEnumerable<CourseModel> GetRecentCourses(StudyGroupModel? studyGroup, ProfileModel profile)
+        public IEnumerable<CourseModel> GetRecentCourses(ProfileModel profile)
         {
-            return profile.RecentCourses
-                .Reverse()
+            return All
+                .Where(v => v.ProfileId == profile.Id)
                 .Take(Constants.NumberOrRecentCourses)
-                .Reverse();
+                .OrderByDescending(v => v.VisitDateTime)
+                .Include(v => v.Course)
+                .ThenInclude(c => c.StudyGroup)
+                .ThenInclude(g => g.University)
+                .Select(v => v.Course);
         }
 
         public void AddRecentCourseVisits(IEnumerable<CourseModel> recentCourses, ProfileModel profile, DateTime visitTime)

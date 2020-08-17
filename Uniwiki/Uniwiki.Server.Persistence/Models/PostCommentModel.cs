@@ -21,7 +21,7 @@ namespace Uniwiki.Server.Persistence.Models
             PostId = post.Id;
             Post = post;
             ProfileId = profile.Id;
-            Profile = profile;
+            //Profile = profile;
             Text = text;
             CreationTime = creationTime;
         }

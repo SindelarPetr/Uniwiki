@@ -70,6 +70,9 @@ namespace Uniwiki.Server.Persistence
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             base.OnConfiguring(options);
+            options
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors();
 
             // TODO: Move the connection string to the configuration
             // TODO: Make it possible to switch between the options in configuration
@@ -81,35 +84,14 @@ namespace Uniwiki.Server.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
+            // Get all the mapping of entities
             var modelMaps = _serviceProvider.GetServices(typeof(IModelMapBase));
 
+            // Add all the maps to the context
             foreach (var builder in modelMaps)
             {
                 ((IModelMapBase)builder).Map(modelBuilder);
             }
-
-            //modelBuilder.Entity<StudyGroupModel>(m =>
-            //{
-            //    m.ToTable("StudyGroup");
-            //    m.HasOne(a => a.Profile).WithOne(a => a.HomeFaculty);
-            //});
-
-            //modelBuilder.Entity<PostCommentModel>()
-            //    .HasMany(c => c.Likes)
-            //    .WithOne(l => l.Comment);
-
-            //modelBuilder.Entity<PostCommentLikeModel>()
-            //    .HasKey(e => new PostCommentLikeModelId(e.CommentId, e.ProfileId));
-
-            //modelBuilder.Entity<PostModel>()
-            //    .HasMany(p => p.Likes)
-            //    .WithOne(l => l.Post);
-
-            //modelBuilder.Entity<PostLikeModel>()
-            //    .HasKey(e => new PostLikeModelId(e.PostId, e.ProfileId));
-
-            //modelBuilder.Entity<PostCategoryModel>()
-            //    .HasKey(m => new PostCategoryModelId(m.Name, m.CourseId));
         }
 
     }
@@ -154,92 +136,6 @@ namespace Uniwiki.Server.Persistence
         public static implicit operator PostCategoryModelId((string Name, Guid CourseId) value)
         {
             return new PostCategoryModelId(value.Name, value.CourseId);
-        }
-    }
-
-    public struct PostLikeModelId
-    {
-        public Guid PostId;
-        public Guid ProfileId;
-
-        public PostLikeModelId(PostModel post, ProfileModel profile)
-            : this(post.Id, profile.Id) { }
-
-        public PostLikeModelId(Guid postId, Guid profileId)
-        {
-            PostId = postId;
-            ProfileId = profileId;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is PostLikeModelId other &&
-                   PostId.Equals(other.PostId) &&
-                   ProfileId.Equals(other.ProfileId);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(PostId, ProfileId);
-        }
-
-        public void Deconstruct(out Guid postId, out Guid profileId)
-        {
-            postId = PostId;
-            profileId = ProfileId;
-        }
-
-        public static implicit operator (Guid PostId, Guid ProfileId)(PostLikeModelId value)
-        {
-            return (value.PostId, value.ProfileId);
-        }
-
-        public static implicit operator PostLikeModelId((Guid PostId, Guid ProfileId) value)
-        {
-            return new PostLikeModelId(value.PostId, value.ProfileId);
-        }
-    }
-
-    public struct PostCommentLikeModelId
-    {
-        public Guid CommentId;
-        public Guid ProfileId;
-
-        public PostCommentLikeModelId(PostCommentModel comment, ProfileModel profile)
-            : this(comment.Id, profile.Id) { }
-
-        public PostCommentLikeModelId(Guid commentId, Guid profileId)
-        {
-            CommentId = commentId;
-            ProfileId = profileId;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is PostCommentLikeModelId other &&
-                   CommentId.Equals(other.CommentId) &&
-                   ProfileId.Equals(other.ProfileId);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(CommentId, ProfileId);
-        }
-
-        public void Deconstruct(out Guid commentId, out Guid profileId)
-        {
-            commentId = CommentId;
-            profileId = ProfileId;
-        }
-
-        public static implicit operator (Guid CommentId, Guid ProfileId)(PostCommentLikeModelId value)
-        {
-            return (value.CommentId, value.ProfileId);
-        }
-
-        public static implicit operator PostCommentLikeModelId((Guid CommentId, Guid ProfileId) value)
-        {
-            return new PostCommentLikeModelId(value.CommentId, value.ProfileId);
         }
     }
 }

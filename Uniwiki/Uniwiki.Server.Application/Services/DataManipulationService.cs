@@ -303,12 +303,14 @@ namespace Uniwiki.Server.Application.Services
             if (isAdmin)
                 _profileRepository.SetAdmin(user);
 
-            var emailSecret = Scoped<IEmailConfirmationSecretRepository>().TryGetValidEmailConfirmationSecret(user);
+            var emailSecret = Scoped<IEmailConfirmationSecretRepository>()
+                .TryGetValidEmailConfirmationSecret(user);
             
-            await Scoped<ConfirmEmailServerAction>().ExecuteActionAsync(new ConfirmEmailRequestDto(emailSecret.Secret),
-                _anonymousContext);
+            await Scoped<ConfirmEmailServerAction>()
+                .ExecuteActionAsync(new ConfirmEmailRequestDto(emailSecret!.Secret),           _anonymousContext);
             
-            var loginTokenDto = (await Scoped<LoginServerAction>().ExecuteActionAsync(new LoginRequestDto(email, password, new CourseDto[0]), _anonymousContext)).LoginToken;
+            var loginTokenDto = (await Scoped<LoginServerAction>()
+                .ExecuteActionAsync(new LoginRequestDto(email, password, new CourseDto[0]), _anonymousContext)).LoginToken;
             
             var token = Scoped<ILoginTokenRepository>().TryFindNonExpiredById(loginTokenDto.PrimaryTokenId, _timeService.Now);
 
@@ -326,7 +328,7 @@ namespace Uniwiki.Server.Application.Services
         public Task<AddCourseResponseDto> CreateCourse(string code, string name, StudyGroupDto studyGroup, RequestContext requestContext)
         {
             var request = new AddCourseRequestDto(name, code, studyGroup.Id);
-            return _addCourseServerAction.ExecuteActionAsync(request, requestContext);
+            return Scoped<AddCourseServerAction>().ExecuteActionAsync(request, requestContext);
         }
     }
 }

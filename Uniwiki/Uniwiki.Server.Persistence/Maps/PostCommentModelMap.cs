@@ -17,7 +17,20 @@ namespace Uniwiki.Server.Persistence.Models
         {
             base.Map(builder);
 
+            builder
+                .HasOne(m => m.Post)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(m => m.PostId);
 
+            builder
+                .HasOne(m => m.Profile)
+                .WithMany()
+                .HasForeignKey(m => m.ProfileId);
+
+            builder
+                .HasMany(m => m.Likes)
+                .WithOne(l => l.Comment)
+                .HasForeignKey(l => l.CommentId);
         }
     }
 }

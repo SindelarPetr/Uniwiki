@@ -32,7 +32,7 @@ namespace Uniwiki.Server.Application.ServerActions
         protected override Task<AddPostResponseDto> ExecuteAsync(AddPostRequestDto request, RequestContext context)
         {
             // Get owner profile for the post
-            var profile = _profileRepository.FindById(context.User.Id);
+            var profile = _profileRepository.FindById(context.User!.Id);
 
             // Get course for the post
             var course = _courseRepository.FindById(request.CourseId);

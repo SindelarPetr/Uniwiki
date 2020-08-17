@@ -7,7 +7,7 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
     public interface ICourseVisitRepository : IRepositoryBase<CourseVisitModel, Guid>
     {
-        IEnumerable<CourseModel> GetRecentCourses(StudyGroupModel? studyGroup, ProfileModel profile);
+        IEnumerable<CourseModel> GetRecentCourses(ProfileModel profile);
         void AddRecentCourseVisits(IEnumerable<CourseModel> recentCourses, ProfileModel profile, DateTime visitTime);
         CourseVisitModel AddCourseVisit(CourseModel course, ProfileModel profile, DateTime visitTime);
     }

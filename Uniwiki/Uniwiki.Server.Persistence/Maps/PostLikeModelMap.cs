@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using Uniwiki.Server.Persistence.Maps.Base;
+using Uniwiki.Server.Persistence.ModelIds;
 using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
@@ -15,7 +16,9 @@ namespace Uniwiki.Server.Persistence.Models
         {
             base.Map(builder);
 
-            builder.HasKey(e => new PostLikeModelId(e.PostId, e.ProfileId));
+            builder.HasKey(m => new PostLikeModelId(m.PostId, m.ProfileId));
+            builder.HasOne(m => m.Post).WithMany().HasForeignKey(m => m.PostId);
+            builder.HasOne(m => m.Profile).WithMany().HasForeignKey(m => m.ProfileId);
         }
     }
 }

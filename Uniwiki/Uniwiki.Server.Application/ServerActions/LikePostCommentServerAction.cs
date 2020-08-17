@@ -33,7 +33,7 @@ namespace Uniwiki.Server.Application.ServerActions
         protected override Task<LikePostCommentResponseDto> ExecuteAsync(LikePostCommentRequestDto request, RequestContext context)
         {
             // Get profile
-            var profile = _profileRepository.FindById(context.User.Id);
+            var profile = _profileRepository.FindById(context.User!.Id);
 
             // Get the comment to like
             var comment = _postCommentRepository.FindById(request.PostCommentId, _textService.Error_PostCommentNotFound);

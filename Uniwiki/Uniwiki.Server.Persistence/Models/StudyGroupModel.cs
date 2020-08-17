@@ -24,14 +24,14 @@ namespace Uniwiki.Server.Persistence.Models
             ProfileModel profile, Language primaryLanguage, bool isRemoved)
             : base(isRemoved, id)
         {
-            University = university;
             UniversityId = university.Id;
+            University = university;
             ShortName = shortName;
             LongName = longName;
             LongNameForSearching = longName.ToLower();
             Url = url;
             ProfileId = profile.Id;
-            Profile = profile;
+            //Profile = profile;
             PrimaryLanguage = primaryLanguage;
         }
 
