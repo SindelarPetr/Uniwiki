@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Uniwiki.Server.Shared.Configuration;
 
 namespace Uniwiki.Server.Application.Configuration
 {
@@ -11,19 +12,8 @@ namespace Uniwiki.Server.Application.Configuration
 
         public EmailConfiguration Email { get; set; }
             = new EmailConfiguration();
-    }
 
-    public class EmailConfiguration
-    {
-        public string SenderAddress { get; set; }
-        public string Password { get; set; }
-        public string Host { get; set; }
-        public int Port { get; set; }
-        public string DisplayName { get; set; }
-    }
-
-    public class AdministrationConfiguration
-    {
-        public string AccessKey { get; set; }
+        public DefaultsConfiguration Defaults { get; set; }
+         = new DefaultsConfiguration();
     }
 }

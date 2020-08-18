@@ -48,6 +48,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig.inferred = .editorconfig.inferred
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uniwiki.Server.Shared", "Uniwiki.Server.Shared\Uniwiki.Server.Shared.csproj", "{05495C09-9B71-4556-8871-54F100398E1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,10 @@ Global
 		{42EBDECD-78AF-41B3-AAB7-67C6D9F75687}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42EBDECD-78AF-41B3-AAB7-67C6D9F75687}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42EBDECD-78AF-41B3-AAB7-67C6D9F75687}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05495C09-9B71-4556-8871-54F100398E1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05495C09-9B71-4556-8871-54F100398E1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05495C09-9B71-4556-8871-54F100398E1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05495C09-9B71-4556-8871-54F100398E1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,6 +136,7 @@ Global
 		{83A3D431-3F9B-4CEE-96C8-FA2CA97A36D7} = {E9936A16-06FC-4ABF-A1B2-BFEA7833BD46}
 		{B7F92039-5746-4AE0-842D-EA3CA4020AA4} = {19147708-523A-49D7-9235-8DB885ACD052}
 		{42EBDECD-78AF-41B3-AAB7-67C6D9F75687} = {E9936A16-06FC-4ABF-A1B2-BFEA7833BD46}
+		{05495C09-9B71-4556-8871-54F100398E1B} = {E9936A16-06FC-4ABF-A1B2-BFEA7833BD46}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58C94EB4-3EDA-40CB-B028-8B24E0575547}

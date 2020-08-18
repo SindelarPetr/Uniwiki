@@ -35,7 +35,7 @@ namespace Uniwiki.Server.Application.ServerActions
         protected override Task<GetCourseResponseDto> ExecuteAsync(GetCourseRequestDto request, RequestContext context)
         {
             // Get profile
-            var profile = context.User;
+            var profile = context.User!;
 
             // Get course for the request
             var course = _courseRepository.GetCourseFromUrl(request.UniversityUrl, request.StudyGroupUrl, request.CourseUrl);
@@ -56,7 +56,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var postDtos = posts.Select(p => p.ToDto(profile)).ToArray();
 
             // Post types // TODO: FIX
-            var postTypesForNewPost = _postCategoryService.GetCategoriesForNewPost(course); // _postTypeRepository.GetPostTypesForNewPost(course).ToArray();
+            var postTypesForNewPost = _postCategoryService.GetCategoriesForNewPost(course).ToArray(); // _postTypeRepository.GetPostTypesForNewPost(course).ToArray();
 
             // Convert course to Dto
             var courseDto = course.ToDto();

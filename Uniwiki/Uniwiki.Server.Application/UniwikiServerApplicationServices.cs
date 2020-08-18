@@ -33,6 +33,7 @@ namespace Uniwiki.Server.Application
             services.AddSingleton<IApplicationHostEnvironment, ServerHostEnvironment>();
             services.AddScoped<IEmailConfirmationSenderService, EmailConfirmationSenderService>();
             services.AddScoped<IRecentCoursesService, RecentCoursesService>();
+            services.AddScoped<IPostCategoryService, PostCategoryService>();
 
             AddServerActions(services);
         }

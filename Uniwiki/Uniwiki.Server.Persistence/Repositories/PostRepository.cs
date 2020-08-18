@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 using Shared.Exceptions;
+using Uniwiki.Server.Application.Configuration;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
@@ -13,13 +15,15 @@ namespace Uniwiki.Server.Persistence.Repositories
     internal class PostRepository : RemovableRepositoryBase<PostModel, Guid>, IPostRepository
     {
         private readonly TextService _textService;
+        private readonly UniwikiConfiguration _uniwikiConfiguration;
 
         public override string NotFoundByIdMessage => _textService.Error_PostNotFound;
 
-        public PostRepository(UniwikiContext uniwikiContext, TextService textService)
+        public PostRepository(UniwikiContext uniwikiContext, TextService textService, UniwikiConfiguration uniwikiConfiguration)
             : base(uniwikiContext, uniwikiContext.Posts)
         {
             _textService = textService;
+            _uniwikiConfiguration = uniwikiConfiguration;
         }
 
         public PostModel EditPost(PostModel post, string text, string? postType, PostFileModel[] postFiles)
@@ -44,10 +48,20 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public IEnumerable<PostModel> FetchPosts(CourseModel course, PostModel? lastPost, int requestPostsToFetch)
         {
-            var posts = All.Where(p => p.Course == course).Reverse();
+            var posts = All
+                .Where(p => p.CourseId == course.Id);
+
             if (lastPost != null)
-                posts = posts.SkipWhile(p => p != lastPost).Skip(1);
-            return posts.Take(requestPostsToFetch);
+                posts = posts.Where(p => p.CreationTime < lastPost.CreationTime);
+
+            // TODO: Optimize
+            return posts
+                .OrderByDescending(p => p.CreationTime)
+                .Take(requestPostsToFetch)
+                .Include(p => p.Likes)
+                .Include(p => p.PostFiles)
+                .Include(p => p.Author)
+                .Include(p => p.Comments);
         }
 
         public bool CanFetchMore(CourseModel course, PostModel? lastPost)
@@ -77,15 +91,20 @@ namespace Uniwiki.Server.Persistence.Repositories
                 .ToArray();
         }
 
-        public string[] GetNewPostCategories(CourseModel course)
+        public string[] GetNewPostCategories(CourseModel course, Language language)
         {
+            var defaultPostCategories = language == Language.Czech ?
+                _uniwikiConfiguration.Defaults.DefaultPostCategoriesCz :
+                _uniwikiConfiguration.Defaults.DefaultPostCategoriesEn;
+
             return All
                 .Where(p => p.CourseId == course.Id && p.PostType != null)
                 .Select(p => p.PostType)
                 .Distinct()
                 .ToArray()
                 .Select(t => t!)
-                .Concat()
+                .Concat(defaultPostCategories)
+                .Distinct()
                 .ToArray();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Shared;
 using Shared.Extensions;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
@@ -25,15 +26,15 @@ namespace Uniwiki.Server.Application.Services
             => MemoryForNewPost.GetOrDefault(course.Id, new string[0]);
 
         // TODO: Build up the memory from the DB - at startup
-        public void UpdateMemory(CourseModel course)
+        public void UpdateMemory(CourseModel course, Language language)
         {
             MemoryForFilters[course.Id] = _postRepository.GetFilterCategories(course);
-            MemoryForNewPost[course.Id] = _postRepository.GetNewPostCategories(course);
+            MemoryForNewPost[course.Id] = _postRepository.GetNewPostCategories(course, language);
         }
 
         public void InitializeMemory()
         {
-
+            // TODO: Finish initializing of the post categories
         }
     }
 }

@@ -29,10 +29,16 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public CourseModel GetCourseFromUrl(string universityUrl, string studyGroupUrl, string courseUrl)
         {
-            return All.FirstOrDefault(c =>
-                c.StudyGroup.University.Url == universityUrl.Neutralize() &&
-                c.StudyGroup.Url == studyGroupUrl.Neutralize() && c.Url == courseUrl.Neutralize()) 
-                ?? throw new RequestException(_textService.Error_CourseNotFound);
+            var neutralizedCourseUrl = courseUrl.Neutralize();
+            var neutralizedStudyGroupUrl = studyGroupUrl.Neutralize();
+            var neutralizedUniversityUrl = universityUrl.Neutralize();
+
+            // TODO: Optimize this
+            return All
+                .Where(c => c.Url == courseUrl && c.StudyGroupUrl == neutralizedStudyGroupUrl && c.UniversityUrl == neutralizedUniversityUrl)
+                .Include(c => c.StudyGroup)
+                .ThenInclude(c => c.University)
+                .FirstOrDefault() ?? throw new RequestException(_textService.Error_CourseNotFound);
         }
 
 

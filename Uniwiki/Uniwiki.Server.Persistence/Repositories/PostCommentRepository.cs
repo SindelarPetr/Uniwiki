@@ -24,7 +24,7 @@ namespace Uniwiki.Server.Persistence.Repositories
             return comment;
         }
 
-        public PostCommentModel AddPostComment(ProfileModel profile, PostModel post, string commentText, DateTime creationTime)
+        public Guid AddPostComment(ProfileModel profile, PostModel post, string commentText, DateTime creationTime)
         {
             var postComment = new PostCommentModel(Guid.NewGuid(), profile, post, commentText, creationTime, false);
 
@@ -32,7 +32,7 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             SaveChanges();
 
-            return postComment;
+            return postComment.Id;
         }
     }
 }

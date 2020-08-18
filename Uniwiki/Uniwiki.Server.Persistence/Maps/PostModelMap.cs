@@ -19,6 +19,7 @@ namespace Uniwiki.Server.Persistence.Models
 
             builder.HasOne(m => m.Author).WithMany().HasForeignKey(m => m.AuthorId);
             builder.HasOne(m => m.Course).WithMany(c => c.Posts).HasForeignKey(m => m.CourseId);
+            builder.HasIndex(m => m.CreationTime);
         }
     }
 }

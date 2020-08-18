@@ -49,24 +49,6 @@ namespace Uniwiki.Server.Persistence
             _serviceProvider = serviceProvider;
         }
 
-        // TODO: Move to configuration
-        public IEnumerable<string> DefaultPostTypesCz => new[]
-        {
-            "Domácí úkol",
-            "Test v semesteru",
-            "Zkouška",
-            "Studijní materiál"
-        };
-
-        // TODO: Move to configuration
-        public IEnumerable<string> DefaultPostTypesEn => new[]
-        {
-            "Homework",
-            "Test in semester",
-            "Final exam",
-            "Study material"
-        };
-
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             base.OnConfiguring(options);

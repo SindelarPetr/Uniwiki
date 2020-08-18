@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Shared;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
@@ -14,6 +15,6 @@ namespace Uniwiki.Server.Persistence.RepositoryAbstractions
         bool CanFetchMore(CourseModel course, PostModel? lastPost);
         PostModel AddPost(string? postType, ProfileModel profile, string text, CourseModel course, DateTime creationTime);
         (string Category, int Count)[] GetFilterCategories(CourseModel course);
-        string[] GetNewPostCategories(CourseModel course);
+        string[] GetNewPostCategories(CourseModel course, Language language);
     }
 }

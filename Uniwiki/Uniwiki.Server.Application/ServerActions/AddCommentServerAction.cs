@@ -19,7 +19,7 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly ITimeService _timeService;
         private readonly TextService _textService;
 
-        protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
+        protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
         public AddCommentServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostRepository postRepository, IPostCommentRepository postCommentRepository, ITimeService timeService, TextService textService) : base(serviceProvider)
         {
@@ -37,6 +37,9 @@ namespace Uniwiki.Server.Application.ServerActions
 
             // Create the comment
             _postCommentRepository.AddPostComment(context.User!, post, request.CommentText, _timeService.Now);
+
+            // Get the updated post
+            post = _postRepository.FindById
 
             // Create response
             var response = new AddCommentResponseDto(post.ToDto(context.User));
