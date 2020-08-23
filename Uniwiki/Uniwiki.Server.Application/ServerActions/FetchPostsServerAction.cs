@@ -36,13 +36,13 @@ namespace Uniwiki.Server.Application.ServerActions
 
             // Get posts for the 
             var posts = !request.UsePostTypeFilter
-                ? _postRepository.FetchPosts(course, lastPost, request.PostsToFetch).ToArray()
-                : _postRepository.FetchPosts(course, request.PostType, lastPost, request.PostsToFetch).ToArray();
+                ? _postRepository.FetchPosts(course, lastPost?.Id, request.PostsToFetch).ToArray()
+                : _postRepository.FetchPosts(course, request.PostType, lastPost?.Id, request.PostsToFetch).ToArray();
 
             // Check if can fetch more posts
             var canFetchMore = !request.UsePostTypeFilter
-                ? _postRepository.CanFetchMore(course, posts.LastOrDefault())
-                : _postRepository.CanFetchMore(course, request.PostType, posts.LastOrDefault());
+                ? _postRepository.CanFetchMore(course, posts.LastOrDefault()?.Id)
+                : _postRepository.CanFetchMore(course, request.PostType, posts.LastOrDefault()?.Id);
 
             // Convert posts to DTOs
             var postDtos = posts.Select(p => p.ToDto(profile)).ToArray();

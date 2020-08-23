@@ -33,30 +33,35 @@ namespace Uniwiki.Server.Persistence.Repositories
             return post;
         }
 
-        public IEnumerable<PostModel> FetchPosts(CourseModel course, string? postType, PostModel? lastPost, int requestPostsToFetch)
+        //TODO: Change this to Paging by the amount of posts - remember pagging by remembering the numerical order of the posts (latest post have the highest number)
+        public IEnumerable<PostModel> FetchPosts(CourseModel course, string? postType, Guid? lastPostId, int requestPostsToFetch)
         {
-            var posts = course.Posts.Where(p => p.PostType == postType).Reverse();
-            if (lastPost != null)
-                posts = posts.SkipWhile(p => p != lastPost).Skip(1);
+            var posts = course.Posts
+                .OrderByDescending(p => p.CreationTime)
+                .Where(p => p.PostType == postType);
+
+            if (lastPostId != null)
+                posts = posts.SkipWhile(p => p.Id != lastPostId).Skip(1);
+
             return posts.Take(requestPostsToFetch);
         }
 
-        public bool CanFetchMore(CourseModel course, string? postType, PostModel? lastPost)
+        public bool CanFetchMore(CourseModel course, string? postType, Guid? lastPostId)
         {
-            return FetchPosts(course, postType, lastPost, 1).Any();
+            return FetchPosts(course, postType, lastPostId, 1).Any();
         }
 
-        public IEnumerable<PostModel> FetchPosts(CourseModel course, PostModel? lastPost, int requestPostsToFetch)
+        public IEnumerable<PostModel> FetchPosts(CourseModel course, Guid? lastPostId, int requestPostsToFetch)
         {
             var posts = All
+                .OrderByDescending(p => p.CreationTime)
                 .Where(p => p.CourseId == course.Id);
 
-            if (lastPost != null)
-                posts = posts.Where(p => p.CreationTime < lastPost.CreationTime);
+            if (lastPostId != null)
+                posts = posts.SkipWhile(p => p.Id != lastPostId).Skip(1);
 
             // TODO: Optimize
             return posts
-                .OrderByDescending(p => p.CreationTime)
                 .Take(requestPostsToFetch)
                 .Include(p => p.Likes)
                 .Include(p => p.PostFiles)
@@ -64,9 +69,9 @@ namespace Uniwiki.Server.Persistence.Repositories
                 .Include(p => p.Comments);
         }
 
-        public bool CanFetchMore(CourseModel course, PostModel? lastPost)
+        public bool CanFetchMore(CourseModel course, Guid? lastPostId)
         {
-            return FetchPosts(course, lastPost, 1).Any();
+            return FetchPosts(course, lastPostId, 1).Any();
         }
 
         public PostModel AddPost(string? postType, ProfileModel profile, string text, CourseModel course, DateTime creationTime)

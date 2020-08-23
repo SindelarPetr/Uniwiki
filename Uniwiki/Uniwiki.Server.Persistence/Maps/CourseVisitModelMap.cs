@@ -19,7 +19,6 @@ namespace Uniwiki.Server.Persistence.Models
 
             builder.HasOne(m => m.Course).WithMany().HasForeignKey(m => m.CourseId);
             builder.HasOne(m => m.Profile).WithMany().HasForeignKey(m => m.ProfileId);
-            builder.HasIndex(m => m.VisitDateTime).IsClustered();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Toolbelt.ComponentModel.DataAnnotations.Schema.V5;
 using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
@@ -11,8 +11,11 @@ namespace Uniwiki.Server.Persistence.Models
         public Guid AuthorId { get; protected set; }
         public ProfileModel Author { get; protected set; } = null!;
         public string Text { get; protected set; } = null!;
+
         public Guid CourseId { get; protected set; }
         public CourseModel Course { get; protected set; } = null!;
+
+        [IndexColumn]
         public DateTime CreationTime { get; protected set; }
 
         public ICollection<PostFileModel> PostFiles { get; protected set; }

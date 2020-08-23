@@ -12,8 +12,6 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-
-
     internal class CourseRepository : RemovableRepositoryBase<CourseModel, Guid>, ICourseRepository
     {
         private readonly IStringStandardizationService _stringStandardizationService;
@@ -33,12 +31,13 @@ namespace Uniwiki.Server.Persistence.Repositories
             var neutralizedStudyGroupUrl = studyGroupUrl.Neutralize();
             var neutralizedUniversityUrl = universityUrl.Neutralize();
 
+            // TODO: Use Single everywhere instead of First()
             // TODO: Optimize this
             return All
-                .Where(c => c.Url == courseUrl && c.StudyGroupUrl == neutralizedStudyGroupUrl && c.UniversityUrl == neutralizedUniversityUrl)
                 .Include(c => c.StudyGroup)
                 .ThenInclude(c => c.University)
-                .FirstOrDefault() ?? throw new RequestException(_textService.Error_CourseNotFound);
+                .SingleOrDefault(c => c.Url == courseUrl && c.StudyGroupUrl == neutralizedStudyGroupUrl && c.UniversityUrl == neutralizedUniversityUrl) 
+                ?? throw new RequestException(_textService.Error_CourseNotFound);
         }
 
 
@@ -46,11 +45,13 @@ namespace Uniwiki.Server.Persistence.Repositories
         public IEnumerable<CourseModel> SearchCourses(string text)
         {
             return All
+                .AsNoTracking()
                 .Include(c => c.StudyGroup)
                 .ThenInclude(g => g.University)
-                .Where(c => c.CodeStandardized.Contains(text) || c.FullNameStandardized.Contains(text));
+                .Where(c => c.CodeStandardized.Contains(text) || c.FullNameStandardized.Contains(text)); // TODO: Have a look on using EF.Functions
         }
 
+        // TODO: Implement Full-text search
         public IEnumerable<CourseModel> SearchCoursesFromStudyGroup(string text, StudyGroupModel studyGroup)
         {
             return SearchCourses(text)

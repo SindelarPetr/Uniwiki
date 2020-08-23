@@ -50,8 +50,8 @@ namespace Uniwiki.Server.Application.ServerActions
 
             // Check if can fetch more posts
             var canFetchMore = request.ShowAll
-                ? _postRepository.CanFetchMore(course, posts.LastOrDefault())
-                : _postRepository.CanFetchMore(course, request.PostType, posts.LastOrDefault());
+                ? _postRepository.CanFetchMore(course, posts.LastOrDefault()?.Id)
+                : _postRepository.CanFetchMore(course, request.PostType, posts.LastOrDefault()?.Id);
 
             var postDtos = posts.Select(p => p.ToDto(profile)).ToArray();
 

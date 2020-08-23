@@ -1,4 +1,5 @@
 ﻿using System;
+using Toolbelt.ComponentModel.DataAnnotations.Schema.V5;
 using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
@@ -9,6 +10,7 @@ namespace Uniwiki.Server.Persistence.Models
         public CourseModel Course { get; protected set; } = null!;
         public Guid ProfileId { get; protected set; }
         public ProfileModel Profile { get; protected set; } = null!;
+        [IndexColumn]
         public DateTime VisitDateTime { get; protected set; }
 
         internal CourseVisitModel(Guid id, CourseModel course, ProfileModel profile, DateTime visitDateTime)

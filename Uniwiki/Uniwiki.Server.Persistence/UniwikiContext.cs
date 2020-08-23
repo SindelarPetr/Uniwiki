@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Toolbelt.ComponentModel.DataAnnotations;
 using Uniwiki.Server.Persistence.Maps.Base;
 using Uniwiki.Server.Persistence.Models;
 
 namespace Uniwiki.Server.Persistence
 {
-    internal class UniwikiContext : DbContext
+    // TODO: Change the lengths of all the strings in the DB (the default is max size = 4000, most of our things are like 200)
+    public class UniwikiContext : DbContext
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -56,6 +58,7 @@ namespace Uniwiki.Server.Persistence
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();
 
+            // TODO: This should be loaded from the constructor
             // TODO: Move the connection string to the configuration
             // TODO: Make it possible to switch between the options in configuration
             // options.UseSqlServer("Server=localhost\\SQLEXPRESS01; initial catalog=UniwikiLocalDatabase;Database=master;Trusted_Connection=True; integrated security=SSPI");
@@ -74,6 +77,8 @@ namespace Uniwiki.Server.Persistence
             {
                 ((IModelMapBase)builder).Map(modelBuilder);
             }
+
+            modelBuilder.BuildIndexesFromAnnotations();
         }
 
     }

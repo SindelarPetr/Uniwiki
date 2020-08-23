@@ -20,6 +20,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.6" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="3.1.2" />
+    <PackageReference Include="Toolbelt.EntityFrameworkCore.IndexAttribute" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

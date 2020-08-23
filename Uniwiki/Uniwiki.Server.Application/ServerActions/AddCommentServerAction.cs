@@ -18,16 +18,18 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly IPostCommentRepository _postCommentRepository;
         private readonly ITimeService _timeService;
         private readonly TextService _textService;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public AddCommentServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostRepository postRepository, IPostCommentRepository postCommentRepository, ITimeService timeService, TextService textService) : base(serviceProvider)
+        public AddCommentServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostRepository postRepository, IPostCommentRepository postCommentRepository, ITimeService timeService, TextService textService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postRepository = postRepository;
             _postCommentRepository = postCommentRepository;
             _timeService = timeService;
             _textService = textService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<AddCommentResponseDto> ExecuteAsync(AddCommentRequestDto request, RequestContext context)
@@ -38,8 +40,8 @@ namespace Uniwiki.Server.Application.ServerActions
             // Create the comment
             _postCommentRepository.AddPostComment(context.User!, post, request.CommentText, _timeService.Now);
 
-            // Get the updated post
-            post = _postRepository.FindById
+            // Get the updated post // TODO: THERE WILL BE A PROBLEM, BECAUSE THE INCLUDES ARE MISSING HERE
+            post = _uniwikiContext.Posts.Find(post.Id);
 
             // Create response
             var response = new AddCommentResponseDto(post.ToDto(context.User));
