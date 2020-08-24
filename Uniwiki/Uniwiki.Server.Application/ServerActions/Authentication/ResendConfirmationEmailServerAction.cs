@@ -2,13 +2,11 @@
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
-using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
-using Uniwiki.Shared;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Server.Application.ServerActions.Authentication
@@ -17,12 +15,12 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
     {
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        private readonly IProfileRepository _profileRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly IInputValidationService _inputValidationService;
         private readonly TextService _textService;
         private readonly IEmailConfirmationSenderService _emailConfirmationSenderService;
 
-        public ResendConfirmationEmailServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IInputValidationService inputValidationService, TextService textService, IEmailConfirmationSenderService emailConfirmationSenderService) : base(serviceProvider)
+        public ResendConfirmationEmailServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, IInputValidationService inputValidationService, TextService textService, IEmailConfirmationSenderService emailConfirmationSenderService) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _inputValidationService = inputValidationService;

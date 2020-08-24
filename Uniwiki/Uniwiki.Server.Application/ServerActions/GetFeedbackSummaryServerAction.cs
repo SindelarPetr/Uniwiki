@@ -1,23 +1,21 @@
 ﻿using Server.Appliaction.ServerActions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Uniwiki.Server.Application.RequestResponse;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 
 namespace Uniwiki.Server.Application.ServerActions
 {
 
     internal class GetFeedbackSummaryServerAction : ServerActionBase<GetFeedbackSummaryRequestDto, GetFeedbackSummaryResponseDto>
     {
-        private readonly IFeedbackRepository _feedbackRepository;
+        private readonly FeedbackRepository _feedbackRepository;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        public GetFeedbackSummaryServerAction(IServiceProvider serviceProvider, IFeedbackRepository feedbackRepository) : base(serviceProvider)
+        public GetFeedbackSummaryServerAction(IServiceProvider serviceProvider, FeedbackRepository feedbackRepository) : base(serviceProvider)
         {
             _feedbackRepository = feedbackRepository;
         }

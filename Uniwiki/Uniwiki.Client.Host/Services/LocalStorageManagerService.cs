@@ -76,19 +76,19 @@ namespace Uniwiki.Client.Host.Services
         }
 
         private const string RecentCoursesKey = "RecentCourses";
-        public Task SetRecentCourses(CourseDto[] courses)
+        public Task SetRecentCourses(FoundCourseDto[] courses)
         {
             // Save it to the storage
             return _localStorageService.SetItemAsync(RecentCoursesKey, courses);
         }
 
-        public async Task SetRecentCourse(CourseDto course)
+        public async Task SetRecentCourse(FoundCourseDto course)
         {
             // Get recent courses first
             var recentCourses = (await GetRecentCourses()).ToList();
 
             // Remove the course in case its there already. Use Url for mapping the courses, that is better for
-            recentCourses.RemoveAll(c => c.Url == course.Url && c.StudyGroup.Url == course.StudyGroup.Url && c.University.Url == course.University.Url);
+            recentCourses.RemoveAll(c => c.FullUrl == course.FullUrl);
 
             // Add to recent courses again
             recentCourses.Add(course);
@@ -103,19 +103,19 @@ namespace Uniwiki.Client.Host.Services
             await _localStorageService.SetItemAsync(RecentCoursesKey, serializedRecentCourses);
         }
 
-        public async Task<CourseDto[]> GetRecentCourses()
+        public async Task<FoundCourseDto[]> GetRecentCourses()
         {
             var serializedCourses = await GetItemOrDefaultAsync(RecentCoursesKey, string.Empty);
 
             try
             {
                 // Deserialize courses or return empty array
-                return string.IsNullOrWhiteSpace(serializedCourses) ? new CourseDto[0] : JsonConvert.DeserializeObject<CourseDto[]>(serializedCourses);
+                return string.IsNullOrWhiteSpace(serializedCourses) ? new FoundCourseDto[0] : JsonConvert.DeserializeObject<FoundCourseDto[]>(serializedCourses);
             }
             catch (Exception)
             {
                 // Return empty array if there was a problem
-                return new CourseDto[0];
+                return new FoundCourseDto[0];
             }
 
         }

@@ -4,7 +4,7 @@ using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Server.Application.ServerActions.Authentication
@@ -13,11 +13,11 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
     {
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        private readonly IProfileRepository _profileRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly TextService _textService;
         private readonly IHashService _hashService;
 
-        public ChangePasswordServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, TextService textService, IHashService hashService) : base(serviceProvider)
+        public ChangePasswordServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, TextService textService, IHashService hashService) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _textService = textService;

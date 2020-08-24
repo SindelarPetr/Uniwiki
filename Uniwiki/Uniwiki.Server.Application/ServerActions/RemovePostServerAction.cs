@@ -4,20 +4,20 @@ using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
 {
     internal class RemovePostServerAction : ServerActionBase<RemovePostRequestDto, RemovePostResponseDto>
     {
-        private readonly IPostRepository _postRepository;
-        private readonly IProfileRepository _profileRepository;
+        private readonly PostRepository _postRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly TextService _textService;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public RemovePostServerAction(IServiceProvider serviceProvider, IPostRepository postRepository, IProfileRepository profileRepository, TextService textService) : base(serviceProvider)
+        public RemovePostServerAction(IServiceProvider serviceProvider, PostRepository postRepository, ProfileRepository profileRepository, TextService textService) : base(serviceProvider)
         {
             _postRepository = postRepository;
             _profileRepository = profileRepository;

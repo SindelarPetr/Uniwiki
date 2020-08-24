@@ -1,14 +1,11 @@
 ﻿using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
@@ -16,12 +13,12 @@ namespace Uniwiki.Server.Application.ServerActions
 
     internal class AddUniversityServerAction : ServerActionBase<AddUniversityRequestDto, AddUniversityResponseDto>
     {
-        private readonly IUniversityRepository _universityRepository;
+        private readonly UniversityRepository _universityRepository;
         private readonly TextService _textService;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.Admin;
 
-        public AddUniversityServerAction(IServiceProvider serviceProvider, IUniversityRepository universityRepository, TextService textService) : base(serviceProvider)
+        public AddUniversityServerAction(IServiceProvider serviceProvider, UniversityRepository universityRepository, TextService textService) : base(serviceProvider)
         {
             _universityRepository = universityRepository;
             _textService = textService;

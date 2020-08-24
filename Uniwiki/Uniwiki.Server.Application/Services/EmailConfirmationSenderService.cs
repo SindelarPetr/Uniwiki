@@ -1,24 +1,22 @@
 ﻿using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Application.Services
 {
     internal class EmailConfirmationSenderService : IEmailConfirmationSenderService
     {
-        private readonly IEmailConfirmationSecretRepository _emailConfirmationSecretRepository;
+        private readonly EmailConfirmationSecretRepository _emailConfirmationSecretRepository;
         private readonly ITimeService _timeService;
         private readonly IEmailService _emailService;
         private readonly TextService _textService;
 
-        public EmailConfirmationSenderService(IEmailConfirmationSecretRepository emailConfirmationSecretRepository, ITimeService timeService, IEmailService emailService, TextService textService)
+        public EmailConfirmationSenderService(EmailConfirmationSecretRepository emailConfirmationSecretRepository, ITimeService timeService, IEmailService emailService, TextService textService)
         {
             _emailConfirmationSecretRepository = emailConfirmationSecretRepository;
             _timeService = timeService;

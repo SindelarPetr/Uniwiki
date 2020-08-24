@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
-using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Server.Application.ServerActions.Authentication
@@ -18,13 +16,13 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
         private readonly TextService _textService;
-        private readonly ICourseVisitRepository _courseVisitRepository;
-        private readonly ICourseRepository _courseRepository;
+        private readonly CourseVisitRepository _courseVisitRepository;
+        private readonly CourseRepository _courseRepository;
         private readonly ITimeService _timeService;
         private readonly ILoginService _loginService;
         private readonly IRecentCoursesService _recentCoursesService;
 
-        public LoginServerAction(IServiceProvider serviceProvider, TextService textService, ICourseVisitRepository courseVisitRepository, ICourseRepository courseRepository, ITimeService timeService, ILoginService loginService, IRecentCoursesService recentCoursesService) : base(serviceProvider)
+        public LoginServerAction(IServiceProvider serviceProvider, TextService textService, CourseVisitRepository courseVisitRepository, CourseRepository courseRepository, ITimeService timeService, ILoginService loginService, IRecentCoursesService recentCoursesService) : base(serviceProvider)
         {
             _textService = textService;
             _courseVisitRepository = courseVisitRepository;
@@ -40,7 +38,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             var token = _loginService.LoginUser(request.Email, request.Password);
 
             // Set the recent courses
-            _recentCoursesService.SetAsRecentCourses(request.RecentCourses, token.Profile);
+            _recentCoursesService.SetAsRecentCourses(request.RecentCourses, token.Profile.Id);
 
             // Create response
             var response = new LoginResponseDto(token.ToDto(), token.Profile.ToDto());

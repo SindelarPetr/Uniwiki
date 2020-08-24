@@ -7,8 +7,8 @@
 
 <LoadingComponent Finished="@IsLoaded">
 	<div class="container">
-		<PageHeaderComponent Title="@_pageData.Course.LongName" />
-		<h5 class="dont-break-out">@_pageData.Course.StudyGroup.University.ShortName - @_pageData.Course.StudyGroup.LongName</h5>
+		<PageHeaderComponent Title="@_pageData.Course.FullUrl" />
+		<h5 class="dont-break-out">@_pageData.Course.UniversityAndFaculty</h5>
 	</div>
 		<div class="container container-sm">
 		@* Top bar *@

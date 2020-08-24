@@ -9,7 +9,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class NewPasswordSecretRepository : RepositoryBase<NewPasswordSecretModel, Guid>, INewPasswordSecretRepository
+    public class NewPasswordSecretRepository : RepositoryBase<NewPasswordSecretModel, Guid> // , NewPasswordSecretRepository
     {
         private readonly TextService _textService;
 

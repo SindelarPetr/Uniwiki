@@ -22,9 +22,9 @@ namespace Uniwiki.Server.Persistence
 {
     public static class UniwikiServerPersistenceServices
     {
-        private static void AddPersistence<TIRepository, TRepository, TModelMap, TModel, TId>(this IServiceCollection services)
-            where TIRepository : IRepositoryBase<TModel, TId>
-            where TRepository : RepositoryBase<TModel, TId>, TIRepository
+        private static void AddPersistence<TRepository, TModelMap, TModel, TId>(this IServiceCollection services)
+            // where TIRepository : IRepositoryBase<TModel, TId>
+            where TRepository : RepositoryBase<TModel, TId> // , TIRepository
             where TModel : ModelBase<TId>
             where TModelMap : ModelMapBase<TModel, TId>
             where TId : struct
@@ -33,26 +33,27 @@ namespace Uniwiki.Server.Persistence
             var modelIsRemovable = typeof(TModel) is RemovableModelBase<TId>;
             var mapIsRemovable = typeof(TModelMap) is RemovableModelMapBase<RemovableModelBase<TId>, TId>;
             var repositoryIsRemovable = typeof(TRepository) is RemovableRepositoryBase<RemovableModelBase<TId>, TId>;
-            var iRepositoryIsRemovable = typeof(TIRepository) is IRemovableRepositoryBase<RemovableModelBase<TId>, TId>;
+            //var iRepositoryIsRemovable = typeof(TIRepository) is IRemovableRepositoryBase<RemovableModelBase<TId>, TId>;
 
             // Are all removable?
-            var allAreRemovabel = modelIsRemovable && mapIsRemovable && repositoryIsRemovable && iRepositoryIsRemovable;
+            var allAreRemovabel = modelIsRemovable && mapIsRemovable && repositoryIsRemovable 
+                /*&& iRepositoryIsRemovable*/;
 
             // Are all non-removable?
-            var allAreNotRemovable = !modelIsRemovable && !mapIsRemovable && !repositoryIsRemovable && !iRepositoryIsRemovable;
+            var allAreNotRemovable = !modelIsRemovable && !mapIsRemovable && !repositoryIsRemovable /*&& !iRepositoryIsRemovable*/;
 
             // Check if either all the types are Removable or none is removable
             if (allAreRemovabel || allAreNotRemovable)
             {
                 // Add the types to the services
-                services.AddScoped(typeof(TIRepository), typeof(TRepository));
+                services.AddScoped(typeof(TRepository));
                 services.AddTransient(typeof(IModelMapBase), typeof(TModelMap));
             }
             else
             {
                 // Inconsistency is found - throw an error
                 throw new ArgumentException("There is inconsistency in who is removable and who is not.\n" +
-                    $"{typeof(TIRepository).Name} is Removeable: {modelIsRemovable}" +
+                    //$"{typeof(TIRepository).Name} is Removeable: {modelIsRemovable}" +
                     $"{typeof(TRepository).Name} is Removeable: {modelIsRemovable}" +
                     $"{typeof(TModel).Name} is Removeable: {modelIsRemovable}" +
                     $"{typeof(TModelMap).Name} is Removeable: {modelIsRemovable}");
@@ -68,49 +69,49 @@ namespace Uniwiki.Server.Persistence
             services.AddDbContext<UniwikiContext>();
 
             // Course
-            services.AddPersistence<ICourseRepository, CourseRepository, CourseModelMap, CourseModel, Guid>();
+            services.AddPersistence<CourseRepository, CourseModelMap, CourseModel, Guid>();
 
             // CourseVisit
-            services.AddPersistence<ICourseVisitRepository, CourseVisitRepository, CourseVisitModelMap, CourseVisitModel, Guid>();
+            services.AddPersistence<CourseVisitRepository, CourseVisitModelMap, CourseVisitModel, Guid>();
 
             // EmailConfirmationSecret
-            services.AddPersistence<IEmailConfirmationSecretRepository, EmailConfirmationSecretRepository, EmailConfirmationSecretModelMap, EmailConfirmationSecretModel, Guid>();
+            services.AddPersistence<EmailConfirmationSecretRepository, EmailConfirmationSecretModelMap, EmailConfirmationSecretModel, Guid>();
 
             // Feedback
-            services.AddPersistence<IFeedbackRepository, FeedbackRepository, FeedbackModelMap, FeedbackModel, Guid>();
+            services.AddPersistence<FeedbackRepository, FeedbackModelMap, FeedbackModel, Guid>();
 
             // LoginToken
-            services.AddPersistence<ILoginTokenRepository, LoginTokenRepository, LoginTokenModelMap, LoginTokenModel, Guid>();
+            services.AddPersistence<LoginTokenRepository, LoginTokenModelMap, LoginTokenModel, Guid>();
 
             // NewPasswordSecret
-            services.AddPersistence<INewPasswordSecretRepository, NewPasswordSecretRepository, NewPasswordSecretModelMap, NewPasswordSecretModel, Guid>();
+            services.AddPersistence<NewPasswordSecretRepository, NewPasswordSecretModelMap, NewPasswordSecretModel, Guid>();
 
             // PostCommentLike
-            services.AddPersistence<IPostCommentLikeRepository, PostCommentLikeRepository, PostCommentLikeModelMap, PostCommentLikeModel, PostCommentLikeModelId>();
+            services.AddPersistence<PostCommentLikeRepository, PostCommentLikeModelMap, PostCommentLikeModel, PostCommentLikeModelId>();
 
             // PostComment
-            services.AddPersistence<IPostCommentRepository, PostCommentRepository, PostCommentModelMap, PostCommentModel, Guid>();
+            services.AddPersistence<PostCommentRepository, PostCommentModelMap, PostCommentModel, Guid>();
 
             // PostFileDownload
-            services.AddPersistence<IPostFileDownloadRepository, PostFileDownloadRepository, PostFileDownloadModelMap, PostFileDownloadModel, Guid>();
+            services.AddPersistence<PostFileDownloadRepository, PostFileDownloadModelMap, PostFileDownloadModel, Guid>();
 
             // PostFile
-            services.AddPersistence<IPostFileRepository, PostFileRepository, PostFileModelMap, PostFileModel, Guid>();
+            services.AddPersistence<PostFileRepository, PostFileModelMap, PostFileModel, Guid>();
 
             // PostLike
-            services.AddPersistence<IPostLikeRepository, PostLikeRepository, PostLikeModelMap, PostLikeModel, PostLikeModelId>();
+            services.AddPersistence<PostLikeRepository, PostLikeModelMap, PostLikeModel, PostLikeModelId>();
 
             // Post
-            services.AddPersistence<IPostRepository, PostRepository, PostModelMap, PostModel, Guid>();
+            services.AddPersistence<PostRepository, PostModelMap, PostModel, Guid>();
 
             // Profile
-            services.AddPersistence<IProfileRepository, ProfileRepository, ProfileModelMap, ProfileModel, Guid>();
+            services.AddPersistence<ProfileRepository, ProfileModelMap, ProfileModel, Guid>();
 
             // StudyGroup
-            services.AddPersistence<IStudyGroupRepository, StudyGroupRepository, StudyGroupModelMap, StudyGroupModel, Guid>();
+            services.AddPersistence<StudyGroupRepository, StudyGroupModelMap, StudyGroupModel, Guid>();
 
             // University
-            services.AddPersistence<IUniversityRepository, UniversityRepository, UniversityModelMap, UniversityModel, Guid>();
+            services.AddPersistence<UniversityRepository, UniversityModelMap, UniversityModel, Guid>();
         }
     }
 }

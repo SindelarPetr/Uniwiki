@@ -12,10 +12,12 @@ namespace Uniwiki.Shared.Services
     {
         public Language Language { get; private set; }
 
-        public string GetTranslation(string czech, string english) => Language == Language.Czech ? czech : english;
+        public string GetTranslation(string czech, string english) => GetTranslation<string>(czech, english);
 
         public void SetLanguage(Language language) => Language = language;
 
         public string Sanitize(string text) => HtmlEncoder.Default.Encode(text);
+
+        public T GetTranslation<T>(T czech, T english) => Language == Language.Czech ? czech : english;
     }
 }

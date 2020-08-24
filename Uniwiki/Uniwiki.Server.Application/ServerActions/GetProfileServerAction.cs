@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
@@ -11,9 +11,9 @@ namespace Uniwiki.Server.Application.ServerActions
     internal class GetProfileServerAction : ServerActionBase<GetProfileRequest, GetProfileResponse>
     {
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
-        private readonly IProfileRepository _profileRepository;
+        private readonly ProfileRepository _profileRepository;
 
-        public GetProfileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository) : base(serviceProvider)
+        public GetProfileServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
         }

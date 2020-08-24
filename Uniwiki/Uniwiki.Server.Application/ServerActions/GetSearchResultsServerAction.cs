@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Models;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 
@@ -17,19 +19,21 @@ namespace Uniwiki.Server.Application.ServerActions
     {
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        private readonly IStudyGroupRepository _studyGroupRepository;
-        private readonly ICourseRepository _courseRepository;
+        private readonly StudyGroupRepository _studyGroupRepository;
+        private readonly CourseRepository _courseRepository;
         private readonly IStringStandardizationService _stringStandardizationService;
-        private readonly ICourseVisitRepository _courseVisitRepository;
+        private readonly CourseVisitRepository _courseVisitRepository;
         private readonly ILogger<GetSearchResultsServerAction> _logger;
+        private readonly UniwikiContext _uniwikiContext;
 
-        public GetSearchResultsServerAction(IServiceProvider serviceProvider, IStudyGroupRepository studyGroupRepository, ICourseRepository courseRepository, IStringStandardizationService stringStandardizationService, ICourseVisitRepository courseVisitRepository, ILogger<GetSearchResultsServerAction> logger) : base(serviceProvider)
+        public GetSearchResultsServerAction(IServiceProvider serviceProvider, StudyGroupRepository studyGroupRepository, CourseRepository courseRepository, IStringStandardizationService stringStandardizationService, CourseVisitRepository courseVisitRepository, ILogger<GetSearchResultsServerAction> logger, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _studyGroupRepository = studyGroupRepository;
             _courseRepository = courseRepository;
             _stringStandardizationService = stringStandardizationService;
             _courseVisitRepository = courseVisitRepository;
             _logger = logger;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<GetSearchResultsResponseDto> ExecuteAsync(GetSearchResultsRequestDto request, RequestContext context)
@@ -41,26 +45,37 @@ namespace Uniwiki.Server.Application.ServerActions
             _logger.LogInformation("Searching for text: '{Text}', standardized: '{StandardizedText}'", request.SearchedText, searchText);
 
             // Which should be found
-            CourseDto[] courseDtos;
+            FoundCourseDto[] courseDtos;
 
             // Recent courses for the user
-            CourseDto[] recentCourseDtos = new CourseDto[0];
+            FoundCourseDto[] recentCourseDtos = new FoundCourseDto[0];
 
             // Find the recent courses if the user is authenticated and did not type any text
             if (context.IsAuthenticated && string.IsNullOrWhiteSpace(searchText))
             {
-                recentCourseDtos = _courseVisitRepository.GetRecentCourses(context.User).Select(c => c.ToDto()).ToArray();
+                // TODO: Check efficiency of this - how many calls are made?
+                recentCourseDtos = 
+                    _uniwikiContext
+                    .CourseVisits
+                    .AsNoTracking()
+                    .Where(v => v.ProfileId == context.User!.Id)
+                    .OrderByDescending(v => v.VisitDateTime)
+                    .Include(v => v.Course)
+                    .Select(v => v.Course) // This might cause a problem
+                    .ToFoundCourses()
+                    .ToArray();
             }
 
-            // Check if the user wants to filter by study group
-            var studyGroup = request.StudyGroupId != null
-                ? _studyGroupRepository.FindById(request.StudyGroupId.Value)
-                : null;
-
-            // User selected a study group
-            if (studyGroup != null)
+            // Check if the user selected a study group
+            if (request.StudyGroupId != null)
             {
-                courseDtos = _courseRepository.SearchCoursesFromStudyGroup(searchText, studyGroup).Select(c => c.ToDto()).ToArray();
+                // Search just amongst the selected study group
+                var coursesFromStudyGroup = _uniwikiContext.Courses.Where(c => c.StudyGroup.Id == request.StudyGroupId);
+
+                // find the courses
+                var courses = FindCourses(coursesFromStudyGroup, searchText);
+
+                courseDtos = courses.ToFoundCourses().ToArray();
             }
             else // User did not select a study group
             {
@@ -68,12 +83,12 @@ namespace Uniwiki.Server.Application.ServerActions
                 if (string.IsNullOrWhiteSpace(searchText))
                 {
                     // Return empty results
-                    courseDtos = new CourseDto[0];
+                    courseDtos = new FoundCourseDto[0];
                 }
                 else // The user typed some text
                 {
                     // Find the courses
-                    courseDtos = _courseRepository.SearchCourses(searchText).Select(c => c.ToDto()).ToArray();
+                    courseDtos = FindCourses(_uniwikiContext.Courses, searchText).ToFoundCourses().ToArray();
                 }
             }
 
@@ -82,5 +97,10 @@ namespace Uniwiki.Server.Application.ServerActions
 
             return Task.FromResult(response);
         }
+
+        private IQueryable<CourseModel> FindCourses(IQueryable<CourseModel> courses, string searchText)
+        => string.IsNullOrWhiteSpace(searchText)
+            ? courses
+            : courses.Where(c => c.FullNameStandardized.Contains(searchText) || c.Code.Contains(searchText));
     }
 }

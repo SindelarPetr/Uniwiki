@@ -6,8 +6,7 @@ using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
@@ -18,12 +17,12 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
         private readonly IEmailService _emailService;
-        private readonly IProfileRepository _profileRepository;
-        private readonly INewPasswordSecretRepository _newPasswordSecretRepository;
+        private readonly ProfileRepository _profileRepository;
+        private readonly NewPasswordSecretRepository _newPasswordSecretRepository;
         private readonly ITimeService _timeService;
         private readonly TextService _textService;
 
-        public RestorePasswordServerAction(IServiceProvider serviceProvider, IEmailService emailService, IProfileRepository profileRepository, INewPasswordSecretRepository newPasswordSecretRepository, ITimeService timeService, TextService textService)
+        public RestorePasswordServerAction(IServiceProvider serviceProvider, IEmailService emailService, ProfileRepository profileRepository, NewPasswordSecretRepository newPasswordSecretRepository, ITimeService timeService, TextService textService)
             : base(serviceProvider)
         {
             _emailService = emailService;

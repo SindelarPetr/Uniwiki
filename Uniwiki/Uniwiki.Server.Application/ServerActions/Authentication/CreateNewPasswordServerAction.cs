@@ -5,7 +5,7 @@ using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Server.Application.ServerActions.Authentication
@@ -15,13 +15,13 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
     {
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        private readonly INewPasswordSecretRepository _newPasswordSecretRepository;
-        private readonly IProfileRepository _profileRepository;
+        private readonly NewPasswordSecretRepository _newPasswordSecretRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
         private readonly TextService _textService;
         private readonly IHashService _hashService;
 
-        public CreateNewPasswordServerAction(IServiceProvider serviceProvider, INewPasswordSecretRepository newPasswordSecretRepository, IProfileRepository profileRepository, ITimeService timeService, TextService textService, IHashService hashService) : base(serviceProvider)
+        public CreateNewPasswordServerAction(IServiceProvider serviceProvider, NewPasswordSecretRepository newPasswordSecretRepository, ProfileRepository profileRepository, ITimeService timeService, TextService textService, IHashService hashService) : base(serviceProvider)
         {
             _newPasswordSecretRepository = newPasswordSecretRepository;
             _profileRepository = profileRepository;

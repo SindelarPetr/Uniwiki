@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Uniwiki.Server.Application.Configuration;

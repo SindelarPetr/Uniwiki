@@ -9,8 +9,7 @@ using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
@@ -18,18 +17,18 @@ namespace Uniwiki.Server.Application.ServerActions
 
     internal class UploadPostFileServerAction : ServerActionBase<UploadPostFileRequestDto, UploadPostFileResponseDto>
     {
-        private readonly IProfileRepository _profileRepository;
-        private readonly IPostFileRepository _postFileRepository;
+        private readonly ProfileRepository _profileRepository;
+        private readonly PostFileRepository _postFileRepository;
         private readonly ITimeService _timeService;
         private readonly IUploadFileService _uploadFileService;
         private readonly ILogger<UploadPostFileServerAction> _logger;
         private readonly IFileHelperService _fileHelperService;
-        private readonly ICourseRepository _courseRepository;
+        private readonly CourseRepository _courseRepository;
         private readonly TextService _textService;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public UploadPostFileServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService, ICourseRepository courseRepository, TextService textService) : base(serviceProvider)
+        public UploadPostFileServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService, CourseRepository courseRepository, TextService textService) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postFileRepository = postFileRepository;

@@ -27,7 +27,14 @@ namespace Uniwiki.Shared
         {
             public static string BuildRoute(CourseDto course, string? postType = null)
             {
-                return RouteHelper.BuildRouteParts(UniPage.BaseRoute, course.University.Url, course.StudyGroup.Url, course.Url, postType);
+                return postType == null ?
+                    RouteHelper.BuildRouteParts(UniPage.BaseRoute, course.University.Url, course.StudyGroup.Url, course.Url) :
+                    RouteHelper.BuildRouteParts(UniPage.BaseRoute, course.University.Url, course.StudyGroup.Url, course.Url, postType);
+            }
+
+            public static string BuildRoute(string courseUrl, string studyGroupUrl, string universityUrl)
+            {
+                return RouteHelper.BuildRouteParts(UniPage.BaseRoute, universityUrl, studyGroupUrl, courseUrl);
             }
         }
 
@@ -106,7 +113,7 @@ namespace Uniwiki.Shared
 
         public static class CreateNewPasswordPage
         {
-            public static string BuildRoute(string secret) 
+            public static string BuildRoute(string secret)
                 => RouteHelper.BuildRouteParts(BaseRoute, secret);
             private const string BaseRoute = "CreateNewPassword";
 

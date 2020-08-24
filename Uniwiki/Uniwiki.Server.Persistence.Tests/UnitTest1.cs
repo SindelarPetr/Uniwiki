@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared.Services.Abstractions;
 using System;
 using Uniwiki.Server.Persistence.Models;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared;
 using Uniwiki.Shared.Tests.FakeServices;
@@ -65,7 +66,7 @@ namespace Uniwiki.Server.Persistence.Tests
             FeedbackModel createdFeedback;
             using (var scope = provider.CreateScope())
             {
-                var feedbackRepository = scope.ServiceProvider.GetService<IFeedbackRepository>();
+                var feedbackRepository = scope.ServiceProvider.GetService<FeedbackRepository>();
 
                 createdFeedback = feedbackRepository.AddFeedback(feedbackUser, feedbackRating, feedbackText, timeService.Now);
             }
@@ -74,7 +75,7 @@ namespace Uniwiki.Server.Persistence.Tests
             FeedbackModel loadedFeedback;
             using (var scope = provider.CreateScope())
             {
-                var feedbackRepository = scope.ServiceProvider.GetService<IFeedbackRepository>();
+                var feedbackRepository = scope.ServiceProvider.GetService<FeedbackRepository>();
 
                 loadedFeedback = feedbackRepository.FindById(createdFeedback.Id);
             }

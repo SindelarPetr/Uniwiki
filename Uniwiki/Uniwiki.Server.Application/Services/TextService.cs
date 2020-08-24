@@ -1,5 +1,4 @@
-﻿using System;
-using Uniwiki.Shared;
+﻿using Uniwiki.Shared;
 using Uniwiki.Shared.Services.Abstractions;
 
 namespace Uniwiki.Server.Application.Services
@@ -82,6 +81,8 @@ namespace Uniwiki.Server.Application.Services
         public string RemovePost_CannotRemoveNonOwnersPost => _languageService.GetTranslation("Nemůžete odstranit cizí komentář", "Its not possible to remove someone else's post.");
 
         public string Error_PostCommentNotFound => _languageService.GetTranslation("Daný komentář nebyl nalezen.", "The specified comment has not been found.");
+
+        public string Error_CourseNotFound => _languageService.GetTranslation("Předmět nenalezen.", "Course not found.");
 
         public string ResendConfirmation_ProfileIsAlreadyConfirmed(string email) => _languageService.GetTranslation(
             $"Email {email} byl již potvrzen.", 

@@ -6,21 +6,20 @@ using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
 {
     internal class AddStudyGroupServerAction : ServerActionBase<AddStudyGroupRequestDto, AddStudyGroupResponseDto>
     {
-        private readonly IUniversityRepository _universityRepository;
-        private readonly IStudyGroupRepository _studyGroupRepository;
+        private readonly UniversityRepository _universityRepository;
+        private readonly StudyGroupRepository _studyGroupRepository;
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.Admin;
 
-        public AddStudyGroupServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IUniversityRepository universityRepository, IStudyGroupRepository studyGroupRepository, IStringStandardizationService stringStandardizationService, TextService textService) : base(serviceProvider)
+        public AddStudyGroupServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, UniversityRepository universityRepository, StudyGroupRepository studyGroupRepository, IStringStandardizationService stringStandardizationService, TextService textService) : base(serviceProvider)
         {
             _universityRepository = universityRepository;
             _studyGroupRepository = studyGroupRepository;

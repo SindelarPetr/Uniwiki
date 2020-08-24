@@ -6,7 +6,7 @@ using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Server.Application.ServerActions.Authentication
@@ -14,11 +14,11 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
 
     internal class ConfirmEmailServerAction : ServerActionBase<ConfirmEmailRequestDto, ConfirmEmailResponseDto>
     {
-        private readonly IEmailConfirmationSecretRepository _emailConfirmationSecretRepository;
+        private readonly EmailConfirmationSecretRepository _emailConfirmationSecretRepository;
         private readonly ILoginService _loginService;
         private readonly TextService _textService;
 
-        public ConfirmEmailServerAction(IServiceProvider serviceProvider, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, ILoginService loginService, TextService textService) : base(serviceProvider)
+        public ConfirmEmailServerAction(IServiceProvider serviceProvider, EmailConfirmationSecretRepository emailConfirmationSecretRepository, ILoginService loginService, TextService textService) : base(serviceProvider)
         {
             _emailConfirmationSecretRepository = emailConfirmationSecretRepository;
             _loginService = loginService;

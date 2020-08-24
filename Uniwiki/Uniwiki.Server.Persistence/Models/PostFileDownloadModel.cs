@@ -12,13 +12,11 @@ namespace Uniwiki.Server.Persistence.Models
         public DateTime DownloadTime { get; protected set; }
         
 
-        internal PostFileDownloadModel(Guid id, LoginTokenModel token, PostFileModel fileDownloaded, DateTime downloadTime)
+        internal PostFileDownloadModel(Guid id, Guid tokenId, Guid fileDownloadedId, DateTime downloadTime)
             : base(id)
         {
-            TokenId = token.Id;
-            Token = token;
-            FileDownloadedId = fileDownloaded.Id;
-            FileDownloaded = fileDownloaded;
+            TokenId = tokenId;
+            FileDownloadedId = fileDownloadedId;
             DownloadTime = downloadTime;
         }
 

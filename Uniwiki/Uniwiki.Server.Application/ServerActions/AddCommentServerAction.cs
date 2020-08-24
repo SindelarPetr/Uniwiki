@@ -5,24 +5,23 @@ using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
 {
     internal class AddCommentServerAction : ServerActionBase<AddCommentRequestDto, AddCommentResponseDto>
     {
-        private readonly IProfileRepository _profileRepository;
-        private readonly IPostRepository _postRepository;
-        private readonly IPostCommentRepository _postCommentRepository;
+        private readonly ProfileRepository _profileRepository;
+        private readonly PostRepository _postRepository;
+        private readonly PostCommentRepository _postCommentRepository;
         private readonly ITimeService _timeService;
         private readonly TextService _textService;
         private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public AddCommentServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostRepository postRepository, IPostCommentRepository postCommentRepository, ITimeService timeService, TextService textService, UniwikiContext uniwikiContext) : base(serviceProvider)
+        public AddCommentServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostRepository postRepository, PostCommentRepository postCommentRepository, ITimeService timeService, TextService textService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postRepository = postRepository;

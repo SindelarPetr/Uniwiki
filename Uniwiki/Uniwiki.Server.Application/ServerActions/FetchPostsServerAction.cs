@@ -4,18 +4,18 @@ using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
 {
     internal class FetchPostsServerAction : ServerActionBase<FetchPostsRequestDto, FetchPostsResponseDto>
     {
-        private readonly ICourseRepository _courseRepository;
-        private readonly IPostRepository _postRepository;
-        private readonly IProfileRepository _profileRepository;
+        private readonly CourseRepository _courseRepository;
+        private readonly PostRepository _postRepository;
+        private readonly ProfileRepository _profileRepository;
 
-        public FetchPostsServerAction(IServiceProvider serviceProvider, ICourseRepository courseRepository, IPostRepository postRepository, IProfileRepository profileRepository) : base(serviceProvider)
+        public FetchPostsServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, PostRepository postRepository, ProfileRepository profileRepository) : base(serviceProvider)
         {
             _courseRepository = courseRepository;
             _postRepository = postRepository;
@@ -36,13 +36,13 @@ namespace Uniwiki.Server.Application.ServerActions
 
             // Get posts for the 
             var posts = !request.UsePostTypeFilter
-                ? _postRepository.FetchPosts(course, lastPost?.Id, request.PostsToFetch).ToArray()
-                : _postRepository.FetchPosts(course, request.PostType, lastPost?.Id, request.PostsToFetch).ToArray();
+                ? _postRepository.FetchPosts(course.Id, lastPost?.Id, request.PostsToFetch).ToArray()
+                : _postRepository.FetchPosts(course.Id, request.PostType, lastPost?.Id, request.PostsToFetch).ToArray();
 
             // Check if can fetch more posts
             var canFetchMore = !request.UsePostTypeFilter
-                ? _postRepository.CanFetchMore(course, posts.LastOrDefault()?.Id)
-                : _postRepository.CanFetchMore(course, request.PostType, posts.LastOrDefault()?.Id);
+                ? _postRepository.CanFetchMore(course.Id, posts.LastOrDefault()?.Id)
+                : _postRepository.CanFetchMore(course.Id, request.PostType, posts.LastOrDefault()?.Id);
 
             // Convert posts to DTOs
             var postDtos = posts.Select(p => p.ToDto(profile)).ToArray();

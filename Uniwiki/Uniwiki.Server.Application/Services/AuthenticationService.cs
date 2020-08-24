@@ -3,16 +3,16 @@ using System;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 
 namespace Uniwiki.Server.Application.Services
 {
     internal class AuthenticationService : IAuthenticationService
     {
-        private readonly ILoginTokenRepository _loginTokenRepository;
+        private readonly LoginTokenRepository _loginTokenRepository;
         private readonly ITimeService _timeService;
 
-        public AuthenticationService(ILoginTokenRepository loginTokenRepository, ITimeService timeService)
+        public AuthenticationService(LoginTokenRepository loginTokenRepository, ITimeService timeService)
         {
             _loginTokenRepository = loginTokenRepository;
             _timeService = timeService;

@@ -8,7 +8,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class LoginTokenRepository : RepositoryBase<LoginTokenModel, Guid>, ILoginTokenRepository
+    public class LoginTokenRepository : RepositoryBase<LoginTokenModel, Guid> //, LoginTokenRepository
     {
         private readonly TextService _textService;
 

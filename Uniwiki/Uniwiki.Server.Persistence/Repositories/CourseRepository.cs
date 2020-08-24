@@ -12,7 +12,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class CourseRepository : RemovableRepositoryBase<CourseModel, Guid>, ICourseRepository
+    public class CourseRepository : RemovableRepositoryBase<CourseModel, Guid>//, CourseRepository
     {
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;

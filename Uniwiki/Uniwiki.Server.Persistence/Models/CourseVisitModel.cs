@@ -13,13 +13,11 @@ namespace Uniwiki.Server.Persistence.Models
         [IndexColumn]
         public DateTime VisitDateTime { get; protected set; }
 
-        internal CourseVisitModel(Guid id, CourseModel course, ProfileModel profile, DateTime visitDateTime)
+        public CourseVisitModel(Guid id, Guid courseId, Guid profileId, DateTime visitDateTime)
             :base(id)
         {
-            CourseId = course.Id;
-            Course = course;
-            ProfileId = profile.Id;
-            Profile = profile;
+            CourseId = courseId;
+            ProfileId = profileId;
             VisitDateTime = visitDateTime;
         }
 

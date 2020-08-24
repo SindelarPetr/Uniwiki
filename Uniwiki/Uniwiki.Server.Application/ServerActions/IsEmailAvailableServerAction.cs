@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
@@ -10,11 +10,11 @@ namespace Uniwiki.Server.Application.ServerActions
 
     public class IsEmailAvailableServerAction : ServerActionBase<IsEmailAvailableRequestDto, IsEmailAvailableResponseDto>
     {
-        private readonly IProfileRepository _profileRepository;
+        private readonly ProfileRepository _profileRepository;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        public IsEmailAvailableServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository)
+        public IsEmailAvailableServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository)
             :base(serviceProvider)
         {
             _profileRepository = profileRepository;

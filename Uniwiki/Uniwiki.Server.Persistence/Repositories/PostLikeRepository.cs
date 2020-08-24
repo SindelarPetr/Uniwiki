@@ -9,7 +9,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    class PostLikeRepository : RepositoryBase<PostLikeModel, PostLikeModelId>, IPostLikeRepository
+    public class PostLikeRepository : RepositoryBase<PostLikeModel, PostLikeModelId> //, PostLikeRepository
     {
         private readonly TextService _textService;
 

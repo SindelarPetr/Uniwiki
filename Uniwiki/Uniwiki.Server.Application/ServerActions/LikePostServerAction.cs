@@ -5,21 +5,20 @@ using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
 {
     internal class LikePostServerAction : ServerActionBase<LikePostRequestDto, LikePostResponseDto>
     {
-        private readonly IPostRepository _postRepository;
-        private readonly IProfileRepository _profileRepository;
+        private readonly PostRepository _postRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
-        private readonly IPostLikeRepository _postLikeRepository;
+        private readonly PostLikeRepository _postLikeRepository;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public LikePostServerAction(IServiceProvider serviceProvider, IPostRepository postRepository, IProfileRepository profileRepository, ITimeService timeService, IPostLikeRepository postLikeRepository) : base(serviceProvider)
+        public LikePostServerAction(IServiceProvider serviceProvider, PostRepository postRepository, ProfileRepository profileRepository, ITimeService timeService, PostLikeRepository postLikeRepository) : base(serviceProvider)
         {
             _postRepository = postRepository;
             _profileRepository = profileRepository;

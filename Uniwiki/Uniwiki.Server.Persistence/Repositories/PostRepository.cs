@@ -12,8 +12,9 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class PostRepository : RemovableRepositoryBase<PostModel, Guid>, IPostRepository
+    public class PostRepository : RemovableRepositoryBase<PostModel, Guid> //, PostRepository  
     {
+        private readonly UniwikiContext _uniwikiContext;
         private readonly TextService _textService;
         private readonly UniwikiConfiguration _uniwikiConfiguration;
 
@@ -22,6 +23,7 @@ namespace Uniwiki.Server.Persistence.Repositories
         public PostRepository(UniwikiContext uniwikiContext, TextService textService, UniwikiConfiguration uniwikiConfiguration)
             : base(uniwikiContext, uniwikiContext.Posts)
         {
+            _uniwikiContext = uniwikiContext;
             _textService = textService;
             _uniwikiConfiguration = uniwikiConfiguration;
         }
@@ -34,9 +36,9 @@ namespace Uniwiki.Server.Persistence.Repositories
         }
 
         //TODO: Change this to Paging by the amount of posts - remember pagging by remembering the numerical order of the posts (latest post have the highest number)
-        public IEnumerable<PostModel> FetchPosts(CourseModel course, string? postType, Guid? lastPostId, int requestPostsToFetch)
+        public IQueryable<PostModel> FetchPosts(Guid courseId, string? postType, Guid? lastPostId, int requestPostsToFetch)
         {
-            var posts = course.Posts
+            var posts = _uniwikiContext.Posts.Where(p => p.CourseId == courseId)
                 .OrderByDescending(p => p.CreationTime)
                 .Where(p => p.PostType == postType);
 
@@ -46,19 +48,21 @@ namespace Uniwiki.Server.Persistence.Repositories
             return posts.Take(requestPostsToFetch);
         }
 
-        public bool CanFetchMore(CourseModel course, string? postType, Guid? lastPostId)
+        public bool CanFetchMore(Guid courseId, string? postType, Guid? lastPostId)
         {
-            return FetchPosts(course, postType, lastPostId, 1).Any();
+            return FetchPosts(courseId, postType, lastPostId, 1).Any();
         }
 
-        public IEnumerable<PostModel> FetchPosts(CourseModel course, Guid? lastPostId, int requestPostsToFetch)
+        public IQueryable<PostModel> FetchPosts(Guid courseId, Guid? lastPostId, int requestPostsToFetch)
         {
             var posts = All
                 .OrderByDescending(p => p.CreationTime)
-                .Where(p => p.CourseId == course.Id);
+                .Where(p => p.CourseId == courseId);
 
             if (lastPostId != null)
-                posts = posts.SkipWhile(p => p.Id != lastPostId).Skip(1);
+                posts = posts
+                    .SkipWhile(p => p.Id != lastPostId)
+                    .Skip(1);
 
             // TODO: Optimize
             return posts
@@ -69,9 +73,9 @@ namespace Uniwiki.Server.Persistence.Repositories
                 .Include(p => p.Comments);
         }
 
-        public bool CanFetchMore(CourseModel course, Guid? lastPostId)
+        public bool CanFetchMore(Guid courseId, Guid? lastPostId)
         {
-            return FetchPosts(course, lastPostId, 1).Any();
+            return FetchPosts(courseId, lastPostId, 1).Any();
         }
 
         public PostModel AddPost(string? postType, ProfileModel profile, string text, CourseModel course, DateTime creationTime)

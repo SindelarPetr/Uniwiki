@@ -6,15 +6,15 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IStudyGroupRepository : IRemovableRepositoryBase<StudyGroupModel, Guid>
-    {
-        StudyGroupModel GetStudyGroup(string studyGroupUrlName);
-        IEnumerable<CourseModel> GetCourses(string studyGroupUrl);
-        IEnumerable<StudyGroupModel> SearchStudyGroups(string text);
-        IEnumerable<StudyGroupModel> SearchStudyGroupsOfUniversity(string text, UniversityModel university);
-        StudyGroupModel? TryGetStudyGroup(string url);
-        bool IsStudyGroupNameUniq(UniversityModel university, string name);
-        StudyGroupModel AddStudyGroup(UniversityModel university, string shortName, string longName, string url, ProfileModel profile, Language primaryLanguage);
-        StudyGroupModel GetStudyGroupWithUniversity(Guid studyGroupId);
-    }
+    //public interface StudyGroupRepository : IRemovableRepositoryBase<StudyGroupModel, Guid>
+    //{
+    //    StudyGroupModel GetStudyGroup(string studyGroupUrlName);
+    //    IEnumerable<CourseModel> GetCourses(string studyGroupUrl);
+    //    IEnumerable<StudyGroupModel> SearchStudyGroups(string text);
+    //    IEnumerable<StudyGroupModel> SearchStudyGroupsOfUniversity(string text, UniversityModel university);
+    //    StudyGroupModel? TryGetStudyGroup(string url);
+    //    bool IsStudyGroupNameUniq(UniversityModel university, string name);
+    //    StudyGroupModel AddStudyGroup(UniversityModel university, string shortName, string longName, string url, ProfileModel profile, Language primaryLanguage);
+    //    StudyGroupModel GetStudyGroupWithUniversity(Guid studyGroupId);
+    //}
 }

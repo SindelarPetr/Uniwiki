@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web;
 
 namespace Uniwiki.Shared
@@ -14,8 +15,9 @@ namespace Uniwiki.Shared
         internal static string BuildRouteParts(params string[] parts)
         {
             if (parts == null)
-                return string.Empty;
+                throw new ArgumentNullException(nameof(parts));
 
+            // Return empty string if there were no parts supplied
             if (parts.Length == 0)
                 return string.Empty;
 

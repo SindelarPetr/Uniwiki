@@ -9,8 +9,7 @@ using Uniwiki.Server.Application.ServerActions;
 using Uniwiki.Server.Application.ServerActions.Authentication;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.RequestResponse.Authentication;
@@ -31,15 +30,15 @@ namespace Uniwiki.Server.Application.Services
         private readonly LikePostServerAction _likePostServerAction;
         private readonly AddStudyGroupServerAction _addStudyGroupServerAction;
         private readonly AddPostServerAction _addPostServerAction;
-        private readonly ILoginTokenRepository _loginTokenRepository;
-        private readonly IEmailConfirmationSecretRepository _emailConfirmationSecretRepository;
-        private readonly IProfileRepository _profileRepository;
+        private readonly LoginTokenRepository _loginTokenRepository;
+        private readonly EmailConfirmationSecretRepository _emailConfirmationSecretRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
         private readonly IEmailService _emailService;
         private readonly AddUniversityServerAction _addUniversityServerAction;
         private readonly RequestContext _anonymousContext = new RequestContext(null, AuthenticationLevel.None, Guid.NewGuid().ToString(), Language.English, new System.Net.IPAddress(0x2414188));
 
-        public DataManipulationService(IServiceProvider serviceProvider, AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, ILoginTokenRepository loginTokenRepository, IEmailConfirmationSecretRepository emailConfirmationSecretRepository, IProfileRepository profileRepository, ITimeService timeService, IEmailService emailService, AddUniversityServerAction addUniversityServerAction)
+        public DataManipulationService(IServiceProvider serviceProvider, AddCourseServerAction addCourseServerAction, RegisterServerAction registerServerAction, ConfirmEmailServerAction confirmEmailServerAction, LoginServerAction loginServerAction, AddCommentServerAction addCommentServerAction, LikePostCommentServerAction likePostCommentServerAction, LikePostServerAction likePostServerAction, AddStudyGroupServerAction addStudyGroupServerAction, AddPostServerAction addPostServerAction, LoginTokenRepository loginTokenRepository, EmailConfirmationSecretRepository emailConfirmationSecretRepository, ProfileRepository profileRepository, ITimeService timeService, IEmailService emailService, AddUniversityServerAction addUniversityServerAction)
         {
             _serviceProvider = serviceProvider;
             _addCourseServerAction = addCourseServerAction;
@@ -296,23 +295,24 @@ namespace Uniwiki.Server.Application.Services
 
         public async Task<RequestContext> RegisterUser(string email, string name, string surname, string password, bool isAdmin = false)
         {
-            var userDto = (await Scoped<RegisterServerAction>().ExecuteActionAsync(new RegisterRequestDto(email, name + " " + surname, password, password, true, null, new CourseDto[0]), _anonymousContext)).UserProfile;
+            var userDto = (await Scoped<RegisterServerAction>().ExecuteActionAsync(
+                new RegisterRequestDto(email, name + " " + surname, password, password, true, null, new FoundCourseDto[0]), _anonymousContext)).UserProfile;
 
-            var user = Scoped<IProfileRepository>().FindById(userDto.Id);
+            var user = Scoped<ProfileRepository>().FindById(userDto.Id);
 
             if (isAdmin)
                 _profileRepository.SetAdmin(user);
 
-            var emailSecret = Scoped<IEmailConfirmationSecretRepository>()
+            var emailSecret = Scoped<EmailConfirmationSecretRepository>()
                 .TryGetValidEmailConfirmationSecret(user);
             
             await Scoped<ConfirmEmailServerAction>()
                 .ExecuteActionAsync(new ConfirmEmailRequestDto(emailSecret!.Secret),           _anonymousContext);
             
             var loginTokenDto = (await Scoped<LoginServerAction>()
-                .ExecuteActionAsync(new LoginRequestDto(email, password, new CourseDto[0]), _anonymousContext)).LoginToken;
+                .ExecuteActionAsync(new LoginRequestDto(email, password, new FoundCourseDto[0]), _anonymousContext)).LoginToken;
             
-            var token = Scoped<ILoginTokenRepository>().TryFindNonExpiredById(loginTokenDto.PrimaryTokenId, _timeService.Now);
+            var token = Scoped<LoginTokenRepository>().TryFindNonExpiredById(loginTokenDto.PrimaryTokenId, _timeService.Now);
 
             var context = new RequestContext(token, isAdmin ? AuthenticationLevel.Admin : AuthenticationLevel.PrimaryToken, Guid.NewGuid().ToString(), Language.English, _anonymousContext.IpAddress);
 

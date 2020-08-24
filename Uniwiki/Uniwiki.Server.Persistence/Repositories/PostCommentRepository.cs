@@ -6,7 +6,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class PostCommentRepository : RemovableRepositoryBase<PostCommentModel, Guid>, IPostCommentRepository
+    public class PostCommentRepository : RemovableRepositoryBase<PostCommentModel, Guid> // , PostCommentRepository
     {
         private readonly TextService _textService;
 

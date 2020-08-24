@@ -7,8 +7,7 @@ using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared;
 using Uniwiki.Shared.RequestResponse;
 
@@ -17,15 +16,15 @@ namespace Uniwiki.Server.Application.ServerActions
 
     internal class GetPostFileServerAction : ServerActionBase<GetPostFileRequest, GetPostFileResponse>
     {
-        private readonly IPostFileRepository _postFileRepository;
+        private readonly PostFileRepository _postFileRepository;
         private readonly IUploadFileService _uploadFileService;
-        private readonly IPostFileDownloadRepository _postFileDownloadRepository;
+        private readonly PostFileDownloadRepository _postFileDownloadRepository;
         private readonly ITimeService _timeService;
         private readonly TextService _textService;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.SecondaryToken;
 
-        public GetPostFileServerAction(IServiceProvider serviceProvider, IPostFileRepository postFileRepository, IUploadFileService uploadFileService, IPostFileDownloadRepository postFileDownloadRepository, ITimeService timeService, TextService textService):base(serviceProvider)
+        public GetPostFileServerAction(IServiceProvider serviceProvider, PostFileRepository postFileRepository, IUploadFileService uploadFileService, PostFileDownloadRepository postFileDownloadRepository, ITimeService timeService, TextService textService):base(serviceProvider)
         {
             _postFileRepository = postFileRepository;
             _uploadFileService = uploadFileService;
@@ -40,7 +39,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var file = _postFileRepository.FindById(request.FileId, request.ExpectedName);
 
             // Get the last time the user downloaded the file
-            var latestDownload = _postFileDownloadRepository.TryGetLatestDownload(context.LoginToken, file);
+            var latestDownload = _postFileDownloadRepository.TryGetLatestDownload(context.LoginToken!, file);
 
             // Get current time
             var currentTime = _timeService.Now;
@@ -50,7 +49,7 @@ namespace Uniwiki.Server.Application.ServerActions
                 throw new RequestException(_textService.Error_WaitBeforeRepeatedDownload);
 
             // Add it to the DB
-            _postFileDownloadRepository.AddPostFileDownload(context.LoginToken, file, currentTime);
+            _postFileDownloadRepository.AddPostFileDownload(context.LoginToken!.Id, file.Id, currentTime);
 
             // Get path for the file
             var filePath = Path.Combine(_uploadFileService.PostFilesDirectoryPath, request.FileId.ToString());

@@ -1,11 +1,9 @@
 ﻿using Server.Appliaction.ServerActions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
@@ -13,12 +11,12 @@ namespace Uniwiki.Server.Application.ServerActions
 
     internal class EditHomeFacultyServerAction : ServerActionBase<EditHomeFacultyRequestDto, EditHomeFacultyResponseDto>
     {
-        private readonly IProfileRepository _profileRepository;
-        private readonly IStudyGroupRepository _studyGroupRepository;
+        private readonly ProfileRepository _profileRepository;
+        private readonly StudyGroupRepository _studyGroupRepository;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public EditHomeFacultyServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IStudyGroupRepository studyGroupRepository) : base(serviceProvider)
+        public EditHomeFacultyServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, StudyGroupRepository studyGroupRepository) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _studyGroupRepository = studyGroupRepository;

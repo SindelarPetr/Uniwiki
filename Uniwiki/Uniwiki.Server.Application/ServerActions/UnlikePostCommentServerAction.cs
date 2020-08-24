@@ -4,18 +4,17 @@ using Server.Appliaction.ServerActions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
 {
     internal class UnlikePostCommentServerAction : ServerActionBase<UnlikePostCommentRequestDto, UnlikePostCommentResponseDto>
     {
-        private readonly IPostCommentLikeRepository _postCommentLikeRepository;
-        private readonly IPostCommentRepository _postCommentRepository;
+        private readonly PostCommentLikeRepository _postCommentLikeRepository;
+        private readonly PostCommentRepository _postCommentRepository;
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public UnlikePostCommentServerAction(IServiceProvider serviceProvider, IPostCommentRepository postCommentRepository, IPostCommentLikeRepository postCommentLikeRepository) : base(serviceProvider)
+        public UnlikePostCommentServerAction(IServiceProvider serviceProvider, PostCommentRepository postCommentRepository, PostCommentLikeRepository postCommentLikeRepository) : base(serviceProvider)
         {
             _postCommentRepository = postCommentRepository;
             _postCommentLikeRepository = postCommentLikeRepository;

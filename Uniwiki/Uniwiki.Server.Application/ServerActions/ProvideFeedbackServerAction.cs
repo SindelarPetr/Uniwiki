@@ -4,8 +4,7 @@ using System;
 using System.Threading.Tasks;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
@@ -13,12 +12,12 @@ namespace Uniwiki.Server.Application.ServerActions
 
     internal class ProvideFeedbackServerAction : ServerActionBase<ProvideFeedbackRequestDto, ProvideFeedbackResponseDto>
     {
-        private readonly IFeedbackRepository _feedbackRepository;
+        private readonly FeedbackRepository _feedbackRepository;
         private readonly ITimeService _timeService;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        public ProvideFeedbackServerAction(IServiceProvider serviceProvider, IFeedbackRepository feedbackRepository, ITimeService timeService) : base(serviceProvider)
+        public ProvideFeedbackServerAction(IServiceProvider serviceProvider, FeedbackRepository feedbackRepository, ITimeService timeService) : base(serviceProvider)
         {
             _feedbackRepository = feedbackRepository;
             _timeService = timeService;

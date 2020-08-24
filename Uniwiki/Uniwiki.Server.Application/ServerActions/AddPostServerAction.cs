@@ -5,22 +5,21 @@ using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
 {
     internal class AddPostServerAction : ServerActionBase<AddPostRequestDto, AddPostResponseDto>
     {
-        private readonly ICourseRepository _courseRepository;
-        private readonly IProfileRepository _profileRepository;
+        private readonly CourseRepository _courseRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
-        private readonly IPostFileRepository _postFileRepository;
-        private readonly IPostRepository _postRepository;
+        private readonly PostFileRepository _postFileRepository;
+        private readonly PostRepository _postRepository;
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public AddPostServerAction(IServiceProvider serviceProvider, ICourseRepository courseRepository, IProfileRepository profileRepository, ITimeService timeService, IPostFileRepository postFileRepository, IPostRepository postRepository) : base(serviceProvider)
+        public AddPostServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, ProfileRepository profileRepository, ITimeService timeService, PostFileRepository postFileRepository, PostRepository postRepository) : base(serviceProvider)
         {
             _courseRepository = courseRepository;
             _profileRepository = profileRepository;

@@ -1,10 +1,10 @@
-﻿using Uniwiki.Server.Persistence.Models;
+﻿using System;
 using Uniwiki.Shared.ModelDtos;
 
 namespace Uniwiki.Server.Application.Services.Abstractions
 {
     public interface IRecentCoursesService
     {
-        void SetAsRecentCourses(CourseDto[] recentCoursesDtos, ProfileModel profile);
+        void SetAsRecentCourses(FoundCourseDto[] recentCoursesDtos, Guid profileId);
     }
 }

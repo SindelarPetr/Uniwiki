@@ -8,7 +8,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class PostFileDownloadRepository : RepositoryBase<PostFileDownloadModel, Guid>, IPostFileDownloadRepository
+    public class PostFileDownloadRepository : RepositoryBase<PostFileDownloadModel, Guid> //, PostFileDownloadRepository
     {
         private readonly TextService _textService;
 
@@ -26,9 +26,9 @@ namespace Uniwiki.Server.Persistence.Repositories
             return All.LastOrDefault(d => d.Token == token && d.FileDownloaded == fileDownloaded);
         }
 
-        public PostFileDownloadModel AddPostFileDownload(LoginTokenModel loginToken, PostFileModel fileDownloaded, DateTime downloadTime)
+        public PostFileDownloadModel AddPostFileDownload(Guid loginTokenId, Guid fileDownloadedId, DateTime downloadTime)
         {
-            var postFileDownload = new PostFileDownloadModel(Guid.NewGuid(), loginToken, fileDownloaded, downloadTime);
+            var postFileDownload = new PostFileDownloadModel(Guid.NewGuid(), loginTokenId, fileDownloadedId, downloadTime);
 
             All.Add(postFileDownload);
 

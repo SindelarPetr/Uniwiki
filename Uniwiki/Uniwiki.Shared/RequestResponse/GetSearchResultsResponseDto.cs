@@ -5,10 +5,10 @@ namespace Uniwiki.Shared.RequestResponse
 {
     public class GetSearchResultsResponseDto : ResponseBase
     {
-        public CourseDto[] RecentCourses { get; set; }
-        public CourseDto[] Courses { get; set; }
+        public FoundCourseDto[] RecentCourses { get; set; }
+        public FoundCourseDto[] Courses { get; set; }
 
-        public GetSearchResultsResponseDto(CourseDto[] recentCourses, CourseDto[] courses)
+        public GetSearchResultsResponseDto(FoundCourseDto[] recentCourses, FoundCourseDto[] courses)
         {
             RecentCourses = recentCourses;
             Courses = courses;

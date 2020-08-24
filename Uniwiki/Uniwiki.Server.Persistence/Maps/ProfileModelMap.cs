@@ -25,7 +25,7 @@ namespace Uniwiki.Server.Persistence.Models
                 .HasForeignKey(m => m.HomeFacultyId);
 
             builder
-                .HasMany(m => m.RecentCourses)
+                .HasMany(m => m.CourseVisits)
                 .WithOne(v => v.Profile)
                 .HasForeignKey(v => v.ProfileId);
         }

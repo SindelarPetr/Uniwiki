@@ -7,7 +7,6 @@ using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Shared;
-using Uniwiki.Shared.Services;
 
 [assembly: InternalsVisibleTo("Uniwiki.Tests")]
 [assembly: InternalsVisibleTo("Uniwiki.Server.Application.Tests")]

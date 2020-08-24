@@ -1,26 +1,24 @@
 ﻿using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Application.Services
 {
     internal class LoginService : ILoginService
     {
-        private readonly IProfileRepository _profileRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly IHashService _hashService;
         private readonly TextService _textService;
         private readonly ITimeService _timeService;
-        private readonly ILoginTokenRepository _loginTokenRepository;
+        private readonly LoginTokenRepository _loginTokenRepository;
         private readonly IInputValidationService _inputValidationService;
 
-        public LoginService(IProfileRepository profileRepository, IHashService hashService, TextService textService, ITimeService timeService, ILoginTokenRepository loginTokenRepository, IInputValidationService inputValidationService)
+        public LoginService(ProfileRepository profileRepository, IHashService hashService, TextService textService, ITimeService timeService, LoginTokenRepository loginTokenRepository, IInputValidationService inputValidationService)
         {
             _profileRepository = profileRepository;
             _hashService = hashService;

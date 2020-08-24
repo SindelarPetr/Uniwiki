@@ -5,20 +5,20 @@ using Shared.Exceptions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
 {
     internal class EditCommentServerAction : ServerActionBase<EditCommentRequestDto, EditCommentResponseDto>
     {
-        private readonly IProfileRepository _profileRepository;
-        private readonly IPostCommentRepository _postCommentRepository;
+        private readonly ProfileRepository _profileRepository;
+        private readonly PostCommentRepository _postCommentRepository;
         private readonly TextService _textService;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public EditCommentServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, IPostCommentRepository postCommentRepository, TextService textService) : base(serviceProvider)
+        public EditCommentServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostCommentRepository postCommentRepository, TextService textService) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postCommentRepository = postCommentRepository;

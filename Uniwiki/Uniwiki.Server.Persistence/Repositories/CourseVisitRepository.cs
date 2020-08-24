@@ -10,7 +10,7 @@ using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class CourseVisitRepository : RepositoryBase<CourseVisitModel, Guid>, ICourseVisitRepository
+    public class CourseVisitRepository : RepositoryBase<CourseVisitModel, Guid> // , CourseVisitRepository
     {
         private readonly TextService _textService;
 
@@ -38,13 +38,13 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             foreach (var course in recentCourses.Reverse())
             {
-                AddCourseVisit(course, profile, visitTime);
+                AddCourseVisit(course.Id, profile, visitTime);
             }
         }
 
-        public CourseVisitModel AddCourseVisit(CourseModel course, ProfileModel profile, DateTime visitTime)
+        public CourseVisitModel AddCourseVisit(Guid courseId, ProfileModel profile, DateTime visitTime)
         {
-            var courseVisit = new CourseVisitModel(Guid.NewGuid(), course, profile, visitTime);
+            var courseVisit = new CourseVisitModel(Guid.NewGuid(), courseId, profile.Id, visitTime);
 
             All.Add(courseVisit);
 

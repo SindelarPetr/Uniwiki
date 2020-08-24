@@ -9,7 +9,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class EmailConfirmationSecretRepository : RepositoryBase<EmailConfirmationSecretModel, Guid>, IEmailConfirmationSecretRepository
+    public class EmailConfirmationSecretRepository : RepositoryBase<EmailConfirmationSecretModel, Guid> //, EmailConfirmationSecretRepository
     {
         private readonly TextService _textService;
 

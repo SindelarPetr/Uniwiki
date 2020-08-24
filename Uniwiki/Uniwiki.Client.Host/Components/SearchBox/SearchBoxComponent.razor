@@ -109,9 +109,9 @@
 </div>
 
 @code {
-	private CourseDto[] _foundCourses = new CourseDto[0];
-	private CourseDto[] _recentCourses = new CourseDto[0];
-	private CourseDto[] _recentCoursesFromStorage = new CourseDto[0];
+	private FoundCourseDto[] _foundCourses = new FoundCourseDto[0];
+	private FoundCourseDto[] _recentCourses = new FoundCourseDto[0];
+	private FoundCourseDto[] _recentCoursesFromStorage = new FoundCourseDto[0];
 
 	private bool HasFoundCourses => _foundCourses.Length > 0;
 
@@ -145,10 +145,6 @@
 		if (!LoginService.IsAuthenticated)
 		{
 			_recentCoursesFromStorage = (await LocalStorageManagerService.GetRecentCourses()).ToArray();
-
-
-			Console.WriteLine("Found recents:!!!!!!");
-			Console.WriteLine(_recentCoursesFromStorage.Length);
 		}
 
 		// Loads recent courses and courses from selected group
@@ -188,11 +184,10 @@
 		await UpdateSearchResults(true);
 	}
 
-	public async Task HandleCourseClicked(CourseDto course)
+	public async Task HandleCourseClicked(FoundCourseDto course)
 	{
-		Console.WriteLine("HandleCourseClicked");
-		// await OnUniversitySelected(course.University, false);
-		await OnStudyGroupSelected(course.StudyGroup, false);
+		// TODO: Move this to the course page initialization
+		// await OnStudyGroupSelected(course.StudyGroup, false);
 	}
 
 	public async Task OnStudyGroupSelected(StudyGroupDto studyGroup, bool updateResults = true)
@@ -253,7 +248,7 @@
 			// if he is authenticated, then show the recieved recent courses
 			if (LoginService.IsAuthenticated)
 			{
-				_recentCourses = response.RecentCourses ?? new CourseDto[0];
+				_recentCourses = response.RecentCourses ?? new FoundCourseDto[0];
 
 				// Save the recent courses to the local storage
 				if (response.RecentCourses != null && response.RecentCourses.Any())
@@ -271,10 +266,10 @@
 		else
 		{
 			// Dont show any recent courses
-			_recentCourses = new CourseDto[0];
+			_recentCourses = new FoundCourseDto[0];
 		}
 
-		_foundCourses = response.Courses ?? new CourseDto[0];
+		_foundCourses = response.Courses ?? new FoundCourseDto[0];
 
 		_searching = false;
 

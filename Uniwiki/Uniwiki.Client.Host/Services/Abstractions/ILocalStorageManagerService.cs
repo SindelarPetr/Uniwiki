@@ -18,9 +18,9 @@ namespace Uniwiki.Client.Host.Services.Abstractions
         Task<ProfileDto?> GetLoginProfile();
         Task SetLoginProfile(ProfileDto loginProfile);
         Task RemoveLoginProfile();
-        Task SetRecentCourses(CourseDto[] courses);
-        Task SetRecentCourse(CourseDto course);
-        Task<CourseDto[]> GetRecentCourses();
+        Task SetRecentCourses(FoundCourseDto[] courses);
+        Task SetRecentCourse(FoundCourseDto course);
+        Task<FoundCourseDto[]> GetRecentCourses();
 
         Task<bool> IsFeedbackProvided();
         Task SetFeedbackProvided();

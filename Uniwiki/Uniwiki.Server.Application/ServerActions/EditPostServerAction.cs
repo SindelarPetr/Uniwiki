@@ -8,8 +8,7 @@ using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
-using Uniwiki.Shared.Extensions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.ServerActions
@@ -31,15 +30,15 @@ namespace Uniwiki.Server.Application.ServerActions
                 request.PostFiles.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"));
         }
 
-        private readonly IPostRepository _postRepository;
+        private readonly PostRepository _postRepository;
         private readonly TextService _textService;
-        private readonly IPostFileRepository _postFileRepository;
-        private readonly IProfileRepository _profileRepository;
+        private readonly PostFileRepository _postFileRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly ILogger<EditPostServerAction> _logger;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public EditPostServerAction(IServiceProvider serviceProvider, IPostRepository postRepository, TextService textService, IPostFileRepository postFileRepository, IProfileRepository profileRepository, ILogger<EditPostServerAction> logger) : base(serviceProvider)
+        public EditPostServerAction(IServiceProvider serviceProvider, PostRepository postRepository, TextService textService, PostFileRepository postFileRepository, ProfileRepository profileRepository, ILogger<EditPostServerAction> logger) : base(serviceProvider)
         {
             _postRepository = postRepository;
             _textService = textService;

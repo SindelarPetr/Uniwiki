@@ -9,7 +9,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class ProfileRepository : RepositoryBase<ProfileModel, Guid>, IProfileRepository
+    public class ProfileRepository : RepositoryBase<ProfileModel, Guid> // , ProfileRepository
     {
         private readonly TextService _textService;
 

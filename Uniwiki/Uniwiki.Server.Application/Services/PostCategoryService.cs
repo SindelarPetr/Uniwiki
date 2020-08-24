@@ -4,7 +4,7 @@ using Shared;
 using Shared.Extensions;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 
 namespace Uniwiki.Server.Application.Services
 {
@@ -12,9 +12,9 @@ namespace Uniwiki.Server.Application.Services
     {
         private static readonly Dictionary<Guid, (string Category, int Count)[]> MemoryForFilters = new Dictionary<Guid, (string Category, int Count)[]>();
         private static readonly Dictionary<Guid, string[]> MemoryForNewPost = new Dictionary<Guid, string[]>();
-        private readonly IPostRepository _postRepository;
+        private readonly PostRepository _postRepository;
 
-        public PostCategoryService(IPostRepository postRepository)
+        public PostCategoryService(PostRepository postRepository)
         {
             _postRepository = postRepository;
         }

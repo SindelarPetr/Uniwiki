@@ -10,7 +10,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    internal class PostFileRepository : RepositoryBase<PostFileModel, Guid>, IPostFileRepository
+    public class PostFileRepository : RepositoryBase<PostFileModel, Guid> // , PostFileRepository
     {
         private readonly TextService _textService;
 

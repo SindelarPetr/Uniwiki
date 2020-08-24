@@ -9,7 +9,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    class FeedbackRepository : RepositoryBase<FeedbackModel, Guid>, IFeedbackRepository
+    public class FeedbackRepository : RepositoryBase<FeedbackModel, Guid> // , FeedbackRepository
     {
         private readonly TextService _textService;
 

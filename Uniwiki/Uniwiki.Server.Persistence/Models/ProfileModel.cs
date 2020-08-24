@@ -22,9 +22,9 @@ namespace Uniwiki.Server.Persistence.Models
         public string FamilyName { get; protected set; } = null!;
         public string Url { get; protected set; } = null!;
         public string ProfilePictureSrc { get; protected set; } = null!;
-        public ICollection<CourseVisitModel> RecentCourses { get; protected set; } 
+        public ICollection<CourseVisitModel> CourseVisits { get; protected set; } 
             = new List<CourseVisitModel>();
-        public ICollection<FeedbackModel> Feedbacks { get; set; } 
+        public ICollection<FeedbackModel> Feedbacks { get; set; }
             = new List<FeedbackModel>();
         public bool FeedbackProvided => Feedbacks.Any();
 

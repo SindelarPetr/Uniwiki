@@ -6,7 +6,7 @@ using Uniwiki.Shared.Services.Abstractions;
 namespace Uniwiki.Server.Persistence.Services
 {
     // We dont want to abstract this one - translating would then be too much time consuming
-    internal class TextService
+    public class TextService
     {
         private readonly ILanguageService _languageService;
 

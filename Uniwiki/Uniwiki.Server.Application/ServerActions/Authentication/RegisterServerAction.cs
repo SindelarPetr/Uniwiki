@@ -7,8 +7,7 @@ using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
-using Uniwiki.Server.Persistence.Models;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Server.Application.ServerActions.Authentication
@@ -17,16 +16,16 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
     {
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        private readonly IProfileRepository _profileRepository;
+        private readonly ProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
         private readonly TextService _textService;
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly IHashService _hashService;
         private readonly IEmailConfirmationSenderService _emailConfirmationSenderService;
-        private readonly IStudyGroupRepository _studyGroupRepository;
+        private readonly StudyGroupRepository _studyGroupRepository;
         private readonly IRecentCoursesService _recentCoursesService;
 
-        public RegisterServerAction(IServiceProvider serviceProvider, IProfileRepository profileRepository, ITimeService timeService, TextService textService, IStringStandardizationService stringStandardizationService, IHashService hashService, IEmailConfirmationSenderService emailConfirmationSenderService, IStudyGroupRepository studyGroupRepository, IRecentCoursesService recentCoursesService)
+        public RegisterServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, ITimeService timeService, TextService textService, IStringStandardizationService stringStandardizationService, IHashService hashService, IEmailConfirmationSenderService emailConfirmationSenderService, StudyGroupRepository studyGroupRepository, IRecentCoursesService recentCoursesService)
             : base(serviceProvider)
         {
             _profileRepository = profileRepository;
@@ -71,7 +70,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             }
 
             // Set the recent courses
-            _recentCoursesService.SetAsRecentCourses(request.RecentCourses, profile);
+            _recentCoursesService.SetAsRecentCourses(request.RecentCourses, profile.Id);
 
             // Send the confirmation email
             await _emailConfirmationSenderService.SendConfirmationEmail(profile);

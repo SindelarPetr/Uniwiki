@@ -5,7 +5,7 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 namespace Uniwiki.Server.Persistence.Repositories.Base
 {
 
-    internal abstract class RepositoryBase<TModel, TId> : IRepositoryBase<TModel, TId> 
+    public abstract class RepositoryBase<TModel, TId> //: IRepositoryBase<TModel, TId> 
         where TModel : ModelBase<TId> 
         where TId : struct
     {

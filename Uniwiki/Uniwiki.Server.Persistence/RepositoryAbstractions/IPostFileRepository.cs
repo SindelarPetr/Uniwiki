@@ -6,17 +6,17 @@ using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.RepositoryAbstractions
 {
-    public interface IPostFileRepository : IRepositoryBase<PostFileModel, Guid>
-    {
-        //PostFileModel CreatePostFile(Guid id, string path, string fileName, string extension, ProfileModel profile, Guid courseId, DateTime creationTime, long size);
-        void FileSaved(PostFileModel postFileModel);
+    //public interface PostFileRepository : IRepositoryBase<PostFileModel, Guid>
+    //{
+    //    //PostFileModel CreatePostFile(Guid id, string path, string fileName, string extension, ProfileModel profile, Guid courseId, DateTime creationTime, long size);
+    //    void FileSaved(PostFileModel postFileModel);
 
-        IEnumerable<PostFileModel> FindPostFiles(IEnumerable<(Guid id, string fileName)> files, ProfileModel profile);
+    //    IEnumerable<PostFileModel> FindPostFiles(IEnumerable<(Guid id, string fileName)> files, ProfileModel profile);
         
-        PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, CourseModel course, DateTime creationTime, long size);
+    //    PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, CourseModel course, DateTime creationTime, long size);
         
-        IEnumerable<PostFileModel> UpdateNamesOfPostFiles(IEnumerable<(PostFileModel postFile, string newFileName)> files);
+    //    IEnumerable<PostFileModel> UpdateNamesOfPostFiles(IEnumerable<(PostFileModel postFile, string newFileName)> files);
         
-        PostModel PairPostFilesWithPost(PostFileModel[] files, PostModel post);
-    }
+    //    PostModel PairPostFilesWithPost(PostFileModel[] files, PostModel post);
+    //}
 }
