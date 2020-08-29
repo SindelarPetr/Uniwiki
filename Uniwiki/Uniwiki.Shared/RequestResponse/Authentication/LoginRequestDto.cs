@@ -9,9 +9,9 @@ namespace Uniwiki.Shared.RequestResponse.Authentication
         public string Email { get; set; }
         [DontLog]
         public string Password { get; set; }
-        public FoundCourseDto[] RecentCourses { get; set; }
+        public RecentCourseDto[] RecentCourses { get; set; }
 
-        public LoginRequestDto(string email, string password, FoundCourseDto[] recentCourses)
+        public LoginRequestDto(string email, string password, RecentCourseDto[] recentCourses)
         {
             Email = email;
             Password = password;

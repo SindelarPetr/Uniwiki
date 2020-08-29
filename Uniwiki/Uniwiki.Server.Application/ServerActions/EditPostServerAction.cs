@@ -53,14 +53,16 @@ namespace Uniwiki.Server.Application.ServerActions
             var postId = request.PostId;
 
             // Get post to edit
-            var post = _postRepository.FindById(postId);
+            var post = _postRepository.FindById(postId).Single();
 
             // Find all files from the request in DB
             var filesForSearch = request.PostFiles.Select(f => (f.Id, f.NameWithoutExtension));
 
             // Check if the post belongs to the right user
-            if (post.Author.Id != context.User!.Id)
+            if (post.AuthorId != context.UserId!.Value)
+            {
                 throw new RequestException(_textService.Error_CouldNotEditPost);
+            }
 
             // Log the change
             LogAction(_logger, post, request);
@@ -69,10 +71,13 @@ namespace Uniwiki.Server.Application.ServerActions
             // TODO: var postFiles = _postFileRepository.UpdateNamesOfPostFiles().ToArray();
 
             // Edit the post
-            var edittedPost = _postRepository.EditPost(post, request.Text, request.PostType, new PostFileModel[0]/*postFiles*/);
+            var edittedPost = _postRepository.EditPost(post, request.Text, request.PostType, new PostFileModel[0]/*postFiles*/); // TODO: Update this
+
+            // Convert to DTO
+            var postDto = edittedPost.ToDto(context.UserId!.Value).Single();
 
             // Create response
-            var response = new EditPostResponseDto(edittedPost.ToDto(context.User!));
+            var response = new EditPostResponseDto(postDto);
 
             return Task.FromResult(response);
         }

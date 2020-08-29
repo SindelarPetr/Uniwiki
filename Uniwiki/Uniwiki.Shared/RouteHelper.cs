@@ -36,6 +36,27 @@ namespace Uniwiki.Shared
             return result;
         }
 
+        internal static string BuildRoutePartsFromUrlFriendlyParts(params string[] parts)
+        {
+            if (parts == null)
+                throw new ArgumentNullException(nameof(parts));
+
+            // Return empty string if there were no parts supplied
+            if (parts.Length == 0)
+                return string.Empty;
+
+            string result = parts[0];
+            for (var i = 1; i < parts.Length; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(parts[i]))
+                {
+                    result = result + "/" + parts[i];
+                }
+            }
+
+            return result;
+        }
+
         internal static string BuildRoutePartsWithParameters(NameValueCollection parameters, params string[] parts)
         {
             var parameterString = string.Empty;

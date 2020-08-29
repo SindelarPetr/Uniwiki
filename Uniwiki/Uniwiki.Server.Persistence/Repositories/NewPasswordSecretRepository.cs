@@ -9,7 +9,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class NewPasswordSecretRepository : RepositoryBase<NewPasswordSecretModel, Guid> // , NewPasswordSecretRepository
+    public class NewPasswordSecretRepository : RepositoryBase<NewPasswordSecretModel, Guid>
     {
         private readonly TextService _textService;
 
@@ -36,15 +36,13 @@ namespace Uniwiki.Server.Persistence.Repositories
             }
         }
 
-        public NewPasswordSecretModel GetValidSecretById(Guid secret)
-        {
-            return All.FirstOrDefault(s => s.Secret == secret && s.IsValid) ??
-                throw new RequestException( _textService.Error_FailedToCreateTheNewPassword);
-        }
+        public NewPasswordSecretModel GetValidSecretById(Guid secret) 
+            => All.FirstOrDefault(s => s.Secret == secret && s.IsValid) ??
+            throw new RequestException( _textService.Error_FailedToCreateTheNewPassword);
 
-        public NewPasswordSecretModel AddNewPasswordSecret(ProfileModel profile, Guid secret, DateTime creationTime, DateTime expirationTime)
+        public NewPasswordSecretModel AddNewPasswordSecret(Guid profileId, Guid secret, DateTime creationTime, DateTime expirationTime)
         {
-            var newPasswordSecretModel = new NewPasswordSecretModel(Guid.NewGuid(), profile, secret, creationTime, expirationTime, true);
+            var newPasswordSecretModel = new NewPasswordSecretModel(Guid.NewGuid(), profileId, secret, creationTime, expirationTime, true);
 
             All.Add(newPasswordSecretModel);
 

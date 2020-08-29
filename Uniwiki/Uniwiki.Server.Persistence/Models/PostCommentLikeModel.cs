@@ -13,13 +13,11 @@ namespace Uniwiki.Server.Persistence.Models
         public DateTime LikeTime { get; protected set; }
         public bool IsLiked { get; protected set; }
 
-        internal PostCommentLikeModel(PostCommentModel comment, ProfileModel profile, DateTime likeTime, bool isLiked)
-            : base(new PostCommentLikeModelId(comment, profile))
+        internal PostCommentLikeModel(Guid commentId, Guid profileId, DateTime likeTime, bool isLiked)
+            : base(new PostCommentLikeModelId(commentId, profileId))
         {
-            CommentId = comment.Id;
-            Comment = comment;
-            ProfileId = profile.Id;
-            Profile = profile;
+            CommentId = commentId;
+            ProfileId = profileId;
             LikeTime = likeTime;
             IsLiked = isLiked;
         }

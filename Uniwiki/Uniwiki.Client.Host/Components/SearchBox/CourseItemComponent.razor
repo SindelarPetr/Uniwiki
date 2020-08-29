@@ -1,7 +1,7 @@
 ﻿
 <button class="px-3 py-2 mb-2 d-block rounded search-item text-dark d-flex align-items-center border border-primary shadow-sm btn btn-block " @onclick="HandleCourseClicked">
 	<div class="text-left">
-		<h5 class="my-0 py-0 dont-break-out">@Course.FullUrl</h5>
+		<h5 class="my-0 py-0 dont-break-out">@Course.Name</h5>
 		<span class="dont-break-out">@Course.UniversityAndFaculty</span>
 	</div>
 	<span class="ml-auto badge badge-secondary badge-pill">@Course.Code</span>
@@ -15,7 +15,7 @@
 
 	public async Task HandleCourseClicked()
 	{
-		var routeToCourse = Course.FullUrl;
+		var routeToCourse = PageRoutes.CoursePage.BuildRoute(Course.FullUrl);
 
 		await CourseClicked.InvokeAsync(Course);
 

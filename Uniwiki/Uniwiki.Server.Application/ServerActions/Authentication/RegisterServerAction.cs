@@ -23,9 +23,9 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         private readonly IHashService _hashService;
         private readonly IEmailConfirmationSenderService _emailConfirmationSenderService;
         private readonly StudyGroupRepository _studyGroupRepository;
-        private readonly IRecentCoursesService _recentCoursesService;
+        private readonly RecentCoursesService _recentCoursesService;
 
-        public RegisterServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, ITimeService timeService, TextService textService, IStringStandardizationService stringStandardizationService, IHashService hashService, IEmailConfirmationSenderService emailConfirmationSenderService, StudyGroupRepository studyGroupRepository, IRecentCoursesService recentCoursesService)
+        public RegisterServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, ITimeService timeService, TextService textService, IStringStandardizationService stringStandardizationService, IHashService hashService, IEmailConfirmationSenderService emailConfirmationSenderService, StudyGroupRepository studyGroupRepository, RecentCoursesService recentCoursesService)
             : base(serviceProvider)
         {
             _profileRepository = profileRepository;
@@ -56,17 +56,14 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
                 var names = request.NameAndSurname.Split( new[] { ' ' }, 2);
 
                 // Create url for the new profile
-                string url = _stringStandardizationService.CreateUrl(request.NameAndSurname,
+                var url = _stringStandardizationService.CreateUrl(request.NameAndSurname,
                     u => _profileRepository.TryGetProfileByUrl(u) == null);
 
                 // Get the hash from the password
                 var password = _hashService.HashPassword(request.Password);
 
-                // Get the home faculty
-                var homeFaculty = request.HomeFacultyId.HasValue ? _studyGroupRepository.FindById(request.HomeFacultyId.Value) : null;
-
                 // Create the profile
-                profile = _profileRepository.AddProfile(request.Email, names[0], names[1], url, password.hashedPassword, password.salt, $"/img/profilePictures/no-profile-picture.jpg", _timeService.Now, false, AuthenticationLevel.PrimaryToken, homeFaculty);
+                profile = _profileRepository.AddProfile(request.Email, names[0], names[1], url, password.hashedPassword, password.salt, $"/img/profilePictures/no-profile-picture.jpg", _timeService.Now, false, AuthenticationLevel.PrimaryToken, request.HomeFacultyId);
             }
 
             // Set the recent courses
@@ -75,7 +72,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             // Send the confirmation email
             await _emailConfirmationSenderService.SendConfirmationEmail(profile);
 
-            return new RegisterResponseDto(profile.ToDto());
+            return new RegisterResponseDto(request.Email, profile.Id);
         }
     }
 }

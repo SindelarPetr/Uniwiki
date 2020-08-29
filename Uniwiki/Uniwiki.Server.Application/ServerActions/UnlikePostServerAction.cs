@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Uniwiki.Server.Application.Extensions;
@@ -13,26 +14,28 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly ProfileRepository _profileRepository;
         private readonly PostRepository _postRepository;
         private readonly PostLikeRepository _postLikeRepository;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public UnlikePostServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostRepository postRepository, PostLikeRepository postLikeRepository) : base(serviceProvider)
+        public UnlikePostServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostRepository postRepository, PostLikeRepository postLikeRepository, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postRepository = postRepository;
             _postLikeRepository = postLikeRepository;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<UnlikePostResponseDto> ExecuteAsync(UnlikePostRequestDto request, RequestContext context)
         {
-            // Get post
-            var post = _postRepository.FindById(request.PostId);
-
             // Like the post
-            _postLikeRepository.UnlikePost(post, context.User);
+            _postLikeRepository.UnlikePost(request.PostId, context.UserId!.Value);
+
+            // Find the updated post
+            var updatedPost = _uniwikiContext.Posts.Where(p => p.Id == request.PostId).ToDto(context.UserId).Single();
 
             // Create result
-            var result = new UnlikePostResponseDto(post.ToDto(context.User));
+            var result = new UnlikePostResponseDto(updatedPost);
 
             return Task.FromResult(result);
 

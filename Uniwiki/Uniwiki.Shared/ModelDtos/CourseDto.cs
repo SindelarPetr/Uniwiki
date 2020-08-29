@@ -4,21 +4,25 @@ namespace Uniwiki.Shared.ModelDtos
 {
     public class CourseDto
     {
-        public Guid Id { get; set; }
-        public string LongName { get; set; }
-        public string ShortName { get; set; }
-        public string Url { get; set; }
-        public StudyGroupDto StudyGroup { get; set; }
-        public UniversityDto University { get; set; }
+        public Guid Id { get; }
+        public string LongName { get; }
+        public string ShortName { get; }
+        public string Url { get; }
+        public string StudyGroupLongName { get; }
+        public string StudyGroupUrl { get; }
+        public string UniversityShortName { get; }
+        public string UniversityUrl { get; }
 
-        public CourseDto(Guid id, string longName, string shortName, string url, StudyGroupDto studyGroup, UniversityDto university)
+        public CourseDto(Guid id, string longName, string shortName, string url, string studyGroupLongName, string studyGroupUrl, string universityShortName, string universityUrl)
         {
             Id = id;
             LongName = longName;
             ShortName = shortName;
             Url = url;
-            StudyGroup = studyGroup;
-            University = university;
+            StudyGroupLongName = studyGroupLongName;
+            StudyGroupUrl = studyGroupUrl;
+            UniversityShortName = universityShortName;
+            UniversityUrl = universityUrl;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Uniwiki.Server.Persistence.Models
         /// <summary>
         /// e. g. 'IT University of Copenhagen'
         /// </summary>
-        public string FullName { get; protected set; } = null!;
+        public string LongName { get; protected set; } = null!;
 
         /// <summary>
         /// e. g. 'ITU'
@@ -23,7 +23,7 @@ namespace Uniwiki.Server.Persistence.Models
 
         internal UniversityModel(Guid id, string fullName, string shortName, string url, bool isRemoved) : base(isRemoved, id)
         {
-            FullName = fullName;
+            LongName = fullName;
             ShortName = shortName;
             Url = url;
         }

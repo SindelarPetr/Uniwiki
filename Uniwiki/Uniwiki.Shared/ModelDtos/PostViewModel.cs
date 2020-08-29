@@ -5,10 +5,15 @@ using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Shared.ModelDtos
 {
-    public class PostDto
+    public class PostViewModel
     {
         public Guid Id { get; set; }
-        public ProfileDto Author { get; set; }
+        public string AuthorUrl { get; }
+        public Guid AuthorId { get; }
+        public string AuthorFullName { get; }
+        public string AuthorNameIdentifier { get; }
+        public string AuthorProfilePictureSrc { get; }
+        public int PostNumber { get; }
         public string Text { get; set; }
         public DateTime CreationTime { get; set; }
         public int NumberOfFiles { get; set; }
@@ -18,10 +23,10 @@ namespace Uniwiki.Shared.ModelDtos
         public PostCommentDto[] PostComments { get; set; }
         public PostFileDto[] Files { get; set; }
 
-        public PostDto(Guid id, ProfileDto author, string text, DateTime creationTime, IEnumerable<PostFileDto> files, int numberOfFiles, string? postType, int likesCount, bool likedByClient, PostCommentDto[] postComments)
+        public PostViewModel(Guid id, string authorUrl, string text, DateTime creationTime, IEnumerable<PostFileDto> files, int numberOfFiles, string? postType, int likesCount, bool likedByClient, PostCommentDto[] postComments, Guid authorId, string authorFullName, string authorNameIdentifier, string authorProfilePictureSrc, int postNumber)
         {
             Id = id;
-            Author = author;
+            AuthorUrl = authorUrl;
             Text = text;
             CreationTime = creationTime;
             NumberOfFiles = numberOfFiles;
@@ -30,6 +35,11 @@ namespace Uniwiki.Shared.ModelDtos
             LikedByClient = likedByClient;
             PostComments = postComments;
             Files = files.ToArray();
+            AuthorId = authorId;
+            AuthorFullName = authorFullName;
+            AuthorNameIdentifier = authorNameIdentifier;
+            AuthorProfilePictureSrc = authorProfilePictureSrc;
+            PostNumber = postNumber;
         }
     }
 }

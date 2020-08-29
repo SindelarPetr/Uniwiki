@@ -24,7 +24,7 @@ namespace Uniwiki.Client.Host
 
             services.AddScoped<IRequestSender, RequestSender>();
             services.AddScoped<ILoginService, LoginService>();
-            services.AddScoped<ILocalLoginService, LocalLoginService>();
+            services.AddScoped<LocalLoginService, LocalLoginService>();
             services.AddScoped<ILocalAuthenticationStateProvider, LocalAuthenticationStateProvider>();
             services.AddScoped<AuthenticationStateProvider>(
                 s => (LocalAuthenticationStateProvider)s.GetService<ILocalAuthenticationStateProvider>());
@@ -36,7 +36,7 @@ namespace Uniwiki.Client.Host
             services.AddScoped<TextService>();
             services.AddScoped<IFixingService, FixingService>();
             services.AddScoped<IScrollService, ScrollService>();
-            services.AddScoped<IStaticStateService, StaticStateService>();
+            services.AddScoped<StaticStateService, StaticStateService>();
             services.AddScoped<IApplicationHostEnvironment, ClientHostEnvironment>();
             services.AddTransient<IFileUploadQueueService, FileUploadQueueService>();
 

@@ -10,7 +10,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class PostFileRepository : RepositoryBase<PostFileModel, Guid> // , PostFileRepository
+    public class PostFileRepository : RepositoryBase<PostFileModel, Guid> 
     {
         private readonly TextService _textService;
 
@@ -52,9 +52,9 @@ namespace Uniwiki.Server.Persistence.Repositories
             return fileModels.Select(f => f.postFile);
         }
 
-        public PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, CourseModel course, DateTime creationTime, long size)
+        public PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, Guid profileId, Guid courseId, DateTime creationTime, long size)
         {
-            var postFile = new PostFileModel(Guid.NewGuid(), path, nameWithoutExtension, extension, isSaved, profile, course, creationTime, size, false);
+            var postFile = new PostFileModel(Guid.NewGuid(), path, nameWithoutExtension, extension, isSaved, profileId, courseId, creationTime, size, false);
 
             All.Add(postFile);
 
@@ -68,12 +68,12 @@ namespace Uniwiki.Server.Persistence.Repositories
         /// <param name="profile">The profile of the user who is adding the files to the DB.</param>
         /// <returns>All the found files.</returns>
         /// <exception cref="RequestException">Thrown when a file is not found.</exception>
-        public IEnumerable<PostFileModel> FindPostFiles(IEnumerable<(Guid id, string fileName)> files, ProfileModel profile)
+        public IEnumerable<PostFileModel> FindPostFiles(IEnumerable<(Guid id, string fileName)> files, Guid profileId)
         {
             // Find the post files according to the defined Ids. Set postFile to null, if not found.
             var fileModels = files.Select(f =>
                 (
-                    postFile: All.FirstOrDefault(p => p.Id == f.id && p.Profile == profile), 
+                    postFile: All.FirstOrDefault(p => p.Id == f.id && p.ProfileId == profileId), 
                     f.fileName
                 )
                ).ToArray();
@@ -87,19 +87,15 @@ namespace Uniwiki.Server.Persistence.Repositories
                 : fileModels.Select(pf => pf.postFile);
         }
 
-        public IEnumerable<PostFileModel> UpdateNamesOfPostFiles(IEnumerable<(PostFileModel postFile, string newFileName)> files)
+        public void UpdateNamesOfPostFiles(IEnumerable<(PostFileModel postFile, string newFileName)> files)
         {
             foreach (var file in files)
             {
                 file.postFile.SetFileNameWithoutExtension(file.newFileName);
             }
-
-            SaveChanges();
-
-            return files.Select(f => f.postFile);
         }
 
-        public PostModel PairPostFilesWithPost(PostFileModel[] files, PostModel post)
+        public IQueryable<PostModel> PairPostFilesWithPost(PostFileModel[] files, PostModel post)
         {
             post.SetPostFiles(files);
 
@@ -108,9 +104,7 @@ namespace Uniwiki.Server.Persistence.Repositories
                 file.SetPost(post);
             }
 
-            SaveChanges();
-
-            return post;
+            return UniwikiContext.Posts.Where(p => p.Id == post.Id);
         }
     }
 }

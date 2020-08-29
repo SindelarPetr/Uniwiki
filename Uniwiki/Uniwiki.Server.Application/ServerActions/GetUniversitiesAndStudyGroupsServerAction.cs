@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Server.Appliaction.ServerActions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
@@ -14,20 +15,30 @@ namespace Uniwiki.Server.Application.ServerActions
     internal class GetUniversitiesAndStudyGroupsServerAction : ServerActionBase<GetUniversitiesAndStudyGroupsRequestDto, GetUniversitiesAndStudyGroupsResponseDto>
     {
         private readonly UniversityRepository _universityRepository;
+        private readonly UniwikiContext _uniwikiContext;
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        public GetUniversitiesAndStudyGroupsServerAction(IServiceProvider serviceProvider, UniversityRepository universityRepository) : base(serviceProvider)
+        public GetUniversitiesAndStudyGroupsServerAction(IServiceProvider serviceProvider, UniversityRepository universityRepository, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _universityRepository = universityRepository;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<GetUniversitiesAndStudyGroupsResponseDto> ExecuteAsync(GetUniversitiesAndStudyGroupsRequestDto request, RequestContext context)
         {
-            var universities = _universityRepository.GetUniversities();
-
-            var universitiesWithStudyGroups = universities.Select(
-                u => new UniversityWithStudyGroupsDto(u.ToDto(), 
-                    u.StudyGroups.Select(g => g.ToDto()).ToArray())
+            var universitiesWithStudyGroups = _uniwikiContext
+                .StudyGroups
+                .Include(g => g.University)
+                .GroupBy(g => new {g.UniversityId, g.LongName, g.ShortName, g.Url})
+                .Select(
+                    pair => new UniversityToSelectDto( 
+                        pair.Key.ShortName, 
+                        pair.Key.LongName, 
+                        pair.Select(g => new StudyGroupToSelectDto(
+                            g.ShortName, 
+                            g.LongName, 
+                            g.Id)).ToArray() // TODO: Check the performance on ToArray on this place
+                        )
                 ).ToArray();
             
             var response = new GetUniversitiesAndStudyGroupsResponseDto(universitiesWithStudyGroups);

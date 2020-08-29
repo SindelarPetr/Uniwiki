@@ -14,7 +14,7 @@ namespace Uniwiki.Client.Host.Extensions
         {
             host.Services.GetRequiredService<IApplicationHostEnvironment>();
             await host.Services.GetRequiredService<ILanguageManagerService>().InitializeLanguage();
-            await host.Services.GetRequiredService<ILocalLoginService>().InitializeLogin();
+            await host.Services.GetRequiredService<LocalLoginService>().InitializeLogin();
             await host.Services.GetRequiredService<IScrollService>().InitializeScroll();
             host.Services.GetRequiredService<HttpClient>().BaseAddress = new Uri(baseAddress);
         }

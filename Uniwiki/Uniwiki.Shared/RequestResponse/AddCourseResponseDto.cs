@@ -1,16 +1,22 @@
-﻿using Shared.RequestResponse;
+﻿using System;
+using Shared.RequestResponse;
 using Uniwiki.Shared.ModelDtos;
 
 namespace Uniwiki.Shared.RequestResponse
 {
     public class AddCourseResponseDto : ResponseBase
     {
-        public CourseDto CourseDto { get; set; }
-
-
-        public AddCourseResponseDto(CourseDto courseDto)
+        public AddCourseResponseDto(Guid courseId, string universityUrl, string studyGroupUrl, string courseUrl)
         {
-            CourseDto = courseDto;
+            CourseId = courseId;
+            UniversityUrl = universityUrl;
+            StudyGroupUrl = studyGroupUrl;
+            CourseUrl = courseUrl;
         }
+
+        public Guid CourseId { get; }
+        public string UniversityUrl { get; }
+        public string StudyGroupUrl { get; }
+        public string CourseUrl { get; }
     }
 }

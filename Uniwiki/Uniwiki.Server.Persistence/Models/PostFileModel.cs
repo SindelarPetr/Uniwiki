@@ -16,27 +16,25 @@ namespace Uniwiki.Server.Persistence.Models
         public CourseModel Course { get; protected set; } = null!;
         public DateTime CreationTime { get; protected set; }
         public long Size { get; protected set; }
-        public Guid? PostId { get; protected set; }
+        public Guid? PostId { get; protected set; } // At the beginning its uninitialized! Because files are uploaded before a post is created
         public PostModel? Post { get; protected set; }
 
-        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, ProfileModel profile, CourseModel course, DateTime creationTime, long size, bool isRemoved)
+        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, Guid profileId, Guid courseId, DateTime creationTime, long size, bool isRemoved)
             : base(isRemoved, id)
         {
             Path = path;
             NameWithoutExtension = nameWithoutExtension;
             Extension = extension;
             IsSaved = isSaved;
-            ProfileId = profile.Id;
-            Profile = profile;
-            CourseId = course.Id;
-            Course = course;
+            ProfileId = profileId;
+            CourseId = courseId;
             CreationTime = creationTime;
             Size = size;
         }
 
-        protected PostFileModel()
+        protected PostFileModel(Guid? postId)
         {
-
+            PostId = postId;
         }
 
         private static FileType GetFileTypeFromExtension(string extension)

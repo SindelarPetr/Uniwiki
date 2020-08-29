@@ -5,10 +5,10 @@ namespace Uniwiki.Shared.RequestResponse
 {
     public class FetchPostsResponseDto : ResponseBase
     {
-        public PostDto[] Posts { get; set; }
+        public PostViewModel[] Posts { get; set; }
         public bool CanFetchMore { get; set; }
 
-        public FetchPostsResponseDto(PostDto[] posts, bool canFetchMore)
+        public FetchPostsResponseDto(PostViewModel[] posts, bool canFetchMore)
         {
             Posts = posts;
             CanFetchMore = canFetchMore;

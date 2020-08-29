@@ -6,9 +6,9 @@ namespace Uniwiki.Shared.RequestResponse.Authentication
     public class LoginResponseDto : ResponseBase
     {
         public LoginTokenDto LoginToken { get; set; }
-        public ProfileDto User { get; set; }
+        public AuthorizedUserDto User { get; set; }
 
-        public LoginResponseDto(LoginTokenDto loginToken, ProfileDto user)
+        public LoginResponseDto(LoginTokenDto loginToken, AuthorizedUserDto user)
         {
             LoginToken = loginToken;
             User = user;

@@ -1,8 +1,10 @@
 ﻿using Shared.Exceptions;
 using Shared.Services.Abstractions;
 using System;
+using System.Linq;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services.Abstractions;
+using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared;
@@ -17,8 +19,9 @@ namespace Uniwiki.Server.Application.Services
         private readonly ITimeService _timeService;
         private readonly LoginTokenRepository _loginTokenRepository;
         private readonly IInputValidationService _inputValidationService;
+        private readonly UniwikiContext _uniwikiContext;
 
-        public LoginService(ProfileRepository profileRepository, IHashService hashService, TextService textService, ITimeService timeService, LoginTokenRepository loginTokenRepository, IInputValidationService inputValidationService)
+        public LoginService(ProfileRepository profileRepository, IHashService hashService, TextService textService, ITimeService timeService, LoginTokenRepository loginTokenRepository, IInputValidationService inputValidationService, UniwikiContext uniwikiContext)
         {
             _profileRepository = profileRepository;
             _hashService = hashService;
@@ -26,9 +29,10 @@ namespace Uniwiki.Server.Application.Services
             _timeService = timeService;
             _loginTokenRepository = loginTokenRepository;
             _inputValidationService = inputValidationService;
+            _uniwikiContext = uniwikiContext;
         }
 
-        public LoginTokenModel LoginUser(string email, string password)
+        public IQueryable<LoginTokenModel> LoginUser(string email, string password)
         {
             // Standardize email
             email = email.StandardizeEmail();
@@ -46,10 +50,18 @@ namespace Uniwiki.Server.Application.Services
             if (profile.Password != hashedPassword)
                 throw new RequestException(_textService.Error_WrongLoginCredentials);
 
-            return LoginUser(profile);
+            return LoginUserInner(profile);
         }
 
-        public LoginTokenModel LoginUser(ProfileModel profile)
+        public IQueryable<LoginTokenModel> LoginUser(Guid profileId)
+        {
+            // Find the user in the DB
+            var profile = _uniwikiContext.Profiles.Single(p => p.Id == profileId);
+
+            return LoginUserInner(profile);
+        }
+
+        private IQueryable<LoginTokenModel> LoginUserInner(ProfileModel profile)
         {
             // Validate profile confirmation
             if (!profile.IsConfirmed)
@@ -65,9 +77,9 @@ namespace Uniwiki.Server.Application.Services
             var extendedExpiration = expiration.AddYears(3);
 
             // Create the token
-            var token = _loginTokenRepository.AddLoginToken(Guid.NewGuid(), Guid.NewGuid(), profile, creationTime, extendedExpiration);
+            var token = _loginTokenRepository.AddLoginToken(Guid.NewGuid(), Guid.NewGuid(), profile.Id, creationTime, extendedExpiration);
 
-            return token;
+            return _uniwikiContext.LoginTokens.Where(t => t.Id == token.Id);
         }
     }
 }

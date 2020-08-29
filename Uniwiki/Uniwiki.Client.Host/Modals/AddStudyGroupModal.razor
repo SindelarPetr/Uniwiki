@@ -2,7 +2,7 @@
 @using Uniwiki.Shared.RequestResponse
 @inherits UniwikiComponentBase
 
-<EditForm style="min-width: 300px" OnValidSubmit="@HandleValidSubmitAddStudyGroup" Model="@AddStudyGroupRequestDto">
+@*<EditForm style="min-width: 300px" OnValidSubmit="@HandleValidSubmitAddStudyGroup" Model="@AddStudyGroupRequestDto">
 	<MyFluentValidator></MyFluentValidator>
 	<div class="form-group">
 		<label for="addGroup_Name">@TextService.SearchBox_FacultyName</label>
@@ -120,4 +120,4 @@
 	{
 		AddStudyGroupRequestDto.UniversityId = Guid.TryParse(args.Value.ToString(), out var guid) ? guid : Guid.Empty;
 	}
-}
+}*@

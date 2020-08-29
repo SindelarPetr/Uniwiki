@@ -28,7 +28,7 @@ namespace Uniwiki.Server.Persistence.Models
             = new List<FeedbackModel>();
         public bool FeedbackProvided => Feedbacks.Any();
 
-        internal ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, StudyGroupModel? homeFaculty)
+        internal ProfileModel(Guid id, string email, string firstName, string familyName, string url, string password, byte[] passwordSalt, string profilePictureSrc, DateTime creationDate, bool isConfirmed, AuthenticationLevel authenticationLevel, Guid? homeFacultyId)
             : base(id)
         {
             Email = email;
@@ -37,8 +37,7 @@ namespace Uniwiki.Server.Persistence.Models
             CreationDate = creationDate;
             IsConfirmed = isConfirmed;
             AuthenticationLevel = authenticationLevel;
-            HomeFacultyId = homeFaculty?.Id;
-            HomeFaculty = homeFaculty;
+            HomeFacultyId = homeFacultyId;
             ProfilePictureSrc = profilePictureSrc;
             FirstName = firstName;
             FamilyName = familyName;
@@ -64,6 +63,6 @@ namespace Uniwiki.Server.Persistence.Models
 
         internal void SetAuthenticationLevel(AuthenticationLevel authenticationLevel) => AuthenticationLevel = authenticationLevel;
 
-        internal void SetHomeFaculty(StudyGroupModel? homeFaculty) => HomeFaculty = homeFaculty;
+        internal void SetHomeFaculty(Guid? homeFacultyId) => HomeFacultyId = homeFacultyId;
     }
 }

@@ -5,10 +5,10 @@ namespace Uniwiki.Shared.RequestResponse
 {
     public class GetProfileResponse : ResponseBase
     {
-        public ProfileDto Profile { get; set; }
+        public ProfileViewModel Profile { get; set; }
         public bool Authenticated { get; }
 
-        public GetProfileResponse(ProfileDto profile, bool authenticated)
+        public GetProfileResponse(ProfileViewModel profile, bool authenticated)
         {
             Profile = profile;
             Authenticated = authenticated;

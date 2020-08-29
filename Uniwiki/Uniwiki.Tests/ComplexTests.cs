@@ -112,7 +112,7 @@ namespace Uniwiki.Tests
         //    await changePasswordPage.ChangePassword();
 
         //    var loginService = provider.GetService<ILoginService>();
-        //    var profilePage = CreateProfilePage(provider, loginService.User.NameIdentifier);
+        //    var profilePage = CreateProfilePage(provider, loginService.User.Url);
         //    await profilePage.Logout();
 
         //    var restorePasswordPageForm = new RestorePasswordRequestDto(email);
@@ -218,7 +218,7 @@ namespace Uniwiki.Tests
 
             var loginService = provider.GetService<ILoginService>();
             // Logout
-            await CreateProfilePage(provider, loginService.User.NameIdentifier).Logout();
+            await CreateProfilePage(provider, loginService.User.Url).Logout();
 
             // Restore password
             await CreateRestorePasswordPage(provider, new RestorePasswordRequestDto(email1)).RestorePassword();

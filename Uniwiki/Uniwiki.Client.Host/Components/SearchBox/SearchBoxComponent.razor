@@ -121,7 +121,7 @@
 	[Inject] public INavigationService NavigationService { get; set; }
 	[Inject] public ILoginService LoginService { get; set; }
 	[Inject] public IModalService ModalService { get; set; }
-	[Inject] public IStaticStateService StaticStateService { get; set; }
+	[Inject] public StaticStateService StaticStateService { get; set; }
 	[Inject] public ILocalStorageManagerService LocalStorageManagerService { get; set; }
 
 	private ElementReference? _searchTextInput;

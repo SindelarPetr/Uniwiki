@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Uniwiki.Server.Application.Extensions;
@@ -12,22 +13,24 @@ namespace Uniwiki.Server.Application.ServerActions
     {
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
         private readonly ProfileRepository _profileRepository;
+        private readonly UniwikiContext _uniwikiContext;
 
-        public GetProfileServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository) : base(serviceProvider)
+        public GetProfileServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<GetProfileResponse> ExecuteAsync(GetProfileRequest request, RequestContext context)
         {
             // Get the wanted profile
-            var profile = _profileRepository.GetProfileByUrl(request.NameIdentifier);
+            var profile = _uniwikiContext.Profiles.ToViewModel(context.UserId).Single(p => p.Url == request.Url);
 
             // Determine if the requesting user matches the authenticated user
-            var isAuthenticated = context.User?.Id == profile.Id;
+            var isAuthenticated = context.UserId == profile.Id;
 
             // Create the response 
-            var response = new GetProfileResponse(profile.ToDto(), isAuthenticated);
+            var response = new GetProfileResponse(profile, isAuthenticated);
 
             return Task.FromResult(response);
         }

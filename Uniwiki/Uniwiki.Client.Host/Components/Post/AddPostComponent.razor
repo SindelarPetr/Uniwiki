@@ -12,7 +12,7 @@
 	[Inject] IJsInteropService JsInteropService { get; set; }
 	[Inject] ITimeService TimeService { get; set; }
 
-	[Parameter] public Func<PostDto, Task> OnPostCreated { get; set; }
+	[Parameter] public Func<PostViewModel, Task> OnPostCreated { get; set; }
 	[Parameter] public Guid CourseId { get; set; }
 	[Parameter] public string[] AllPostTypes { get; set; }
 

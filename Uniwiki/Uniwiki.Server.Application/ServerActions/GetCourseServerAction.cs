@@ -12,6 +12,7 @@ using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
+using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
 using Uniwiki.Shared.Services.Abstractions;
 
@@ -30,8 +31,9 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly TextService _textService;
         private readonly UniwikiConfiguration _uniwikiConfiguration;
         private readonly ILanguageService _languageService;
+        private readonly FetchPostsService _fetchPostsService;
 
-        public GetCourseServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, PostRepository postRepository, CourseVisitRepository courseVisitRepository, ITimeService timeService, IPostCategoryService postCategoryService, UniwikiContext uniwikiContext, TextService textService, UniwikiConfiguration uniwikiConfiguration, ILanguageService languageService) : base(serviceProvider)
+        public GetCourseServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, PostRepository postRepository, CourseVisitRepository courseVisitRepository, ITimeService timeService, IPostCategoryService postCategoryService, UniwikiContext uniwikiContext, TextService textService, UniwikiConfiguration uniwikiConfiguration, ILanguageService languageService, FetchPostsService fetchPostsService) : base(serviceProvider)
         {
             _courseRepository = courseRepository;
             _postRepository = postRepository;
@@ -42,27 +44,29 @@ namespace Uniwiki.Server.Application.ServerActions
             _textService = textService;
             _uniwikiConfiguration = uniwikiConfiguration;
             _languageService = languageService;
+            _fetchPostsService = fetchPostsService;
         }
 
         protected override Task<GetCourseResponseDto> ExecuteAsync(GetCourseRequestDto request, RequestContext context)
         {
-            // Get profile
-            var profile = context.User!;
-
             // Normalize the urls
             var neutralizedCourseUrl = request.CourseUrl.Neutralize();
             var neutralizedStudyGroupUrl = request.StudyGroupUrl.Neutralize();
             var neutralizedUniversityUrl = request.UniversityUrl.Neutralize();
-            var neutralizedFullUrl = $"{neutralizedUniversityUrl}/{neutralizedStudyGroupUrl}/{neutralizedCourseUrl}";
 
             // Find the course according to the URL
             var course = _uniwikiContext
                 .Courses
                 .Include(c => c.StudyGroup)
-                .ThenInclude(c => c.University)
-                .ToFoundCourses()
-                .SingleOrDefault(c => c.FullUrl == neutralizedFullUrl)
-                ?? throw new RequestException(_textService.Error_CourseNotFound);
+                .ThenInclude(g => g.University)
+                .SingleOrDefault(c => c.Url == neutralizedCourseUrl 
+                             && c.StudyGroupUrl == neutralizedStudyGroupUrl 
+                             && c.UniversityUrl == neutralizedUniversityUrl);
+            
+            if(course == null)
+            {
+                throw new RequestException(_textService.Error_CourseNotFound);
+            }
 
             // Get categories and their counts for filtering
             var filterPostTypes = _uniwikiContext
@@ -72,17 +76,8 @@ namespace Uniwiki.Server.Application.ServerActions
                 .Select(g => new FilterPostTypeDto(g.Key, g.Count())) // TODO: This might cause problems
                 .ToArray();
 
-            // Get posts for the course
-            var posts = request.ShowAll
-                ? _postRepository.FetchPosts(course.Id, null, request.PostsToFetch).ToArray()
-                : _postRepository.FetchPosts(course.Id, request.PostType, null, request.PostsToFetch).ToArray();
-
-            // Check if can fetch more posts
-            var canFetchMore = request.ShowAll
-                ? _postRepository.CanFetchMore(course.Id, posts.LastOrDefault()?.Id)
-                : _postRepository.CanFetchMore(course.Id, request.PostType, posts.LastOrDefault()?.Id);
-
-            var postDtos = posts.Select(p => p.ToDto(profile)).ToArray();
+            var (postViewModels, canFetchMore) = _fetchPostsService.FetchPosts(!request.ShowAll, course.Id, request.PostType,
+                request.LastPostNumber, request.PostsToFetch, context.UserId);
 
             // Get categories for a new post
             var postTypesForNewPost = _uniwikiContext
@@ -99,16 +94,30 @@ namespace Uniwiki.Server.Application.ServerActions
             // Set the course as recent
             if (context.IsAuthenticated) // Equivalent to context.IsAuthenticated
             {
-                _courseVisitRepository.AddCourseVisit(course.Id, profile, _timeService.Now);
+                _courseVisitRepository.AddCourseVisit(course.Id, context.UserId!.Value, _timeService.Now);
             }
+
+            var posts = postViewModels.ToArray();
 
             // Create response
             var response = new GetCourseResponseDto(request.PostType,
-                    postDtos,
+                    posts,
                     filterPostTypes,
-                    course,
+                    course.Id,
                     postTypesForNewPost,
-                    canFetchMore);
+                    canFetchMore,
+                    new RecentCourseDto(
+                        course.LongName,
+                        course.Code,
+                        course.StudyGroupUrl, 
+                        course.StudyGroup.LongName,
+                        course.UniversityUrl, 
+                        course.StudyGroup.University.ShortName, 
+                        course.Id, 
+                        course.Url
+                        ),
+                    course.LongName,
+                    course.StudyGroup.University.ShortName + " - " + course.StudyGroup.LongName);
 
             return Task.FromResult(response);
         }

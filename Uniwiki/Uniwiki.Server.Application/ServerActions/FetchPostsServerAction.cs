@@ -14,41 +14,24 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly CourseRepository _courseRepository;
         private readonly PostRepository _postRepository;
         private readonly ProfileRepository _profileRepository;
+        private readonly FetchPostsService _fetchPostsService;
 
-        public FetchPostsServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, PostRepository postRepository, ProfileRepository profileRepository) : base(serviceProvider)
+        public FetchPostsServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, PostRepository postRepository, ProfileRepository profileRepository, FetchPostsService fetchPostsService) : base(serviceProvider)
         {
             _courseRepository = courseRepository;
             _postRepository = postRepository;
             _profileRepository = profileRepository;
+            _fetchPostsService = fetchPostsService;
         }
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
         protected override Task<FetchPostsResponseDto> ExecuteAsync(FetchPostsRequestDto request, RequestContext context)
         {
-            // Get profile
-            var profile = context.User != null ? _profileRepository.FindById(context.User.Id) : null;
-
-            // Find the course
-            var course = _courseRepository.FindById(request.CourseId);
-
-            // Find the last post
-            var lastPost = _postRepository.FindById(request.LastPostId);
-
-            // Get posts for the 
-            var posts = !request.UsePostTypeFilter
-                ? _postRepository.FetchPosts(course.Id, lastPost?.Id, request.PostsToFetch).ToArray()
-                : _postRepository.FetchPosts(course.Id, request.PostType, lastPost?.Id, request.PostsToFetch).ToArray();
-
-            // Check if can fetch more posts
-            var canFetchMore = !request.UsePostTypeFilter
-                ? _postRepository.CanFetchMore(course.Id, posts.LastOrDefault()?.Id)
-                : _postRepository.CanFetchMore(course.Id, request.PostType, posts.LastOrDefault()?.Id);
-
-            // Convert posts to DTOs
-            var postDtos = posts.Select(p => p.ToDto(profile)).ToArray();
+            var (postDtos, canFetchMore) = _fetchPostsService.FetchPosts(request.UsePostTypeFilter, request.CourseId, request.PostType,
+                request.LastPostNumber, request.PostsToFetch, context.UserId);
 
             // Create the response
-            var response = new FetchPostsResponseDto(postDtos, canFetchMore);
+            var response = new FetchPostsResponseDto(postDtos.ToArray(), canFetchMore);
 
             return Task.FromResult(response);
         }

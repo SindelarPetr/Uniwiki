@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
@@ -17,31 +18,30 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly ITimeService _timeService;
         private readonly PostCommentLikeRepository _postCommentLikeRepository;
         private readonly TextService _textService;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public LikePostCommentServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostCommentRepository postCommentRepository, ITimeService timeService, PostCommentLikeRepository postCommentLikeRepository, TextService textService) : base(serviceProvider)
+        public LikePostCommentServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostCommentRepository postCommentRepository, ITimeService timeService, PostCommentLikeRepository postCommentLikeRepository, TextService textService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postCommentRepository = postCommentRepository;
             _timeService = timeService;
             _postCommentLikeRepository = postCommentLikeRepository;
             _textService = textService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<LikePostCommentResponseDto> ExecuteAsync(LikePostCommentRequestDto request, RequestContext context)
         {
-            // Get profile
-            var profile = _profileRepository.FindById(context.User!.Id);
-
-            // Get the comment to like
-            var comment = _postCommentRepository.FindById(request.PostCommentId, _textService.Error_PostCommentNotFound);
-
             // Like the comment
-            _postCommentLikeRepository.LikeComment(comment, profile, _timeService.Now);
+            var postId = _postCommentLikeRepository.LikeComment(request.PostCommentId, context.UserId!.Value, _timeService.Now);
+
+            // Find the post
+            var updatedPost = _uniwikiContext.Posts.ToDto(context.UserId).Single(p => p.Id == postId);
 
             // Create response
-            var response = new LikePostCommentResponseDto(comment.Post.ToDto(profile));
+            var response = new LikePostCommentResponseDto(updatedPost);
 
             return Task.FromResult(response);
         }

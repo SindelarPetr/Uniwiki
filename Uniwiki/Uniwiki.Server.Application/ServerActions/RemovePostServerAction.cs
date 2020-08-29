@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
@@ -26,14 +27,11 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<RemovePostResponseDto> ExecuteAsync(RemovePostRequestDto request, RequestContext context)
         {
-            // Get profile
-            var profile = _profileRepository.FindById(context.User!.Id);
-
             // Get post
-            var post = _postRepository.FindById(request.PostId);
+            var post = _postRepository.FindById(request.PostId).Single();
 
             // Verify if the post belongs to the user, who is removing it, or that the user is admin
-            if (profile != post.Author && profile.AuthenticationLevel != AuthenticationLevel.Admin)
+            if (context.UserId != post.AuthorId)
             {
                 throw new RequestException(_textService.RemovePost_CannotRemoveNonOwnersPost);
             }

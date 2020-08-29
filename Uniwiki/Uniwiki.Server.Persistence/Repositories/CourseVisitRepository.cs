@@ -10,7 +10,7 @@ using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class CourseVisitRepository : RepositoryBase<CourseVisitModel, Guid> // , CourseVisitRepository
+    public class CourseVisitRepository : RepositoryBase<CourseVisitModel, Guid>
     {
         private readonly TextService _textService;
 
@@ -22,33 +22,29 @@ namespace Uniwiki.Server.Persistence.Repositories
             _textService = textService;
         }
 
-        public IEnumerable<CourseModel> GetRecentCourses(ProfileModel profile)
-        {
-            return All
-                .Where(v => v.ProfileId == profile.Id)
+        public IEnumerable<CourseModel> GetRecentCourses(Guid profileId) 
+            =>  All
+                .Where(v => v.ProfileId == profileId)
                 .Take(Constants.NumberOrRecentCourses)
                 .OrderByDescending(v => v.VisitDateTime)
                 .Include(v => v.Course)
                 .ThenInclude(c => c.StudyGroup)
                 .ThenInclude(g => g.University)
                 .Select(v => v.Course);
-        }
 
-        public void AddRecentCourseVisits(IEnumerable<CourseModel> recentCourses, ProfileModel profile, DateTime visitTime)
+        public void AddRecentCourseVisits(IEnumerable<CourseModel> recentCourses, Guid profileId, DateTime visitTime)
         {
             foreach (var course in recentCourses.Reverse())
             {
-                AddCourseVisit(course.Id, profile, visitTime);
+                AddCourseVisit(course.Id, profileId, visitTime);
             }
         }
 
-        public CourseVisitModel AddCourseVisit(Guid courseId, ProfileModel profile, DateTime visitTime)
+        public CourseVisitModel AddCourseVisit(Guid courseId, Guid profileId, DateTime visitTime)
         {
-            var courseVisit = new CourseVisitModel(Guid.NewGuid(), courseId, profile.Id, visitTime);
+            var courseVisit = new CourseVisitModel(Guid.NewGuid(), courseId, profileId, visitTime);
 
             All.Add(courseVisit);
-
-            SaveChanges();
 
             return courseVisit;
         }

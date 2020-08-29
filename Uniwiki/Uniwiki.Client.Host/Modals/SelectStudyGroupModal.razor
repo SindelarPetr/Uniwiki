@@ -5,15 +5,15 @@
 {
 	@foreach (var uni in UniversitiesWithStudyGroups)
 	{
-		@if (uni.StudyGroups.Any())
+		@if (uni.StudyGroupsToSelect.Any())
 		{
-			<h5 class="mb-3">@uni.University.ShortName - @uni.University.LongName</h5>
+			<h5 class="mb-3">@uni.UniversityShortName - @uni.UniversityLongName</h5>
 
 			<div class="list-group mb-4">
-				@foreach (var group in uni.StudyGroups)
+				@foreach (var group in uni.StudyGroupsToSelect)
 				{
-					<button class="list-group-item list-group-item-action text-primary @(LoginService.User?.HomeFaculty?.Id == group.Id ? "" : string.Empty)" type="button" @onclick="@(() => HandleStudyGroupSelected(group))">
-						<i class="fas fa-@(LoginService.User?.HomeFaculty?.Id == group.Id ? "home" : "chevron-right") mr-3"></i>@group.ShortName - @group.LongName
+					<button class="list-group-item list-group-item-action text-primary @(LoginService.User?.HomeStudyGroupId == group.StudyGroupId ? "" : string.Empty)" type="button" @onclick="@(() => HandleStudyGroupSelected(group))">
+						<i class="fas fa-@(LoginService.User?.HomeStudyGroupId == group.StudyGroupId ? "home" : "chevron-right") mr-3"></i>@group.StudyGroupShortName - @group.StudyGroupLongName
 					</button>
 				}
 			</div>
@@ -34,14 +34,14 @@ else
 }
 
 @code {
-	[Inject] IRequestSender RequestSender { get; set; }
-	[Inject] IModalService ModalService { get; set; }
-	[Inject] ILoginService LoginService { get; set; }
-	[Inject] IToastService ToastService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] IModalService ModalService { get; set; } = null!;
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] IToastService ToastService { get; set; } = null!;
 
-	[CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+	[CascadingParameter] BlazoredModalInstance ModalInstance { get; set; } = null!;
 
-	public UniversityWithStudyGroupsDto[]? UniversitiesWithStudyGroups { get; set; }
+	public UniversityToSelectDto[]? UniversitiesWithStudyGroups { get; set; }
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -64,31 +64,31 @@ else
 		StateHasChanged();
 	}
 
-	public void HandleStudyGroupSelected(StudyGroupDto studyGroup)
+	public void HandleStudyGroupSelected(StudyGroupToSelectDto studyGroup)
 	{
 		ModalInstance.Close(ModalResult.Ok(studyGroup));
 	}
 
-	public async Task HandleAddStudGroup(UniversityWithStudyGroupsDto university)
-	{
-		if (!LoginService.IsAuthenticated)
-		{
-			ToastService.ShowLoginRequired(TextService);
-			return;
-		}
+	//public async Task HandleAddStudGroup(UniversityWithStudyGroupsDto university)
+	//{
+	//	if (!LoginService.IsAuthenticated)
+	//	{
+	//		ToastService.ShowLoginRequired(TextService);
+	//		return;
+	//	}
 
-		var parameters = new ModalParameters();
-		parameters.Add(nameof(AddStudyGroupModal.University), university);
-		var modal = ModalService.Show<AddStudyGroupModal>(TextService.AddFacultyModal_Title, parameters);
+	//	var parameters = new ModalParameters();
+	//	parameters.Add(nameof(AddStudyGroupModal.University), university);
+	//	var modal = ModalService.Show<AddStudyGroupModal>(TextService.AddFacultyModal_Title, parameters);
 
-		var result = await modal.Result;
+	//	var result = await modal.Result;
 
-		if (!result.Cancelled)
-		{
-			UniversitiesWithStudyGroups = null;
-			//await FetchData();
-			ModalInstance.Close(ModalResult.Ok(result.Data));
-		}
-	}
+	//	if (!result.Cancelled)
+	//	{
+	//		UniversitiesWithStudyGroups = null;
+	//		//await FetchData();
+	//		ModalInstance.Close(ModalResult.Ok(result.Data));
+	//	}
+	//}
 
 }

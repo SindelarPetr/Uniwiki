@@ -8,12 +8,12 @@ namespace Uniwiki.Client.Host.Services
 {
     internal class FixingService : IFixingService
     {
-        private readonly ILocalLoginService _localLoginService;
+        private readonly LocalLoginService _localLoginService;
         private readonly IToastService _toastService;
         private readonly TextService _textService;
         private readonly INavigationService _navigationService;
 
-        public FixingService(ILocalLoginService localLoginService, IToastService toastService, TextService textService, INavigationService navigationService)
+        public FixingService(LocalLoginService localLoginService, IToastService toastService, TextService textService, INavigationService navigationService)
         {
             _localLoginService = localLoginService;
             _toastService = toastService;

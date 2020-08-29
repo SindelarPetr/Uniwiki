@@ -15,13 +15,13 @@
 		<div class="form-group">
 			<label for="addCourse_Name">@TextService.SearchBox_CourseName</label>
 			<OnInputTextComponent id="addCourse_Name" class="form-control" type="text" placeholder="@TextService.EgCourseName" @bind-Value="AddCourseRequestDto.CourseName" maxlength="@Constants.Validations.CourseNameMaxLength" />
-			<ValidationMessage For="@(() => AddCourseRequestDto.CourseName)" name="courseName"/>
+			<ValidationMessage For="@(() => AddCourseRequestDto.CourseName)" name="courseName" />
 		</div>
 
 		@* Course code *@
 		<div class="form-group">
 			<label for="addCourse_Code">@TextService.SearchBox_CourseCode</label>
-			<InputText id="addCourse_Code" class="form-control" type="text" placeholder="@TextService.EgCourseCode" @bind-Value="AddCourseRequestDto.CourseCode" maxlength="@Constants.Validations.CourseCodeMaxLength" name="courseCode"/>
+			<InputText id="addCourse_Code" class="form-control" type="text" placeholder="@TextService.EgCourseCode" @bind-Value="AddCourseRequestDto.CourseCode" maxlength="@Constants.Validations.CourseCodeMaxLength" name="courseCode" />
 			<ValidationMessage For="@(() => AddCourseRequestDto.CourseCode)" />
 		</div>
 
@@ -30,7 +30,7 @@
 			<label for="addCourse_StudyGroup">@TextService.AddCoursePage_WhichFaculty</label>
 			<div class="mb-3">
 				<button id="addCourse_StudyGroup" class="btn btn-secondary dont-break-out" type="button" @onclick="HandleOnSelectStudyGroup">
-					@(_selectedStudyGroup == null ? TextService.SelectFaculty : _selectedStudyGroup.LongName + " (" + _selectedStudyGroup.University.ShortName + ")")
+					@(_selectedStudyGroup == null ? TextService.SelectFaculty : _selectedStudyGroup.StudyGroupLongName + " (" + _selectedStudyGroup.UniversityShortName + ")")
 				</button>
 			</div>
 			<ValidationMessage For="@(() => AddCourseRequestDto.StudyGroupId)" />
@@ -47,13 +47,13 @@
 	[Inject] public IModalService ModalService { get; set; }
 	[Inject] public IRequestSender RequestSender { get; set; }
 	[Inject] public INavigationService NavigationService { get; set; }
-	[Inject] public IStaticStateService StaticStateService { get; set; }
+	[Inject] public StaticStateService StaticStateService { get; set; }
 
 	public AddCourseRequestDto AddCourseRequestDto { get; private set; }
 
 	private bool _adding;
 
-	private StudyGroupDto? _selectedStudyGroup;
+	private StudyGroupToSelectDto? _selectedStudyGroup;
 
 	public AddCoursePage()
 	{
@@ -65,23 +65,28 @@
 		base.OnInitialized();
 
 		_selectedStudyGroup = StaticStateService.SelectedStudyGroup;
-		AddCourseRequestDto.StudyGroupId = _selectedStudyGroup?.Id ?? Guid.Empty;
+		AddCourseRequestDto.StudyGroupId = _selectedStudyGroup?.StudyGroupId ?? Guid.Empty;
 	}
 
 	public async Task HandleValidSubmitAddCourse()
 	{
 		if (_adding)
 			return;
-		
+
 		_adding = true;
 
-		var result = await RequestSender.SendRequestAsync(AddCourseRequestDto, () =>
-		{
-			_adding = false;
-			StateHasChanged();
-		});
+		var result = await RequestSender.SendRequestAsync(AddCourseRequestDto,
+			() =>
+			{
+				_adding = false;
+				StateHasChanged();
+			});
 
-		NavigationService.NavigateTo(PageRoutes.CoursePage.BuildRoute(result.CourseDto));
+		NavigationService.NavigateTo(PageRoutes.CoursePage.BuildRoute(
+			result.CourseUrl,
+			result.StudyGroupUrl,
+			result.UniversityUrl)
+			);
 	}
 
 	public async Task HandleOnSelectStudyGroup()
@@ -90,8 +95,8 @@
 		var result = await modal.Result;
 		if (!result.Cancelled)
 		{
-			_selectedStudyGroup = (StudyGroupDto)result.Data;
-			AddCourseRequestDto.StudyGroupId = _selectedStudyGroup.Id;
+			_selectedStudyGroup = (StudyGroupToSelectDto)result.Data;
+			AddCourseRequestDto.StudyGroupId = _selectedStudyGroup.StudyGroupId;
 		}
 	}
 }

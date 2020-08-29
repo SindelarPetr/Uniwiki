@@ -50,7 +50,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             }
 
             // Create the secret
-            var secret = _newPasswordSecretRepository.AddNewPasswordSecret(profile, Guid.NewGuid(), _timeService.Now, _timeService.Now.Add(Constants.RestorePasswordSecretExpiration));
+            var secret = _newPasswordSecretRepository.AddNewPasswordSecret(profile.Id, Guid.NewGuid(), _timeService.Now, _timeService.Now.Add(Constants.RestorePasswordSecretExpiration));
 
             // Send the email
             await _emailService.SendRestorePasswordEmail(request.Email, secret.Id);

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Server.Appliaction;
 using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
+using Uniwiki.Server.Application.ServerActions;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
@@ -26,13 +27,14 @@ namespace Uniwiki.Server.Application
             services.AddScoped<IInputValidationService, InputValidationService>();
             services.AddScoped<TextService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
-            services.AddTransient<IDataManipulationService, DataManipulationService>();
+            services.AddTransient<DataManipulationService>();
             services.AddSingleton<IHashService, HashService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddSingleton<IApplicationHostEnvironment, ServerHostEnvironment>();
             services.AddScoped<IEmailConfirmationSenderService, EmailConfirmationSenderService>();
-            services.AddScoped<IRecentCoursesService, RecentCoursesService>();
+            services.AddScoped<RecentCoursesService>();
             services.AddScoped<IPostCategoryService, PostCategoryService>();
+            services.AddScoped<FetchPostsService>();
 
             AddServerActions(services);
         }

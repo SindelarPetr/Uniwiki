@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
 using Shared.Services.Abstractions;
@@ -19,15 +21,18 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly ProfileRepository _profileRepository;
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
+        private readonly UniwikiContext _uniwikiContext;
+
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public AddCourseServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, StudyGroupRepository studyGroupRepository, ProfileRepository profileRepository, IStringStandardizationService stringStandardizationService, TextService textService) : base(serviceProvider)
+        public AddCourseServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, StudyGroupRepository studyGroupRepository, ProfileRepository profileRepository, IStringStandardizationService stringStandardizationService, TextService textService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _courseRepository = courseRepository;
             _studyGroupRepository = studyGroupRepository;
             _profileRepository = profileRepository;
             _stringStandardizationService = stringStandardizationService;
             _textService = textService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<AddCourseResponseDto> ExecuteAsync(AddCourseRequestDto request, RequestContext context)
@@ -38,24 +43,22 @@ namespace Uniwiki.Server.Application.ServerActions
             var studyGroupId = request.StudyGroupId;
 
             // Get study group with university
-            var faculty = _studyGroupRepository.GetStudyGroupWithUniversity(studyGroupId);
+            var faculty = _uniwikiContext
+                .StudyGroups
+                .Include(g => g.University)
+                .Single(g => g.Id == request.StudyGroupId);
 
             // Check if the course name is unique
-            if(!_courseRepository.IsNameUnique(faculty, name))
+            if(!_courseRepository.IsNameUnique(faculty.Id, name))
                 throw new RequestException(_textService.Error_CourseNameTaken(name));
 
             // Create url for the course
-            var url = _stringStandardizationService.CreateUrl(name, u => _courseRepository.IsUrlUnique(faculty, u));
+            var url = _stringStandardizationService.CreateUrl(name, u => _courseRepository.IsCourseUrlUnique(faculty.Id, u));
 
             // Create the course
-            var course = _courseRepository.AddCourse(code, name, context.User!, faculty, faculty.University.Url, url);
+            var course = _courseRepository.AddCourse(code, name, context.UserId!.Value, faculty.Id, faculty.University.Url, url, faculty.Url);
 
-            course = _courseRepository.GetCourseWithStudyGroupAndUniversity(course.Id);
-
-            // Create course DTO
-            var courseDto = course.ToDto();
-
-            return Task.FromResult(new AddCourseResponseDto(courseDto));
+            return Task.FromResult(new AddCourseResponseDto(course.Id, course.Url, course.Url, course.Url));
         }
 
     }

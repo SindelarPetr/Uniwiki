@@ -1,30 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
 
 namespace Uniwiki.Server.Persistence.Repositories.Base
 {
 
-    public abstract class RepositoryBase<TModel, TId> //: IRepositoryBase<TModel, TId> 
+    abstract public class RepositoryBase<TModel, TId> //: IRepositoryBase<TModel, TId> 
         where TModel : ModelBase<TId> 
         where TId : struct
     {
-        private readonly UniwikiContext _uniwikiContext;
+        protected readonly UniwikiContext UniwikiContext;
 
         protected DbSet<TModel> All { get; }
 
-        public abstract string NotFoundByIdMessage { get; }
+        abstract public string NotFoundByIdMessage { get; }
 
-        public TModel FindById(TId id, string? notFoundMessage = null) => All.Find(id) ?? throw new RequestException(notFoundMessage ?? NotFoundByIdMessage);
-
-        public TModel? TryFindById(TId id) => All.Find(id);
+        public IQueryable<TModel> FindById(TId id) => All.Where(m => m.Id.Equals(id)); //?? throw new RequestException(notFoundMessage ?? NotFoundByIdMessage);
 
         public RepositoryBase(UniwikiContext uniwikiContext, DbSet<TModel> all)
         {
-            _uniwikiContext = uniwikiContext;
+            UniwikiContext = uniwikiContext;
             All = all;
         }
 
-        protected void SaveChanges() => _uniwikiContext.SaveChanges();
+        protected void SaveChanges() => UniwikiContext.SaveChanges();
     }
 }

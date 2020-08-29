@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Shared;
+using Toolbelt.ComponentModel.DataAnnotations.Schema.V5;
 using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
@@ -13,6 +14,7 @@ namespace Uniwiki.Server.Persistence.Models
         public string ShortNameForSearching { get; protected set; } = null!;
         public string LongName { get; protected set; } = null!;
         public string LongNameForSearching { get; protected set; } = null!;
+        [IndexColumn]
         public string Url { get; protected set; } = null!;
         public Guid ProfileId { get; protected set; }
         public ProfileModel Profile { get; protected set; } = null!;
@@ -20,18 +22,16 @@ namespace Uniwiki.Server.Persistence.Models
         = new List<CourseModel>();
         public Language PrimaryLanguage { get; protected set; }
 
-        internal StudyGroupModel(Guid id, UniversityModel university, string shortName, string longName, string url,
-            ProfileModel profile, Language primaryLanguage, bool isRemoved)
+        internal StudyGroupModel(Guid id, Guid universityId, string shortName, string longName, string url,
+            Guid profileId, Language primaryLanguage, bool isRemoved)
             : base(isRemoved, id)
         {
-            UniversityId = university.Id;
-            University = university;
+            UniversityId = universityId;
             ShortName = shortName;
             LongName = longName;
             LongNameForSearching = longName.ToLower();
             Url = url;
-            ProfileId = profile.Id;
-            //Profile = profile;
+            ProfileId = profileId;
             PrimaryLanguage = primaryLanguage;
         }
 

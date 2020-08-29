@@ -9,7 +9,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class FeedbackRepository : RepositoryBase<FeedbackModel, Guid> // , FeedbackRepository
+    public class FeedbackRepository : RepositoryBase<FeedbackModel, Guid> 
     {
         private readonly TextService _textService;
 
@@ -21,44 +21,30 @@ namespace Uniwiki.Server.Persistence.Repositories
             _textService = textService;
         }
 
-        public double? GetAverageRating()
-        {
-            return All.Where(f => f.Rating != null).Average(f => f.Rating);
-        }
+        public double? GetAverageRating() 
+            => All.Where(f => f.Rating != null).Average(f => f.Rating);
 
-        public IEnumerable<string> GetLastFeedbacks(int count)
-        {
-            return All.Select(f =>
-            $"{(f.Rating.HasValue ? $"{f.CreationTime.ToString("g")} ({f.Rating}) " : string.Empty)}{f.Text}\n").Reverse().Take(count).Reverse();
-        }
+        public IEnumerable<string> GetLastFeedbacks(int count) 
+            => All.Select(f =>
+                $"{(f.Rating.HasValue ? $"{f.CreationTime.ToString("g")} ({f.Rating}) " : string.Empty)}{f.Text}\n").Reverse().Take(count).Reverse();
 
-        public int GetFeedbacksCount()
-        {
-            return All.Count();
-        }
+        public int GetFeedbacksCount() 
+            => All.Count();
 
-        public int GetTextOnlyFeedbacksCount()
-        {
-            return All.Count(f => f.Rating == null && !string.IsNullOrWhiteSpace(f.Text));
-        }
+        public int GetTextOnlyFeedbacksCount() 
+            => All.Count(f => f.Rating == null && !string.IsNullOrWhiteSpace(f.Text));
 
-        public int RatingOnlyFeedbacksCount()
-        {
-            return All.Count(f => f.Rating != null && string.IsNullOrWhiteSpace(f.Text));
-        }
+        public int RatingOnlyFeedbacksCount() 
+            => All.Count(f => f.Rating != null && string.IsNullOrWhiteSpace(f.Text));
 
-        public int TextAndRatingFeedbacksCount()
-        {
-            return All.Count(f => f.Rating != null && !string.IsNullOrWhiteSpace(f.Text));
-        }
+        public int TextAndRatingFeedbacksCount() 
+            => All.Count(f => f.Rating != null && !string.IsNullOrWhiteSpace(f.Text));
 
-        public FeedbackModel AddFeedback(ProfileModel? user, int? rating, string text, DateTime creationTime)
+        public FeedbackModel AddFeedback(Guid? userId, int? rating, string text, DateTime creationTime)
         {
-            var feedback = new FeedbackModel(Guid.NewGuid(), false, user, rating, text, creationTime);
+            var feedback = new FeedbackModel(Guid.NewGuid(), false, userId, rating, text, creationTime);
 
             All.Add(feedback);
-
-            SaveChanges();
 
             return feedback;
         }

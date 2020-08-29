@@ -11,11 +11,10 @@ namespace Uniwiki.Server.Persistence.Models
         public string Text { get; protected set; } = null!;
         public DateTime CreationTime { get; protected set; }
 
-        internal FeedbackModel(Guid id, bool isRemoved, ProfileModel? user, int? rating, string text, DateTime creationTime)
+        internal FeedbackModel(Guid id, bool isRemoved, Guid? userId, int? rating, string text, DateTime creationTime)
             :base(isRemoved, id)
         {
-            UserId = user?.Id;
-            User = user;
+            UserId = userId;
             Rating = rating;
             Text = text;
             CreationTime = creationTime;

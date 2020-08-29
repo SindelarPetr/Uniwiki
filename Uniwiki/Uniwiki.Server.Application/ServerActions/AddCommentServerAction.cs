@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
@@ -33,17 +34,14 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<AddCommentResponseDto> ExecuteAsync(AddCommentRequestDto request, RequestContext context)
         {
-            // Get post
-            var post = _postRepository.FindById(request.PostId, _textService.Error_PostNotFound);
-
             // Create the comment
-            _postCommentRepository.AddPostComment(context.User!, post, request.CommentText, _timeService.Now);
+            _postCommentRepository.AddPostComment(context.UserId!.Value, request.PostId, request.CommentText, _timeService.Now);
 
-            // Get the updated post // TODO: THERE WILL BE A PROBLEM, BECAUSE THE INCLUDES ARE MISSING HERE
-            post = _uniwikiContext.Posts.Find(post.Id);
+            // Get the hole updated post
+            var post = _uniwikiContext.Posts.ToDto(context.UserId).Single(p => p.Id == request.PostId);
 
             // Create response
-            var response = new AddCommentResponseDto(post.ToDto(context.User));
+            var response = new AddCommentResponseDto(post);
 
             return Task.FromResult(response);
         }

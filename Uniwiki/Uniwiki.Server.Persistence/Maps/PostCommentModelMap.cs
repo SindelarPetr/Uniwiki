@@ -23,9 +23,9 @@ namespace Uniwiki.Server.Persistence.Models
                 .HasForeignKey(m => m.PostId);
 
             builder
-                .HasOne(m => m.Profile)
+                .HasOne(m => m.Author)
                 .WithMany()
-                .HasForeignKey(m => m.ProfileId);
+                .HasForeignKey(m => m.AuthorId);
 
             builder
                 .HasMany(m => m.Likes)

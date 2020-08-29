@@ -5,9 +5,9 @@ namespace Uniwiki.Shared.RequestResponse
 {
     public class GetUniversitiesAndStudyGroupsResponseDto : ResponseBase
     {
-        public UniversityWithStudyGroupsDto[] UniversitiesWithStudyGroups { get; set; }
+        public UniversityToSelectDto[] UniversitiesWithStudyGroups { get; set; }
 
-        public GetUniversitiesAndStudyGroupsResponseDto(UniversityWithStudyGroupsDto[] universitiesWithStudyGroups)
+        public GetUniversitiesAndStudyGroupsResponseDto(UniversityToSelectDto[] universitiesWithStudyGroups)
         {
             UniversitiesWithStudyGroups = universitiesWithStudyGroups;
         }

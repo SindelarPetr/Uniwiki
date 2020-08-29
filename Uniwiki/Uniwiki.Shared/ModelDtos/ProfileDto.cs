@@ -2,7 +2,7 @@
 
 namespace Uniwiki.Shared.ModelDtos
 {
-    public class ProfileDto
+    public class ProfileViewModel
     {
         public Guid Id { get; set; }
         public string FullName { get; set; }
@@ -10,12 +10,15 @@ namespace Uniwiki.Shared.ModelDtos
         public string FamilyName { get; set; }
         public string ProfilePictureSrc { get; set; }
         public DateTime CreationDate { get; set; }
-        public string NameIdentifier { get; set; }
-        public string Email { get; set; }
+        public string Url { get; set; }
+        public string? Email { get; set; }
         public bool FeedbackProvided { get; set; }
-        public StudyGroupDto? HomeFaculty { get; }
+        public string? HomeStudyGroupUrl { get; }
+        public string? HomeStudyGroupLongName { get; }
+        public string? HomeStudyGroupUniversityName { get; }
+        public Guid? HomeStudyGroupId { get; }
 
-        public ProfileDto(Guid id, string firstName, string familyName, string fullName, string profilePictureSrc, DateTime creationDate, string nameIdentifier, string email, bool feedbackProvided, StudyGroupDto? homeFaculty)
+        public ProfileViewModel(Guid id, string firstName, string familyName, string fullName, string profilePictureSrc, DateTime creationDate, string url, bool feedbackProvided, string? homeStudyGroupUrl, string? homeStudyGroupLongName, Guid? homeStudyGroupId, string? email, string? homeStudyGroupUniversityName)
         {
             Id = id;
             FirstName = firstName;
@@ -23,10 +26,13 @@ namespace Uniwiki.Shared.ModelDtos
             FullName = fullName;
             ProfilePictureSrc = profilePictureSrc;
             CreationDate = creationDate;
-            NameIdentifier = nameIdentifier;
+            Url = url;
             Email = email;
             FeedbackProvided = feedbackProvided;
-            HomeFaculty = homeFaculty;
+            HomeStudyGroupUrl = homeStudyGroupUrl;
+            HomeStudyGroupLongName = homeStudyGroupLongName;
+            HomeStudyGroupId = homeStudyGroupId;
+            HomeStudyGroupUniversityName = homeStudyGroupUniversityName;
         }
     }
 }

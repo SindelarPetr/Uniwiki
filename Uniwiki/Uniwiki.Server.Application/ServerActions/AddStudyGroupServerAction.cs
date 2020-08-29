@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
 using Shared.Services.Abstractions;
@@ -32,25 +34,24 @@ namespace Uniwiki.Server.Application.ServerActions
             var longName = request.StudyGroupName;
             var shortName = request.StudyGroupShortcut;
             var universityId = request.UniversityId;
-            
-            // Get university
-            var university = _universityRepository.FindById(universityId);
 
             // Check if the name of the group is uniq
-            if(!_studyGroupRepository.IsStudyGroupNameUniq(university, longName))
+            if(!_studyGroupRepository.IsStudyGroupNameUniq(universityId, longName))
+            {
                 throw new RequestException(_textService.Error_StudyGroupNameIsTaken(longName));
+            }
 
             // Create url for the study group
             var studyGroupUrl = _stringStandardizationService.CreateUrl(shortName, url => _studyGroupRepository.TryGetStudyGroup(url) == null);
 
             // Create the study group
-            var studyGroup = _studyGroupRepository.AddStudyGroup(university, shortName, longName, studyGroupUrl, context.User!, request.PrimaryLanguage);
+            var studyGroup = _studyGroupRepository.AddStudyGroup(universityId, shortName, longName, studyGroupUrl, context.UserId!.Value, request.PrimaryLanguage);
 
             // Create study group DTO
-            var studyGroupDto = studyGroup.ToDto();
+            // var studyGroupDto = studyGroup.;
 
             // Create the response
-            var response = new AddStudyGroupResponseDto(studyGroupDto);
+            var response = studyGroup.Include(g => g.University).Select(g => new AddStudyGroupResponseDto(g.Id/*, g.ShortName, g.University.LongName, g.University.Url*/)).Single();
 
             return Task.FromResult(response);
         }

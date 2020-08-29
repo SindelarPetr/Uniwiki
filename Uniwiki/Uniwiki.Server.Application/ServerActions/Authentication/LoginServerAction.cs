@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
@@ -20,9 +21,10 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         private readonly CourseRepository _courseRepository;
         private readonly ITimeService _timeService;
         private readonly ILoginService _loginService;
-        private readonly IRecentCoursesService _recentCoursesService;
+        private readonly RecentCoursesService _recentCoursesService;
+        private readonly UniwikiContext _uniwikiContext;
 
-        public LoginServerAction(IServiceProvider serviceProvider, TextService textService, CourseVisitRepository courseVisitRepository, CourseRepository courseRepository, ITimeService timeService, ILoginService loginService, IRecentCoursesService recentCoursesService) : base(serviceProvider)
+        public LoginServerAction(IServiceProvider serviceProvider, TextService textService, CourseVisitRepository courseVisitRepository, CourseRepository courseRepository, ITimeService timeService, ILoginService loginService, RecentCoursesService recentCoursesService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _textService = textService;
             _courseVisitRepository = courseVisitRepository;
@@ -30,6 +32,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             _timeService = timeService;
             _loginService = loginService;
             _recentCoursesService = recentCoursesService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<LoginResponseDto> ExecuteAsync(LoginRequestDto request, RequestContext context)
@@ -37,11 +40,16 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             // Issue the token
             var token = _loginService.LoginUser(request.Email, request.Password);
 
+            var tokenDto = token.ToDto().Single();
+
             // Set the recent courses
-            _recentCoursesService.SetAsRecentCourses(request.RecentCourses, token.Profile.Id);
+            _recentCoursesService.SetAsRecentCourses(request.RecentCourses, tokenDto.ProfileId);
+
+            // Get the authorized user
+            var authorizedUser = _uniwikiContext.Profiles.ToAuthorizedUser().Single(p => p.Id == tokenDto.ProfileId);
 
             // Create response
-            var response = new LoginResponseDto(token.ToDto(), token.Profile.ToDto());
+            var response = new LoginResponseDto(tokenDto, authorizedUser);
 
             return Task.FromResult(response);
         }

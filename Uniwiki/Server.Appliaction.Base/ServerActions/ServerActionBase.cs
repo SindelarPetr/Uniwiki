@@ -19,6 +19,7 @@ namespace Server.Appliaction.ServerActions
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly TextService _textService;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected abstract AuthenticationLevel AuthenticationLevel { get; }
 
@@ -26,6 +27,7 @@ namespace Server.Appliaction.ServerActions
         {
             _serviceProvider = serviceProvider;
             _textService = serviceProvider.GetService<TextService>();
+            _uniwikiContext = serviceProvider.GetService<UniwikiContext>();
         }
 
         public async virtual Task<TResponse> ExecuteActionAsync(TRequest request, RequestContext context)
@@ -59,6 +61,8 @@ namespace Server.Appliaction.ServerActions
 
             // Execute the server request
             var result = await ExecuteAsync(tRequest, context);
+
+            _uniwikiContext.SaveChanges();
 
             return result;
         }

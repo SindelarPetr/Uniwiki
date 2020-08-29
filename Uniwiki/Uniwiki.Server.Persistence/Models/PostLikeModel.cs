@@ -14,18 +14,13 @@ namespace Uniwiki.Server.Persistence.Models
         public bool IsLiked { get; protected set; }
 
         // Keep it internal - its created in a repository method
-        internal PostLikeModel(PostModel post, ProfileModel profile, DateTime dateTime, bool isLiked)
-            : base(new PostLikeModelId(post.Id, profile.Id))
+        internal PostLikeModel(Guid postId, Guid profileId, DateTime dateTime, bool isLiked)
+            : base(new PostLikeModelId(postId, profileId))
         {
-            Post = post;
-            Profile = profile;
+            PostId = postId;
+            ProfileId = profileId;
             DateTime = dateTime;
             IsLiked = isLiked;
-        }
-
-        protected PostLikeModel()
-        {
-
         }
 
         internal void Like() => IsLiked = true;

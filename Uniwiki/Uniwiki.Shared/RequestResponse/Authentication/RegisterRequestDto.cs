@@ -17,9 +17,9 @@ namespace Uniwiki.Shared.RequestResponse.Authentication
         public bool AgreeToTermsOfUse { get; set; }
 
         public Guid? HomeFacultyId { get; set; }
-        public FoundCourseDto[] RecentCourses { get; }
+        public RecentCourseDto[] RecentCourses { get; }
 
-        public RegisterRequestDto(string email, string nameAndSurname, string password, string passwordAgain, bool agreeToTermsOfUse, Guid? homeFacultyId, FoundCourseDto[] recentCourses)
+        public RegisterRequestDto(string email, string nameAndSurname, string password, string passwordAgain, bool agreeToTermsOfUse, Guid? homeFacultyId, RecentCourseDto[] recentCourses)
         {
             Email = email;
             NameAndSurname = nameAndSurname;

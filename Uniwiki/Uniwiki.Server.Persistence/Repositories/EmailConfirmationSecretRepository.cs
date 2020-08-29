@@ -50,12 +50,6 @@ namespace Uniwiki.Server.Persistence.Repositories
             return All.FirstOrDefault(s => s.ProfileId == profile.Id && s.IsValid);
         }
 
-        public EmailConfirmationSecretModel FindValidById(Guid secret)
-        {
-            return All.FirstOrDefault(s => s.Secret == secret && s.IsValid) 
-                   ?? throw new RequestException(_textService.Error_EmailConfirmationFailed);
-        }
-
         public EmailConfirmationSecretModel AddEmailConfirmationSecret(ProfileModel profile, Guid secret, DateTime creationTime)
         {
             EmailConfirmationSecretModel emailConfirmationSecretModel = new EmailConfirmationSecretModel(Guid.NewGuid(), profile, secret, creationTime, true);
@@ -65,11 +59,6 @@ namespace Uniwiki.Server.Persistence.Repositories
             SaveChanges();
 
             return emailConfirmationSecretModel;
-        }
-
-        public EmailConfirmationSecretModel FindSecret(Guid secret)
-        {
-            return All.Where(s => s.Secret == secret).Include(s => s.Profile).First();
         }
     }
 }

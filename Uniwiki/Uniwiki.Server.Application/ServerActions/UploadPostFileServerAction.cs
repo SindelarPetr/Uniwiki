@@ -42,9 +42,6 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override async Task<UploadPostFileResponseDto> ExecuteAsync(UploadPostFileRequestDto request, RequestContext context)
         {
-            // Get the user
-            var profile = _profileRepository.FindById(context.User!.Id);
-
             // Get the file
             var file = _uploadFileService.GetFile();
 
@@ -75,11 +72,8 @@ namespace Uniwiki.Server.Application.ServerActions
             // Log information about the file
             _logger.LogInformation("Writing the file record to the DB: FileId: '{FileId}', FileName: '{FileName}', Size: {Size}", id, originalName, file.Length);
 
-            // Find the course for the file
-            var course = _courseRepository.FindById(request.CourseId);
-
             // Create a new file record in the DB
-            var postFileModel = _postFileRepository.AddPostFile(path, fileName, extension, false, profile, course, creationTime, file.Length);
+            var postFileModel = _postFileRepository.AddPostFile(path, fileName, extension, false, context.UserId!.Value, request.CourseId, creationTime, file.Length);
 
             // Log information about the file
             _logger.LogInformation("Copying the file to the file system: FileId: '{FileId}'", id);
@@ -100,10 +94,12 @@ namespace Uniwiki.Server.Application.ServerActions
             // Set the file as saved
             _postFileRepository.FileSaved(postFileModel);
 
-            // Create DTO
-            var postFileDto = postFileModel.ToDto();
+            throw new NotImplementedException();
 
-            return new UploadPostFileResponseDto(postFileDto);
+            // Create DTO
+            // var postFileDto = postFileModel.ToDto();
+
+            // return new UploadPostFileResponseDto(postFileDto);
         }
     }
 }

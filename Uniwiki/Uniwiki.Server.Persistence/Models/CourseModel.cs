@@ -8,7 +8,7 @@ namespace Uniwiki.Server.Persistence.Models
     {
         public string Code { get; protected set; } = null!;
         public string CodeStandardized { get; protected set; } = null!;
-        public string FullName { get; protected set; } = null!;
+        public string LongName { get; protected set; } = null!;
         public string FullNameStandardized { get; protected set; } = null!;
         public Guid StudyGroupId { get; protected set; }
         public StudyGroupModel StudyGroup { get; protected set; } = null!;
@@ -20,19 +20,17 @@ namespace Uniwiki.Server.Persistence.Models
         public ICollection<PostModel> Posts { get; protected set; }
             = new List<PostModel>();
 
-        internal CourseModel(Guid id, string code, string codeStandardized, string fullname, string fullnameStandardized, ProfileModel author, StudyGroupModel studyGroup, string universityUrl, string url, bool isRemoved)
+        internal CourseModel(Guid id, string code, string codeStandardized, string fullname, string fullnameStandardized, Guid authorId, Guid studyGroupId, string universityUrl, string url, string studyGroupUrl, bool isRemoved)
             : base(isRemoved, id)
         {
             Code = code;
             CodeStandardized = codeStandardized;
-            FullName = fullname;
+            LongName = fullname;
             FullNameStandardized = fullnameStandardized;
-            AuthorId = author.Id;
-            // Author = author;
-            StudyGroupId = studyGroup.Id;
-            StudyGroup = studyGroup;
+            AuthorId = authorId;
+            StudyGroupId = studyGroupId;
             Url = url;
-            StudyGroupUrl = studyGroup.Url;
+            StudyGroupUrl = studyGroupUrl;
             UniversityUrl = universityUrl;
         }
 

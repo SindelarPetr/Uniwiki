@@ -4,11 +4,11 @@ namespace Uniwiki.Shared.RequestResponse
 {
     public class GetProfileRequest : RequestBase<GetProfileResponse>
     {
-        public string NameIdentifier { get; set; }
+        public string Url { get; set; }
 
-        public GetProfileRequest(string nameIdentifier)
+        public GetProfileRequest(string url)
         {
-            NameIdentifier = nameIdentifier;
+            Url = url;
         }
     }
 }

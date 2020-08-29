@@ -1,18 +1,20 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 using Shared.RequestResponse;
 using Uniwiki.Shared.ModelDtos;
 
 namespace Uniwiki.Shared.RequestResponse.Authentication
 {
-    [DataContract]
     public class RegisterResponseDto : ResponseBase
     {
-        [DataMember]
-        public ProfileDto UserProfile { get; set; }
+        public string UserEmail { get; }
 
-        public RegisterResponseDto(ProfileDto userProfile)
+        public Guid UserId { get;  }
+
+        public RegisterResponseDto(string userEmail, Guid userId)
         {
-            UserProfile = userProfile;
+            UserEmail = userEmail;
+            UserId = userId;
         }
     }
 }

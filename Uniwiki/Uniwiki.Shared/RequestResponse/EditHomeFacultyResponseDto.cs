@@ -1,15 +1,16 @@
 ﻿using Shared.RequestResponse;
 using Uniwiki.Shared.ModelDtos;
+using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Shared.RequestResponse
 {
     public class EditHomeFacultyResponseDto : ResponseBase
     {
-        public EditHomeFacultyResponseDto(ProfileDto profile)
+        public EditHomeFacultyResponseDto(AuthorizedUserDto profile)
         {
             Profile = profile;
         }
 
-        public ProfileDto Profile { get; }
+        public AuthorizedUserDto Profile { get; }
     }
 }

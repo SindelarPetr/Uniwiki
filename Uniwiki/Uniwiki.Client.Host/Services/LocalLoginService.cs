@@ -6,18 +6,18 @@ using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Client.Host.Services
 {
-    internal class LocalLoginService : ILocalLoginService
+    public class LocalLoginService
     {
         private readonly ILocalAuthenticationStateProvider _localAuthenticationStateProvider;
         private readonly ILocalStorageManagerService _localStorageManagerService;
         private readonly ITimeService _timeService;
-        private readonly IStaticStateService _staticStateService;
+        private readonly StaticStateService _staticStateService;
 
         public bool IsAuthenticated => User != null && LoginToken != null;
-        public ProfileDto? User { get; private set; }
+        public AuthorizedUserDto? User { get; private set; }
         public LoginTokenDto? LoginToken { get; private set; }
 
-        public LocalLoginService(ILocalAuthenticationStateProvider localAuthenticationStateProvider, ILocalStorageManagerService localStorageManagerService, ITimeService timeService, IStaticStateService staticStateService)
+        public LocalLoginService(ILocalAuthenticationStateProvider localAuthenticationStateProvider, ILocalStorageManagerService localStorageManagerService, ITimeService timeService, StaticStateService staticStateService)
         {
             _localAuthenticationStateProvider = localAuthenticationStateProvider;
             _localStorageManagerService = localStorageManagerService;
@@ -29,7 +29,13 @@ namespace Uniwiki.Client.Host.Services
         {
             var loginToken = await _localStorageManagerService.GetLoginToken();
             var loginProfile = await _localStorageManagerService.GetLoginProfile();
-            _staticStateService.SetSelectedStudyGroup(loginProfile?.HomeFaculty);
+
+            if (loginProfile?.HomeStudyGroupId != null)
+            {
+                _staticStateService.SetSelectedStudyGroup(
+                    new StudyGroupToSelectDto(loginProfile.HomeStudyGroupLongName, loginProfile.HomeStudyGroupShortName, loginProfile.HomeStudyGroupId.Value)
+                );
+            }
 
             if (loginToken == null || loginProfile == null || loginToken.Expiration.AddMinutes(10) < _timeService.Now)
                 return;
@@ -41,7 +47,7 @@ namespace Uniwiki.Client.Host.Services
             _localAuthenticationStateProvider.SetAsLoggedIn(LoginToken.PrimaryTokenId);
         }
 
-        public async Task<ProfileDto> LocalLogin(ProfileDto user, LoginTokenDto loginToken)
+        public async Task<AuthorizedUserDto> LocalLogin(AuthorizedUserDto user, LoginTokenDto loginToken)
         {
             User = user;
             LoginToken = loginToken;
@@ -55,7 +61,10 @@ namespace Uniwiki.Client.Host.Services
             await _localStorageManagerService.SetLoginToken(loginToken);
 
             // Set static state
-            _staticStateService.SetSelectedStudyGroup(user.HomeFaculty);
+            if(user.HomeStudyGroupId != null)
+            {
+                _staticStateService.SetSelectedStudyGroup(new StudyGroupToSelectDto(user.HomeStudyGroupLongName!, user.HomeStudyGroupShortName!, user.HomeStudyGroupId.Value));
+            }
 
             // Notify the rest of the app about authentication
             _localAuthenticationStateProvider.SetAsLoggedIn(loginToken.PrimaryTokenId);
@@ -75,7 +84,7 @@ namespace Uniwiki.Client.Host.Services
             _localAuthenticationStateProvider.SetAsLoggedOut();
         }
 
-        public Task UpdateUser(ProfileDto user)
+        public Task UpdateUser(AuthorizedUserDto user)
         {
             // Dont do anything if the user is not authenticated
             if (!IsAuthenticated)

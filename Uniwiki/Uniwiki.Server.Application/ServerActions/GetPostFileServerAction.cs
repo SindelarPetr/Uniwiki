@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Server.Appliaction.Services.Abstractions;
@@ -35,11 +36,8 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<GetPostFileResponse> ExecuteAsync(GetPostFileRequest request, RequestContext context)
         {
-            // Get file from DB
-            var file = _postFileRepository.FindById(request.FileId, request.ExpectedName);
-
             // Get the last time the user downloaded the file
-            var latestDownload = _postFileDownloadRepository.TryGetLatestDownload(context.LoginToken!, file);
+            var latestDownload = _postFileDownloadRepository.TryGetLatestDownload(context.LoginToken!.Id, request.FileId);
 
             // Get current time
             var currentTime = _timeService.Now;
@@ -49,15 +47,18 @@ namespace Uniwiki.Server.Application.ServerActions
                 throw new RequestException(_textService.Error_WaitBeforeRepeatedDownload);
 
             // Add it to the DB
-            _postFileDownloadRepository.AddPostFileDownload(context.LoginToken!.Id, file.Id, currentTime);
+            _postFileDownloadRepository.AddPostFileDownload(context.LoginToken!.Id, request.FileId, currentTime);
 
             // Get path for the file
             var filePath = Path.Combine(_uploadFileService.PostFilesDirectoryPath, request.FileId.ToString());
 
-            // Open the file stream
-            FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            // Get original name for the file
+            var originalFullName = _postFileRepository.FindById(request.FileId).Select(f => f.OriginalFullName).Single();
 
-            return Task.FromResult(new GetPostFileResponse(fileStream, file.OriginalFullName));
+            // Open the file stream
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+
+            return Task.FromResult(new GetPostFileResponse(fileStream, originalFullName));
         }
     }
 }

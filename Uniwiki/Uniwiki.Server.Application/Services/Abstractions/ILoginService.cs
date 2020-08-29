@@ -1,10 +1,12 @@
-﻿using Uniwiki.Server.Persistence.Models;
+﻿using System;
+using System.Linq;
+using Uniwiki.Server.Persistence.Models;
 
 namespace Uniwiki.Server.Application.Services.Abstractions
 {
     internal interface ILoginService
     {
-        LoginTokenModel LoginUser(string email, string password);
-        LoginTokenModel LoginUser(ProfileModel profileModel);
+        IQueryable<LoginTokenModel> LoginUser(string email, string password);
+        IQueryable<LoginTokenModel> LoginUser(Guid profileId);
     }
 }

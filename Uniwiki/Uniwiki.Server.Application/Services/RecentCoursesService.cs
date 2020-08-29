@@ -5,10 +5,11 @@ using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Shared.ModelDtos;
+using Uniwiki.Shared.RequestResponse;
 
 namespace Uniwiki.Server.Application.Services
 {
-    public class RecentCoursesService : IRecentCoursesService
+    public class RecentCoursesService
     {
         private readonly ITimeService _timeService;
         private readonly UniwikiContext _uniwikiContext;
@@ -19,7 +20,7 @@ namespace Uniwiki.Server.Application.Services
             _uniwikiContext = uniwikiContext;
         }
 
-        public void SetAsRecentCourses(FoundCourseDto[] recentCoursesDtos, Guid profileId)
+        public void SetAsRecentCourses(RecentCourseDto[] recentCoursesDtos, Guid profileId)
         {
             // Set the recent courses
             var courseVisits = recentCoursesDtos.Select(c => new CourseVisitModel(Guid.NewGuid(), c.Id, profileId, _timeService.Now));

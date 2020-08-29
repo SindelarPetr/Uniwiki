@@ -28,13 +28,18 @@ namespace Uniwiki.Shared
             public static string BuildRoute(CourseDto course, string? postType = null)
             {
                 return postType == null ?
-                    RouteHelper.BuildRouteParts(UniPage.BaseRoute, course.University.Url, course.StudyGroup.Url, course.Url) :
-                    RouteHelper.BuildRouteParts(UniPage.BaseRoute, course.University.Url, course.StudyGroup.Url, course.Url, postType);
+                    RouteHelper.BuildRouteParts(UniPage.BaseRoute, course.UniversityUrl, course.StudyGroupUrl, course.Url) :
+                    RouteHelper.BuildRouteParts(UniPage.BaseRoute, course.UniversityUrl, course.StudyGroupUrl, course.Url, postType);
             }
 
             public static string BuildRoute(string courseUrl, string studyGroupUrl, string universityUrl)
             {
                 return RouteHelper.BuildRouteParts(UniPage.BaseRoute, universityUrl, studyGroupUrl, courseUrl);
+            }
+
+            public static string BuildRoute(string fullUrl)
+            {
+                return RouteHelper.BuildRoutePartsFromUrlFriendlyParts(UniPage.BaseRoute, fullUrl);
             }
         }
 

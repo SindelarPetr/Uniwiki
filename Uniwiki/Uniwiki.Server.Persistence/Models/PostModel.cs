@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Toolbelt.ComponentModel.DataAnnotations.Schema.V5;
 using Uniwiki.Server.Persistence.Repositories.Base;
 
@@ -7,6 +8,7 @@ namespace Uniwiki.Server.Persistence.Models
 {
     public class PostModel : RemovableModelBase<Guid>
     {
+        [IndexColumn]
         public string? PostType { get; protected set; }
         public Guid AuthorId { get; protected set; }
         public ProfileModel Author { get; protected set; } = null!;
@@ -16,6 +18,9 @@ namespace Uniwiki.Server.Persistence.Models
         public CourseModel Course { get; protected set; } = null!;
 
         [IndexColumn]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public int PostNumber { get; protected set; }
+
         public DateTime CreationTime { get; protected set; }
 
         public ICollection<PostFileModel> PostFiles { get; protected set; }
@@ -27,14 +32,12 @@ namespace Uniwiki.Server.Persistence.Models
         public ICollection<PostCommentModel> Comments { get; protected set; }
             = new List<PostCommentModel>();
 
-        internal PostModel(Guid id, string? postType, ProfileModel author, string text, CourseModel course, DateTime creationTime, bool isRemoved) : base(isRemoved, id)
+        internal PostModel(Guid id, string? postType, Guid authorId, string text, Guid courseId, bool isRemoved, DateTime creationTime) : base(isRemoved, id)
         {
             PostType = postType;
-            AuthorId = author.Id;
-            Author = author;
+            AuthorId = authorId;
             Text = text;
-            CourseId = course.Id;
-            Course = course;
+            CourseId = courseId;
             CreationTime = creationTime;
         }
 

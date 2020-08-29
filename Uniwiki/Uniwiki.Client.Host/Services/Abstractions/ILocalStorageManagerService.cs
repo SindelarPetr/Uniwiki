@@ -15,12 +15,12 @@ namespace Uniwiki.Client.Host.Services.Abstractions
         Task SetLoginToken(LoginTokenDto loginToken);
         Task RemoveLoginToken();
 
-        Task<ProfileDto?> GetLoginProfile();
-        Task SetLoginProfile(ProfileDto loginProfile);
+        Task<AuthorizedUserDto?> GetLoginProfile();
+        Task SetLoginProfile(AuthorizedUserDto loginProfile);
         Task RemoveLoginProfile();
-        Task SetRecentCourses(FoundCourseDto[] courses);
-        Task SetRecentCourse(FoundCourseDto course);
-        Task<FoundCourseDto[]> GetRecentCourses();
+        Task SetRecentCourses(RecentCourseDto[] courses);
+        Task SetRecentCourse(RecentCourseDto course);
+        Task<RecentCourseDto[]> GetRecentCourses();
 
         Task<bool> IsFeedbackProvided();
         Task SetFeedbackProvided();

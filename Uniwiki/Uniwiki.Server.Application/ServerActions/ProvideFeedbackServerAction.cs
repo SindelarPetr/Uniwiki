@@ -1,6 +1,7 @@
 ﻿using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
@@ -14,22 +15,27 @@ namespace Uniwiki.Server.Application.ServerActions
     {
         private readonly FeedbackRepository _feedbackRepository;
         private readonly ITimeService _timeService;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.None;
 
-        public ProvideFeedbackServerAction(IServiceProvider serviceProvider, FeedbackRepository feedbackRepository, ITimeService timeService) : base(serviceProvider)
+        public ProvideFeedbackServerAction(IServiceProvider serviceProvider, FeedbackRepository feedbackRepository, ITimeService timeService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _feedbackRepository = feedbackRepository;
             _timeService = timeService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<ProvideFeedbackResponseDto> ExecuteAsync(ProvideFeedbackRequestDto request, RequestContext context)
         {
             // Add the feedback to the DB
-            _feedbackRepository.AddFeedback(context.User, request.Rating, request.Text, _timeService.Now);
+            _feedbackRepository.AddFeedback(context.UserId, request.Rating, request.Text, _timeService.Now);
+
+            // Find the user
+            var user = context.UserId != null ? _uniwikiContext.Profiles.ToAuthorizedUser().Single(p => p.Id == context.UserId.Value) : null;
 
             // Create response
-            var response = new ProvideFeedbackResponseDto(context.User?.ToDto());
+            var response = new ProvideFeedbackResponseDto(user);
 
             return Task.FromResult(response);
         }

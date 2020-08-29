@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
@@ -15,30 +16,29 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly ProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
         private readonly PostLikeRepository _postLikeRepository;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public LikePostServerAction(IServiceProvider serviceProvider, PostRepository postRepository, ProfileRepository profileRepository, ITimeService timeService, PostLikeRepository postLikeRepository) : base(serviceProvider)
+        public LikePostServerAction(IServiceProvider serviceProvider, PostRepository postRepository, ProfileRepository profileRepository, ITimeService timeService, PostLikeRepository postLikeRepository, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _postRepository = postRepository;
             _profileRepository = profileRepository;
             _timeService = timeService;
             _postLikeRepository = postLikeRepository;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<LikePostResponseDto> ExecuteAsync(LikePostRequestDto request, RequestContext context)
         {
-            // Get profile
-            var profile = _profileRepository.FindById(context.User!.Id);
-
-            // Get post
-            var post = _postRepository.FindById(request.PostId);
-
             // Like the post
-            _postLikeRepository.LikePost(post, profile, _timeService.Now);
+            _postLikeRepository.LikePost(request.PostId, context.UserId!.Value, _timeService.Now);
+
+            // Reload the post
+            var postDto = _uniwikiContext.Posts.Where(p => p.Id == request.PostId).ToDto(context.UserId).Single();
 
             // Create result
-            var result = new LikePostResponseDto(post.ToDto(profile));
+            var result = new LikePostResponseDto(postDto);
 
             return Task.FromResult(result);
         }

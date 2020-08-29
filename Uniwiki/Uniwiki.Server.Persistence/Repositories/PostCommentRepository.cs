@@ -6,7 +6,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class PostCommentRepository : RemovableRepositoryBase<PostCommentModel, Guid> // , PostCommentRepository
+    public class PostCommentRepository : RemovableRepositoryBase<PostCommentModel, Guid> 
     {
         private readonly TextService _textService;
 
@@ -21,12 +21,13 @@ namespace Uniwiki.Server.Persistence.Repositories
         public PostCommentModel EditComment(PostCommentModel comment, string text)
         {
             comment.Edit(text);
+
             return comment;
         }
 
-        public Guid AddPostComment(ProfileModel profile, PostModel post, string commentText, DateTime creationTime)
+        public Guid AddPostComment(Guid authorId, Guid postId, string commentText, DateTime creationTime)
         {
-            var postComment = new PostCommentModel(Guid.NewGuid(), profile, post, commentText, creationTime, false);
+            var postComment = new PostCommentModel(Guid.NewGuid(), authorId, postId, commentText, creationTime, false);
 
             All.Add(postComment);
 

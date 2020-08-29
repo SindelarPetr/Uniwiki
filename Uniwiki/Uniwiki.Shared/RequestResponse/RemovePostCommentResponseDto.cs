@@ -5,9 +5,9 @@ namespace Uniwiki.Shared.RequestResponse
 {
     public class RemovePostCommentResponseDto : ResponseBase
     {
-        public PostDto Post { get; set; }
+        public PostViewModel Post { get; set; }
 
-        public RemovePostCommentResponseDto(PostDto post)
+        public RemovePostCommentResponseDto(PostViewModel post)
         {
             Post = post;
         }

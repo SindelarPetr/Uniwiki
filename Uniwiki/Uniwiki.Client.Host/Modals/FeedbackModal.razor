@@ -42,7 +42,7 @@ else
 	[Inject] IToastService ToastService { get; set; }
 	[Inject] IRequestSender RequestSender { get; set; }
 	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; }
-	[Inject] ILocalLoginService LocalLoginService { get; set; }
+	[Inject] LocalLoginService LocalLoginService { get; set; }
 
 	public ProvideFeedbackRequestDto Request { get; set; }
 
@@ -107,4 +107,5 @@ else
 			Request.Rating = rating;
 
 		StateHasChanged();
-	} }
+	} 
+}

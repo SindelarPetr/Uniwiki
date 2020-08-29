@@ -8,20 +8,18 @@ namespace Uniwiki.Server.Persistence.Models
     {
         public Guid PostId { get; protected set; }
         public PostModel Post { get; protected set; } = null!;
-        public Guid ProfileId { get; protected set; }
-        public ProfileModel Profile { get; protected set; } = null!;
+        public Guid AuthorId { get; protected set; }
+        public ProfileModel Author { get; protected set; } = null!;
         public string Text { get; protected set; } = null!;
         public DateTime CreationTime { get; protected set; }
         public ICollection<PostCommentLikeModel> Likes { get; protected set; }
             = new List<PostCommentLikeModel>();
 
-        internal PostCommentModel(Guid id, ProfileModel profile, PostModel post, string text, DateTime creationTime, bool isRemoved)
+        internal PostCommentModel(Guid id, Guid authorId, Guid postId, string text, DateTime creationTime, bool isRemoved)
             : base(isRemoved, id)
         {
-            PostId = post.Id;
-            Post = post;
-            ProfileId = profile.Id;
-            //Profile = profile;
+            PostId = postId;
+            AuthorId = authorId;
             Text = text;
             CreationTime = creationTime;
         }

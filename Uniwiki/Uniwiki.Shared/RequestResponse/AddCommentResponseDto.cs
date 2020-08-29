@@ -5,9 +5,9 @@ namespace Uniwiki.Shared.RequestResponse
 {
     public class AddCommentResponseDto : ResponseBase
     {
-        public PostDto Post { get; set; }
+        public PostViewModel Post { get; set; }
 
-        public AddCommentResponseDto(PostDto post)
+        public AddCommentResponseDto(PostViewModel post)
         {
             Post = post;
         }

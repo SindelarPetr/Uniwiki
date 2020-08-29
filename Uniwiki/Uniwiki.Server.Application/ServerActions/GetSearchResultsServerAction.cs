@@ -58,7 +58,7 @@ namespace Uniwiki.Server.Application.ServerActions
                     _uniwikiContext
                     .CourseVisits
                     .AsNoTracking()
-                    .Where(v => v.ProfileId == context.User!.Id)
+                    .Where(v => v.ProfileId == context.UserId!.Value)
                     .OrderByDescending(v => v.VisitDateTime)
                     .Include(v => v.Course)
                     .Select(v => v.Course) // This might cause a problem

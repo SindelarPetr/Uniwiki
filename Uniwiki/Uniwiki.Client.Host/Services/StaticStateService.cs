@@ -3,10 +3,10 @@ using Uniwiki.Shared.ModelDtos;
 
 namespace Uniwiki.Client.Host.Services
 {
-    public class StaticStateService : IStaticStateService
+    public class StaticStateService
     {
-        public StudyGroupDto? SelectedStudyGroup { get; private set; }
-        public void SetSelectedStudyGroup(StudyGroupDto? selectedStudyGroup) => SelectedStudyGroup = selectedStudyGroup;
+        public StudyGroupToSelectDto? SelectedStudyGroup { get; private set; }
+        public void SetSelectedStudyGroup(StudyGroupToSelectDto? selectedStudyGroup) => SelectedStudyGroup = selectedStudyGroup;
 
         public string LoginPageEmail { get; private set; } = string.Empty;
         public string SetLoginPageEmail(string email) => LoginPageEmail = email;

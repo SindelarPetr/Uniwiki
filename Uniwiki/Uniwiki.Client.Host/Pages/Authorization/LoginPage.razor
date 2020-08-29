@@ -57,7 +57,7 @@
 	[Inject] private ILoginService LoginService { get; set; }
 	[Inject] private INavigationService NavigationService { get; set; }
 	[Inject] private ILocalStorageManagerService LocalStorageManagerService { get; set; }
-	[Inject] private IStaticStateService StaticStateService { get; set; }
+	[Inject] private StaticStateService StaticStateService { get; set; }
 
 	public LoginRequestDto Request { get; set; }
 

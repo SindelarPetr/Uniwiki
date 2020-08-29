@@ -12,8 +12,9 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class CourseRepository : RemovableRepositoryBase<CourseModel, Guid>//, CourseRepository
+    public class CourseRepository : RemovableRepositoryBase<CourseModel, Guid>
     {
+        private readonly UniwikiContext _uniwikiContext;
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
 
@@ -21,6 +22,7 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public CourseRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.Courses)
         {
+            _uniwikiContext = uniwikiContext;
             _stringStandardizationService = stringStandardizationService;
             _textService = textService;
         }
@@ -40,66 +42,34 @@ namespace Uniwiki.Server.Persistence.Repositories
                 ?? throw new RequestException(_textService.Error_CourseNotFound);
         }
 
-
-
-        public IEnumerable<CourseModel> SearchCourses(string text)
-        {
-            return All
+        public IEnumerable<CourseModel> SearchCourses(string text) 
+            => All
                 .AsNoTracking()
                 .Include(c => c.StudyGroup)
                 .ThenInclude(g => g.University)
-                .Where(c => c.CodeStandardized.Contains(text) || c.FullNameStandardized.Contains(text)); // TODO: Have a look on using EF.Functions
-        }
+                .Where(c => c.CodeStandardized.Contains(text) || c.FullNameStandardized.Contains(text));
 
-        // TODO: Implement Full-text search
-        public IEnumerable<CourseModel> SearchCoursesFromStudyGroup(string text, StudyGroupModel studyGroup)
-        {
-            return SearchCourses(text)
-                .Where(c => c.StudyGroupId == studyGroup.Id);
-        }
+        public bool IsCourseUrlUnique(Guid studyGroupId, string url) 
+            => _uniwikiContext
+            .Courses
+            .Where(c => c.StudyGroupId == studyGroupId).All(c => c.Url != url);
 
-        public IEnumerable<CourseModel> SearchCoursesFromUniversity(string text, UniversityModel university)
-        {
-            return SearchCourses(text).Where(c => c.StudyGroup.UniversityId == university.Id);
-        }
+        public bool IsNameUnique(Guid studyGroupId, string name) 
+            => _uniwikiContext
+            .Courses
+            .Where(c => c.StudyGroupId == studyGroupId)
+            .All(c => c.LongName.ToLower().Trim() != name.ToLower().Trim());
 
-        public bool IsUrlUnique(StudyGroupModel studyGroup, string url)
-        {
-            return studyGroup.Courses.All(c => c.Url != url);
-        }
-
-        public bool IsNameUnique(StudyGroupModel studyGroup, string name)
-        {
-            return studyGroup.Courses.All(c => c.FullName.ToLower().Trim() != name.ToLower().Trim());
-        }
-
-        public IEnumerable<CourseModel> TryGetCourses(IEnumerable<(string courseUrl, string studyGroupUrl, string universityUrl)> urls)
-        {
-            return urls
-                .Select(course => All
-                    .FirstOrDefault(c => c.Url == course.courseUrl && c.StudyGroup.Url == course.studyGroupUrl && c.StudyGroup.University.Url == course.universityUrl))
-                .Where(c => c != null);
-        }
-
-        public CourseModel AddCourse(string code, string fullName, ProfileModel author, StudyGroupModel faculty, string universityUrl, string url)
+        public CourseModel AddCourse(string code, string fullName, Guid authorId, Guid facultyId, string universityUrl, string url, string studyGroupUrl)
         {
             var codeStandardized = _stringStandardizationService.StandardizeSearchText(code);
             var fullNameStandardized = _stringStandardizationService.StandardizeSearchText(fullName);
 
-            var course = new CourseModel(Guid.NewGuid(), code, codeStandardized, fullName, fullNameStandardized, author, faculty, universityUrl, url, false);
+            var course = new CourseModel(Guid.NewGuid(), code, codeStandardized, fullName, fullNameStandardized, authorId, facultyId, universityUrl, url, studyGroupUrl, false);
 
             All.Add(course);
 
-            SaveChanges();
-
             return course;
         }
-
-        public CourseModel GetCourseWithStudyGroupAndUniversity(Guid courseId)
-        => All
-            .Where(c => c.Id == courseId)
-            .Include(c => c.StudyGroup)
-            .ThenInclude(g => g.University)
-            .First();
     }
 }

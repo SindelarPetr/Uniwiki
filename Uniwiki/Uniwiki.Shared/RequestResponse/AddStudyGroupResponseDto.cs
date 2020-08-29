@@ -1,15 +1,17 @@
-﻿using Shared.RequestResponse;
+﻿using System;
+using Shared.RequestResponse;
 using Uniwiki.Shared.ModelDtos;
 
 namespace Uniwiki.Shared.RequestResponse
 {
     public class AddStudyGroupResponseDto : ResponseBase
-    {
-        public StudyGroupDto StudyGroupDto { get; set; }
+    { 
 
-        public AddStudyGroupResponseDto(StudyGroupDto studyGroupDto)
+        public AddStudyGroupResponseDto(Guid studyGroupId)
         {
-            StudyGroupDto = studyGroupDto;
+            StudyGroupId = studyGroupId;
         }
+
+        public Guid StudyGroupId { get; }
     }
 }

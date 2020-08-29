@@ -17,9 +17,9 @@ namespace Uniwiki.Client.Host.Pages
         [Inject] private IRequestSender RequestSender { get; set; }
         [Inject] private ILoginService LoginService { get; set; }
         [Inject] private INavigationService NavigationService { get; set; }
-        [Inject] private ILocalLoginService LocalLoginService { get; set; }
+        [Inject] private LocalLoginService LocalLoginService { get; set; }
         [Inject] private IModalService ModalService { get; set; }
-        [Inject] private IStaticStateService StaticStateService { get; set; }
+        [Inject] private StaticStateService StaticStateService { get; set; }
 
         [Parameter] public string Url { get; set; }
 
@@ -36,7 +36,7 @@ namespace Uniwiki.Client.Host.Pages
             // Update the authenticated profile
             if (_pageData.Authenticated)
             {
-               await LocalLoginService.UpdateUser(_pageData.Profile);
+               await LocalLoginService.UpdateUser(_pageData.AuthenticatedUser);
             }
         }
 
@@ -85,7 +85,7 @@ namespace Uniwiki.Client.Host.Pages
             var request = new EditHomeFacultyRequestDto(homeFacultyId);
 
             // Send the request
-            var response = await RequestSender.SendRequestAsync(request, () => _edittingHomeFaculty = false);
+            var response = await RequestSender.SendRequestAsync(request, () => { _edittingHomeFaculty = false; StateHasChanged(); });
 
             // Update the profile
             await LocalLoginService.UpdateUser(response.Profile);
@@ -94,7 +94,7 @@ namespace Uniwiki.Client.Host.Pages
             _pageData.Profile = response.Profile;
 
             // Save the new home university to the static state
-            StaticStateService.SetSelectedStudyGroup(response.Profile.HomeFaculty);
+            StaticStateService.SetSelectedStudyGroup(new StudyGroupToSelectDto(response.Profile.HomeStudyGroupLongName, response.Profile.HomeStudyGroupShortName, response.Profile.HomeStudyGroupId.Value, response.Profile.HomeStudyGroupUniversityShortName) response.Profile.HomeFaculty);
         }
     }
 }

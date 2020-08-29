@@ -3,13 +3,13 @@
 @using Uniwiki.Shared.RequestResponse
 
 <div class="mx-3 mt-0 d-flex">
-	<img src="@Comment.Profile.ProfilePictureSrc" alt="Profile picture" class="rounded-circle border border-light mr-2" style="width: 2rem; height: 2rem; object-fit: cover" />
+	<img src="@Comment.AuthorProfilePictureSrc" alt="Profile picture" class="rounded-circle border border-light mr-2" style="width: 2rem; height: 2rem; object-fit: cover" />
 	<div class="d-flex flex-column flex-grow-1">
 		<div class="d-flex">
-			<a class="btn btn-link mr-auto pl-0 pt-0" href="@PageRoutes.ProfilePage.BuildRoute(Comment.Profile.NameIdentifier)">@Comment.Profile.FullName</a>
+			<a class="btn btn-link mr-auto pl-0 pt-0" href="@PageRoutes.ProfilePage.BuildRoute(Comment.AuthorNameIdentifier)">@Comment.AuthorFullName</a>
 
 
-			@if (LoginService.IsAuthenticated && LoginService.User.Id == Comment.Profile.Id)
+			@if (LoginService.IsAuthenticated && LoginService.User.Id == Comment.AuthorId)
 			{
 				<div class="dropleft">
 					<button class="btn border-0 btn-outline-secondary mt-auto" type="button" id="contextBtn-@Comment.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
@@ -44,7 +44,7 @@
 	[Inject] IToastService ToastService { get; set; }
 
 	[Parameter] public PostCommentDto Comment { get; set; }
-	[Parameter] public EventCallback<PostDto> OnCommentModified { get; set; }
+	[Parameter] public EventCallback<PostViewModel> OnCommentModified { get; set; }
 
 	private bool _editMode;
 

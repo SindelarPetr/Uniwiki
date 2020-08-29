@@ -11,22 +11,22 @@
 		else
 		{
 			<div class="d-flex mb-3">
-				<a href="@PageRoutes.ProfilePage.BuildRoute(Post.Author.NameIdentifier)">
-					<img src="@Post.Author.ProfilePictureSrc"
+				<a href="@PageRoutes.ProfilePage.BuildRoute(Post.AuthorNameIdentifier)">
+					<img src="@Post.AuthorProfilePictureSrc"
 						 alt="Profile picture"
 						 class="rounded-circle border border-light mr-2"
 						 style="width: 3rem; height: 3rem; object-fit: cover" />
 				</a>
 				<div class="my-auto mr-2">
-					<a href="@PageRoutes.ProfilePage.BuildRoute(Post.Author.NameIdentifier)">
-						<h6 class="">@Post.Author.FullName</h6>
+					<a href="@PageRoutes.ProfilePage.BuildRoute(Post.AuthorNameIdentifier)">
+						<h6 class="">@Post.AuthorFullName</h6>
 					</a>
 					<span class="text-secondary my-auto dont-break-out">@Post.CreationTime.ToPassedTimeString(TimeService, TextService)</span>
 				</div>
 
 
 				<span class="text-info font-weight-bold my-auto ml-auto dont-break-out">@(Post.PostType)</span>
-				@if (LoginService.IsAuthenticated && Post.Author.Id == LoginService.User.Id)
+				@if (LoginService.IsAuthenticated && Post.AuthorId == LoginService.User.Id)
 				{
 					<div class="dropleft d-flex">
 						<button class="btn border-0 btn-outline-secondary my-auto" type="button" id="contextBtn-@Post.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
@@ -142,7 +142,7 @@
 
 	[Parameter] public Guid CourseId { get; set; }
 	[Parameter] public string[] AllPostTypes { get; set; }
-	[Parameter] public PostDto Post { get; set; }
+	[Parameter] public PostViewModel Post { get; set; }
 	[Parameter] public EventCallback OnRemoved { get; set; }
 
 	private bool _showFiles = false;
@@ -270,7 +270,7 @@
 		await base.OnAfterRenderAsync(firstRender);
 	}
 
-	public void HandleOnCommentModified(PostDto modifiedPost)
+	public void HandleOnCommentModified(PostViewModel modifiedPost)
 	{
 		Post = modifiedPost;
 		StateHasChanged();

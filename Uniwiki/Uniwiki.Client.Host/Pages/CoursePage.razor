@@ -7,8 +7,8 @@
 
 <LoadingComponent Finished="@IsLoaded">
 	<div class="container">
-		<PageHeaderComponent Title="@_pageData.Course.FullUrl" />
-		<h5 class="dont-break-out">@_pageData.Course.UniversityAndFaculty</h5>
+		<PageHeaderComponent Title="@_pageData.CourseLongName" />
+		<h5 class="dont-break-out">@_pageData.CourseUniversityAndFaculty</h5>
 	</div>
 		<div class="container container-sm">
 		@* Top bar *@
@@ -47,7 +47,7 @@
 					<div class="card-body">
 						@if (LoginService.IsAuthenticated)
 						{
-							<AddPostComponent OnPostCreated="@HandlePostCreated" CourseId="@_pageData.Course.Id" AllPostTypes="@_pageData.NewPostPostTypes" />
+							<AddPostComponent OnPostCreated="@HandlePostCreated" CourseId="@_pageData.CourseId" AllPostTypes="@_pageData.NewPostPostTypes" />
 						}
 						else
 						{
@@ -74,7 +74,7 @@
 		@* Posts *@
 		@foreach (var postDto in _posts)
 		{
-			<PostComponent @key="@postDto.Id.ToString()" Post="postDto" AllPostTypes="_pageData.NewPostPostTypes" CourseId="_pageData.Course.Id" OnRemoved="@(() => HandlePostRemoved(postDto))" />
+			<PostComponent @key="@postDto.Id.ToString()" Post="postDto" AllPostTypes="_pageData.NewPostPostTypes" CourseId="_pageData.CourseId" OnRemoved="@(() => HandlePostRemoved(postDto))" />
 		}
 		@* /Posts *@
 
@@ -131,7 +131,7 @@
 
 	private Guid? _requestedScroll;
 
-	private List<PostDto> _posts = new List<PostDto>();
+	private List<PostViewModel> _posts = new List<PostViewModel>();
 
 	private bool _fetchingMorePosts;
 	private bool _canFetchMorePosts;
@@ -140,7 +140,7 @@
 	{
 		await base.OnInitializedAsync();
 		await ReloadPosts(_filteredPostType, true);
-		await LocalStorageManagerService.SetRecentCourse(_pageData.Course);
+		await LocalStorageManagerService.SetRecentCourse(_pageData.RecentCourse);
 		ScrollService.ScrolledToEnd += HandleScrolledToEnd;
 	}
 
@@ -154,19 +154,28 @@
 		_isFiltering = true;
 		_showAllPostTypes = showAll;
 		_filteredPostType = filterPostType;
-		_pageData = await RequestSender.SendRequestAsync(new GetCourseRequestDto(UniversityUrl, StudyGroupUrl, CourseUrl, _filteredPostType, showAll, Constants.MaxPostsToFetch), () =>
-		{
-			_isFiltering = false;
-			StateHasChanged();
-		});
-		_posts = new List<PostDto>(_pageData.Posts);
+		_pageData = await RequestSender.SendRequestAsync(
+			new GetCourseRequestDto(
+				UniversityUrl,
+				StudyGroupUrl,
+				CourseUrl,
+				_filteredPostType,
+				showAll,
+				Constants.MaxPostsToFetch,
+				_pageData.Posts == null || _pageData.Posts.Length == 0 ? null : (int?)_pageData.Posts.Last().PostNumber
+			),
+			() => {
+				_isFiltering = false;
+				StateHasChanged();
+			});
+		_posts = new List<PostViewModel>(_pageData.Posts);
 		_canFetchMorePosts = _pageData.CanFetchMore;
 
 		_isFiltering = false;
 		StateHasChanged();
 	}
 
-	public async Task HandlePostCreated(PostDto postDto)
+	public async Task HandlePostCreated(PostViewModel postDto)
 	{
 		// Check if the post is visible according to filters
 		if (_filteredPostType != null && _filteredPostType != postDto.PostType)
@@ -195,14 +204,14 @@
 
 	private async Task FetchMorePosts()
 	{
-		if (_fetchingMorePosts || !_posts.Any() || !_canFetchMorePosts)
+		if (_fetchingMorePosts || _pageData == null || _posts == null || !_posts.Any() || !_canFetchMorePosts)
 			return;
 
 		_fetchingMorePosts = true;
 		StateHasChanged();
 
 		// Create request
-		var request = new FetchPostsRequestDto(_pageData.Course.Id, _posts.Last().Id, Constants.MaxPostsToFetch, !_showAllPostTypes, _filteredPostType);
+		var request = new FetchPostsRequestDto(_pageData.CourseId, _posts.Last().PostNumber, Constants.MaxPostsToFetch, !_showAllPostTypes, _filteredPostType);
 
 		// Send request
 		var response = await RequestSender.SendRequestAsync(request, () =>
@@ -222,7 +231,7 @@
 		StateHasChanged();
 	}
 
-	private void HandlePostRemoved(PostDto post)
+	private void HandlePostRemoved(PostViewModel post)
 	{
 		_posts.Remove(post);
 	}

@@ -9,13 +9,13 @@ namespace Uniwiki.Client.Host.Services
     internal class LoginService : ILoginService
     {
         private readonly IRequestSender _requestSender;
-        private readonly ILocalLoginService _localLoginService;
+        private readonly LocalLoginService _localLoginService;
 
         public bool IsAuthenticated => _localLoginService.IsAuthenticated;
-        public ProfileDto? User => _localLoginService.User;
+        public AuthorizedUserDto? User => _localLoginService.User;
         public LoginTokenDto? LoginToken => _localLoginService.LoginToken;
 
-        public LoginService(IRequestSender requestSender, ILocalLoginService localLoginService)
+        public LoginService(IRequestSender requestSender, LocalLoginService localLoginService)
         {
             _requestSender = requestSender;
             _localLoginService = localLoginService;

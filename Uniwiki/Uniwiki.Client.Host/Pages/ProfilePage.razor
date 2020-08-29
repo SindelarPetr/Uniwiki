@@ -40,7 +40,7 @@
 				}
 				else
 				{
-					@if (_pageData.Profile.HomeFaculty == null)
+					@if (_pageData.Profile.HomeStudyGroupId == null)
 					{
 						@if (_pageData.Authenticated)
 						{
@@ -50,7 +50,7 @@
 					}
 					else
 					{
-						<p class="mb-0">Studying at <strong>@_pageData.Profile.HomeFaculty.University.ShortName @_pageData.Profile.HomeFaculty.LongName</strong></p>
+						<p class="mb-0">Studying at <strong>@_pageData.Profile.HomeStudyGroupUniversityName @_pageData.Profile.HomeStudyGroupLongName</strong></p>
 						@if (_pageData.Authenticated)
 						{
 							<div class="text-right">

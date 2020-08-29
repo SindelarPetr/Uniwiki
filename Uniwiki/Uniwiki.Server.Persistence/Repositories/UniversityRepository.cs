@@ -12,7 +12,7 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class UniversityRepository : RemovableRepositoryBase<UniversityModel, Guid> // , UniversityRepository
+    public class UniversityRepository : RemovableRepositoryBase<UniversityModel, Guid> 
     {
         private readonly IStringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
@@ -34,7 +34,7 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             var neutralizedText = text.Neutralize();
 
-            var universities = All.Where(u => u.FullName.Neutralize().Contains(neutralizedText) || u.ShortName.Neutralize().Contains(neutralizedText));
+            var universities = All.Where(u => u.LongName.Neutralize().Contains(neutralizedText) || u.ShortName.Neutralize().Contains(neutralizedText));
             return universities;
         }
 
@@ -55,12 +55,12 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             return GetUniversities().Where(u =>
                     _stringStandardizationService.StandardizeSearchText(u.ShortName).Contains(text) ||
-                    _stringStandardizationService.StandardizeSearchText(u.FullName).Contains(text));
+                    _stringStandardizationService.StandardizeSearchText(u.LongName).Contains(text));
         }
 
         public bool IsNameAndUrlUniq(string fullName, string url)
         {
-            return All.All(u => u.FullName.ToLower() != fullName.ToLower() && u.Url != url);
+            return All.All(u => u.LongName.ToLower() != fullName.ToLower() && u.Url != url);
         }
 
         public UniversityModel AddUniversity(string fullName, string shortName, string url)
