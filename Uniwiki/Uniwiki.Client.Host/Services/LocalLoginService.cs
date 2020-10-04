@@ -25,20 +25,28 @@ namespace Uniwiki.Client.Host.Services
             _staticStateService = staticStateService;
         }
 
+        // TODO: Sould I actually use this?
         public async Task InitializeLogin()
         {
             var loginToken = await _localStorageManagerService.GetLoginToken();
             var loginProfile = await _localStorageManagerService.GetLoginProfile();
 
-            if (loginProfile?.HomeStudyGroupId != null)
+            if (loginProfile?.HasHomeStudyGroup ?? false)
             {
                 _staticStateService.SetSelectedStudyGroup(
-                    new StudyGroupToSelectDto(loginProfile.HomeStudyGroupLongName, loginProfile.HomeStudyGroupShortName, loginProfile.HomeStudyGroupId.Value)
+                    new StudyGroupToSelectDto(
+                        loginProfile.HomeStudyGroup!.LongName, 
+                        loginProfile.HomeStudyGroup.ShortName, 
+                        loginProfile.HomeStudyGroup.StudyGroupId, 
+                        loginProfile.HomeStudyGroup.UniversityShortName,
+                        loginProfile.HomeStudyGroup.UniversityId)
                 );
             }
 
             if (loginToken == null || loginProfile == null || loginToken.Expiration.AddMinutes(10) < _timeService.Now)
+            {
                 return;
+            }
 
             User = loginProfile;
             LoginToken = loginToken;
@@ -61,9 +69,15 @@ namespace Uniwiki.Client.Host.Services
             await _localStorageManagerService.SetLoginToken(loginToken);
 
             // Set static state
-            if(user.HomeStudyGroupId != null)
+            if(user.HasHomeStudyGroup)
             {
-                _staticStateService.SetSelectedStudyGroup(new StudyGroupToSelectDto(user.HomeStudyGroupLongName!, user.HomeStudyGroupShortName!, user.HomeStudyGroupId.Value));
+                _staticStateService.SetSelectedStudyGroup(
+                    new StudyGroupToSelectDto(
+                        user.HomeStudyGroup!.LongName, 
+                        user.HomeStudyGroup.ShortName, 
+                        user.HomeStudyGroup.StudyGroupId,
+                        user.HomeStudyGroup.UniversityShortName,
+                        user.HomeStudyGroup.UniversityId));
             }
 
             // Notify the rest of the app about authentication
@@ -88,7 +102,9 @@ namespace Uniwiki.Client.Host.Services
         {
             // Dont do anything if the user is not authenticated
             if (!IsAuthenticated)
+            {
                 return Task.CompletedTask;
+            }
 
             User = user;
 

@@ -1,12 +1,12 @@
-﻿using System;
+﻿#nullable disable
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Uniwiki.Client.Host.Shared
+namespace Uniwiki.Client.Host.Components
 {
     /// <summary>
 	/// Add Fluent Validator support to an EditContext.
@@ -23,12 +23,7 @@ namespace Uniwiki.Client.Host.Shared
         /// Enable access to the ASP.NET Core Service Provider / DI.
         /// </summary>
         [Inject]
-        private IServiceProvider ServiceProvider { get; set; }
-
-        /// <summary>
-        /// Isolate scoped DbContext to this component.
-        /// </summary>
-        // private IServiceScope ServiceScope { get; set; }
+        public IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
         /// The AbstractValidator object for the corresponding form Model object type.
@@ -55,17 +50,17 @@ namespace Uniwiki.Client.Host.Shared
             {
                 throw new InvalidOperationException($"{nameof(DataAnnotationsValidator)} requires a cascading " +
                 $"parameter of type {nameof(EditContext)}. For example, you can use {nameof(DataAnnotationsValidator)} " +
-                $"inside an EditForm.");
+                "inside an EditForm.");
             }
 
             //this.ServiceScope = ServiceProvider.CreateScope();
 
-            if (this.Validator == null)
+            if (Validator == null)
             {
-                this.SetFormValidator();
+                SetFormValidator();
             }
 
-            this.AddValidation();
+            AddValidation();
         }
 
         /// <summary>
@@ -74,8 +69,8 @@ namespace Uniwiki.Client.Host.Shared
         private void SetFormValidator()
         {
             var formType = CurrentEditContext.Model.GetType();
-            this.Validator = GetTypedValidator(formType);
-            if (this.Validator == null)
+            Validator = GetTypedValidator(formType);
+            if (Validator == null)
             {
                 throw new InvalidOperationException($"FluentValidation.IValidator<{formType.FullName}> is not registered in the application service provider.");
             }
@@ -129,8 +124,8 @@ namespace Uniwiki.Client.Host.Shared
                 var (propertyValue, propertyName) = EvalObjectProperty(editContext.Model, error.PropertyName, modelGraphCache);
                 if (propertyValue != null)
                 {
-                    var fieldID = new FieldIdentifier(propertyValue, propertyName);
-                    messages.Add(fieldID, error.ErrorMessage);
+                    var fieldId = new FieldIdentifier(propertyValue, propertyName);
+                    messages.Add(fieldId, error.ErrorMessage);
                 }
             }
 
@@ -158,12 +153,12 @@ namespace Uniwiki.Client.Host.Shared
             // Therefore, we need to traverse the object graph to acquire them!
             var modelObjectPath = string.Empty;
             var objectParts = propertyPath.Split('.');
-            var fieldName = objectParts[objectParts.Length - 1];
+            var fieldName = objectParts[objectParts!.Length - 1];
             for (var i = 0; i < objectParts.Length - 1; i++)
             {
                 var propertyName = objectParts[i];
-                bool isArray = false;
-                int arrayIndex = 0;
+                var isArray = false;
+                var arrayIndex = 0;
                 if (propertyName.Contains("[") && propertyName.Contains("]"))
                 {
                     // propertyName = "A[22]" --> ["A", "22"]
@@ -253,11 +248,11 @@ namespace Uniwiki.Client.Host.Shared
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -272,7 +267,7 @@ namespace Uniwiki.Client.Host.Shared
                 Validator = null;
                 ChildValidators = null;
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
@@ -284,13 +279,13 @@ namespace Uniwiki.Client.Host.Shared
         // }
 
         // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
+        public void Dispose() =>
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // Uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
+        // Uncomment the following line if the finalizer is overridden above.
+        // GC.SuppressFinalize(this);
+
         #endregion
     }
 }
+#nullable restore

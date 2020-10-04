@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
@@ -28,13 +28,13 @@ namespace Uniwiki.Server.Persistence.Repositories
         public ProfileModel GetProfileByEmail(string email) 
             => TryGetProfileByEmail(email) ?? throw new RequestException(_textService.Error_NoUserWithProvidedEmail(email));
 
-        public ProfileModel TryGetProfileByEmail(string email) 
+        public ProfileModel? TryGetProfileByEmail(string email) 
             => All.FirstOrDefault(p => p.Email == email);
 
         public void ChangePassword(ProfileModel profile, string newPassword, byte[] passwordSalt) 
             => profile.ChangePassword(newPassword, passwordSalt);
 
-        public ProfileModel TryGetProfileByUrl(string url) 
+        public ProfileModel? TryGetProfileByUrl(string url) 
             => All.FirstOrDefault(p => p.Url == url);
 
         public ProfileModel AddProfile(string email, string firstName, string familyName, string url, string hashedPassword, byte[] salt, string profilePictureSrc, DateTime creationTime, bool isConfirmed, AuthenticationLevel authenticationLevel, Guid? homeFacultyId)
@@ -42,8 +42,6 @@ namespace Uniwiki.Server.Persistence.Repositories
             var profile = new ProfileModel(Guid.NewGuid(), email, firstName, familyName, url, hashedPassword, salt, profilePictureSrc, creationTime, isConfirmed, authenticationLevel, homeFacultyId);
 
             All.Add(profile);
-
-            SaveChanges();
 
             return profile;
         }
@@ -53,6 +51,8 @@ namespace Uniwiki.Server.Persistence.Repositories
             var profile = UniwikiContext.Profiles.Single(p => p.Id == profileId);
 
             profile.SetHomeFaculty(facultyId);
+
+            UniwikiContext.SaveChanges();
 
             return FindById(profileId);
         }

@@ -40,13 +40,16 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             // Issue the token
             var token = _loginService.LoginUser(request.Email, request.Password);
 
-            var tokenDto = token.ToDto().Single();
+            var tokenDto = token.ToLoginTokenDto().Single();
 
-            // Set the recent courses
-            _recentCoursesService.SetAsRecentCourses(request.RecentCourses, tokenDto.ProfileId);
+            // TODO (uncomment): Set the recent courses
+            // _recentCoursesService.SetAsRecentCourses(request.RecentCourses, tokenDto.ProfileId);
 
             // Get the authorized user
-            var authorizedUser = _uniwikiContext.Profiles.ToAuthorizedUser().Single(p => p.Id == tokenDto.ProfileId);
+            var authorizedUser = _uniwikiContext
+                .Profiles
+                .Where(p => p.Id == tokenDto.ProfileId)
+                .ToAuthorizedUserDto();
 
             // Create response
             var response = new LoginResponseDto(tokenDto, authorizedUser);

@@ -8,7 +8,7 @@ namespace Uniwiki.Shared
         public static class HomePage
         {
             public static string BuildRoute() => RouteHelper.BuildRouteParts(BaseRoute);
-            public const string BaseRoute = "Home";
+            public const string BaseRoute = "/";
         }
 
         public static class UniPage

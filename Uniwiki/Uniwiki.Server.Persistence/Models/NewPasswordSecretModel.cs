@@ -1,16 +1,17 @@
 ﻿using System;
+using Uniwiki.Server.Persistence.Models.Base;
 using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
     public class NewPasswordSecretModel : ModelBase<Guid>
     {
-        public Guid ProfileId { get; protected set; }
-        public ProfileModel Profile { get; protected set; } = null!;
-        public DateTime CreationTime { get; protected set; }
-        public DateTime ExpirationTime { get; protected set; }
-        public bool IsValid { get; protected set; }
-        public Guid Secret { get; protected set; }
+        public Guid ProfileId { get; set; }
+        public ProfileModel Profile { get; set; } = null!;
+        public DateTime CreationTime { get; set; }
+        public DateTime ExpirationTime { get; set; }
+        public bool IsValid { get; set; }
+        public Guid Secret { get; set; }
 
         internal NewPasswordSecretModel(Guid id, Guid profileId, Guid secret, DateTime creationTime, DateTime expirationTime, bool isValid)
             : base(id)

@@ -63,7 +63,7 @@ namespace Uniwiki.Server.Application.Tests
             var editPostServerAction = provider.GetService<EditPostServerAction>();
             var removePostServerAction = provider.GetService<RemovePostServerAction>();
             var likePostServerAction = provider.GetService<LikePostServerAction>();
-            var addCommentServerAction = provider.GetService<AddCommentServerAction>();
+            var addCommentServerAction = provider.GetService<AddPostCommentServerAction>();
             var likePostCommentServerAction = provider.GetService<LikePostCommentServerAction>();
             var provideFeedbackServerAction = provider.GetService<ProvideFeedbackServerAction>();
 
@@ -254,14 +254,14 @@ namespace Uniwiki.Server.Application.Tests
             Assert.AreEqual(1, likePost1Response.Post.LikesCount);
 
             // TEST: Can write a comment
-            var addComment1Request = new AddCommentRequestDto(post1.Id, comment1Text);
+            var addComment1Request = new AddPostCommentRequestDto(post1.Id, comment1Text);
             var addComment1Response = await addCommentServerAction.ExecuteActionAsync(addComment1Request, user1Context);
             Assert.AreEqual(1, addComment1Response.Post.PostComments.Length);
             Assert.AreEqual(comment1Text, addComment1Response.Post.PostComments.Last().Text);
             var comment1 = addComment1Response.Post.PostComments.Last();
 
             // TEST: Unauthorised user cannot write a comment
-            var addComment2Request = new AddCommentRequestDto(post1.Id, "Some another comment.");
+            var addComment2Request = new AddPostCommentRequestDto(post1.Id, "Some another comment.");
             await Assert.ThrowsExceptionAsync<RequestException>(() => addCommentServerAction.ExecuteActionAsync(addComment2Request, anonymousContext));
 
             // TEST: Can like a comment

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Server.Appliaction.ServerActions;
+using Shared.Services;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
@@ -21,12 +22,12 @@ namespace Uniwiki.Server.Application.ServerActions
 
         private readonly StudyGroupRepository _studyGroupRepository;
         private readonly CourseRepository _courseRepository;
-        private readonly IStringStandardizationService _stringStandardizationService;
+        private readonly StringStandardizationService _stringStandardizationService;
         private readonly CourseVisitRepository _courseVisitRepository;
         private readonly ILogger<GetSearchResultsServerAction> _logger;
         private readonly UniwikiContext _uniwikiContext;
 
-        public GetSearchResultsServerAction(IServiceProvider serviceProvider, StudyGroupRepository studyGroupRepository, CourseRepository courseRepository, IStringStandardizationService stringStandardizationService, CourseVisitRepository courseVisitRepository, ILogger<GetSearchResultsServerAction> logger, UniwikiContext uniwikiContext) : base(serviceProvider)
+        public GetSearchResultsServerAction(IServiceProvider serviceProvider, StudyGroupRepository studyGroupRepository, CourseRepository courseRepository, StringStandardizationService stringStandardizationService, CourseVisitRepository courseVisitRepository, ILogger<GetSearchResultsServerAction> logger, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _studyGroupRepository = studyGroupRepository;
             _courseRepository = courseRepository;
@@ -48,21 +49,22 @@ namespace Uniwiki.Server.Application.ServerActions
             FoundCourseDto[] courseDtos;
 
             // Recent courses for the user
-            FoundCourseDto[] recentCourseDtos = new FoundCourseDto[0];
+            RecentCourseDto[] recentCourseDtos = new RecentCourseDto[0];
 
             // Find the recent courses if the user is authenticated and did not type any text
             if (context.IsAuthenticated && string.IsNullOrWhiteSpace(searchText))
             {
                 // TODO: Check efficiency of this - how many calls are made?
-                recentCourseDtos = 
+                // TODO: Fix
+                recentCourseDtos =
                     _uniwikiContext
                     .CourseVisits
-                    .AsNoTracking()
+                    .Include(v => v.Course)
                     .Where(v => v.ProfileId == context.UserId!.Value)
                     .OrderByDescending(v => v.VisitDateTime)
-                    .Include(v => v.Course)
                     .Select(v => v.Course) // This might cause a problem
-                    .ToFoundCourses()
+                    .Distinct()
+                    .ToRecentCourseDto()
                     .ToArray();
             }
 
@@ -70,7 +72,11 @@ namespace Uniwiki.Server.Application.ServerActions
             if (request.StudyGroupId != null)
             {
                 // Search just amongst the selected study group
-                var coursesFromStudyGroup = _uniwikiContext.Courses.Where(c => c.StudyGroup.Id == request.StudyGroupId);
+                var coursesFromStudyGroup = _uniwikiContext
+                    .Courses
+                    .Include(c => c.StudyGroup)
+                    .ThenInclude(g => g.University)
+                    .Where(c => c.StudyGroupId.Equals(request.StudyGroupId));
 
                 // find the courses
                 var courses = FindCourses(coursesFromStudyGroup, searchText);

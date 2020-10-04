@@ -29,7 +29,8 @@ namespace Uniwiki.Server.Application.ServerActions
             var universitiesWithStudyGroups = _uniwikiContext
                 .StudyGroups
                 .Include(g => g.University)
-                .GroupBy(g => new {g.UniversityId, g.LongName, g.ShortName, g.Url})
+                .AsEnumerable()
+                .GroupBy(g => g.University)
                 .Select(
                     pair => new UniversityToSelectDto( 
                         pair.Key.ShortName, 
@@ -37,7 +38,9 @@ namespace Uniwiki.Server.Application.ServerActions
                         pair.Select(g => new StudyGroupToSelectDto(
                             g.ShortName, 
                             g.LongName, 
-                            g.Id)).ToArray() // TODO: Check the performance on ToArray on this place
+                            g.Id,
+                            g.University.ShortName,
+                            g.UniversityId)).ToArray() // TODO: Check the performance on ToArray on this place
                         )
                 ).ToArray();
             

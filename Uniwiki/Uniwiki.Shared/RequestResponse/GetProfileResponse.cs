@@ -1,17 +1,19 @@
 ﻿using Shared.RequestResponse;
 using Uniwiki.Shared.ModelDtos;
+using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Shared.RequestResponse
 {
     public class GetProfileResponse : ResponseBase
     {
         public ProfileViewModel Profile { get; set; }
-        public bool Authenticated { get; }
+        public bool IsAuthenticated => AuthorizedUser != null;
+        public AuthorizedUserDto? AuthorizedUser { get; }
 
-        public GetProfileResponse(ProfileViewModel profile, bool authenticated)
+        public GetProfileResponse(ProfileViewModel profile, AuthorizedUserDto? authorizedUser)
         {
             Profile = profile;
-            Authenticated = authenticated;
+            AuthorizedUser = authorizedUser;
         }
     }
 }

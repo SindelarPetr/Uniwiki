@@ -22,12 +22,12 @@ namespace Uniwiki.Server.Application.ServerActions
                 post.Id,
                 post.Text,
                 post.PostType ?? "null",
-                post.PostFiles.Count,
-                post.PostFiles.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"),
+                post.PostFiles?.Count ?? 0,
+                post.PostFiles?.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'") ?? string.Empty,
                 request.Text,
                 request.PostType,
-                request.PostFiles.Count(),
-                request.PostFiles.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'"));
+                request.PostFiles?.Count() ?? 0,
+                request.PostFiles?.Select(f => f.OriginalFullName).Aggregate(string.Empty, (a, b) => $"'{a}', '{b}'") ?? string.Empty);
         }
 
         private readonly PostRepository _postRepository;
@@ -35,16 +35,20 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly PostFileRepository _postFileRepository;
         private readonly ProfileRepository _profileRepository;
         private readonly ILogger<EditPostServerAction> _logger;
+        private readonly PostFileService _postFileService;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public EditPostServerAction(IServiceProvider serviceProvider, PostRepository postRepository, TextService textService, PostFileRepository postFileRepository, ProfileRepository profileRepository, ILogger<EditPostServerAction> logger) : base(serviceProvider)
+        public EditPostServerAction(IServiceProvider serviceProvider, PostRepository postRepository, TextService textService, PostFileRepository postFileRepository, ProfileRepository profileRepository, ILogger<EditPostServerAction> logger, PostFileService postFileService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _postRepository = postRepository;
             _textService = textService;
             _postFileRepository = postFileRepository;
             _profileRepository = profileRepository;
             _logger = logger;
+            _postFileService = postFileService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<EditPostResponseDto> ExecuteAsync(EditPostRequestDto request, RequestContext context)
@@ -53,10 +57,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var postId = request.PostId;
 
             // Get post to edit
-            var post = _postRepository.FindById(postId).Single();
-
-            // Find all files from the request in DB
-            var filesForSearch = request.PostFiles.Select(f => (f.Id, f.NameWithoutExtension));
+            var post = _uniwikiContext.Posts.Find(postId) ?? throw  new RequestException(_textService.CouldNotFindPost_Removing);
 
             // Check if the post belongs to the right user
             if (post.AuthorId != context.UserId!.Value)
@@ -68,13 +69,13 @@ namespace Uniwiki.Server.Application.ServerActions
             LogAction(_logger, post, request);
 
             // Update the names of the files
-            // TODO: var postFiles = _postFileRepository.UpdateNamesOfPostFiles().ToArray();
+            _postFileService.UpdatePostFiles(context.UserId!.Value, post.Id, request.PostFiles.ToArray());
 
             // Edit the post
-            var edittedPost = _postRepository.EditPost(post, request.Text, request.PostType, new PostFileModel[0]/*postFiles*/); // TODO: Update this
+            var edittedPost = _postRepository.EditPost(post, request.Text, request.PostType);
 
             // Convert to DTO
-            var postDto = edittedPost.ToDto(context.UserId!.Value).Single();
+            var postDto = edittedPost.ToPostViewModel(context.UserId!.Value).Single();
 
             // Create response
             var response = new EditPostResponseDto(postDto);

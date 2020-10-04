@@ -1,44 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Toolbelt.ComponentModel.DataAnnotations.Schema.V5;
+using Uniwiki.Server.Persistence.Models.Base;
 using Uniwiki.Server.Persistence.Repositories.Base;
+using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class PostModel : RemovableModelBase<Guid>
+    public class PostModel : ModelBase<Guid>, ISoftDeletable
     {
+        public class Map : IEntityTypeConfiguration<PostModel>
+        {
+            public void Configure(EntityTypeBuilder<PostModel> builder)
+            {
+                builder.Property<int>(PersistenceConstants.IsDeleted);
+                builder.HasQueryFilter(m => EF.Property<int>(m, PersistenceConstants.IsDeleted) == 0);
+
+                builder
+                    .HasMany(m => m.Comments)
+                    .WithOne(c => c.Post)
+                    .HasForeignKey(c => c.PostId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasIndex(m => m.CreationTime);
+            }
+        }
+
         [IndexColumn]
-        public string? PostType { get; protected set; }
-        public Guid AuthorId { get; protected set; }
-        public ProfileModel Author { get; protected set; } = null!;
-        public string Text { get; protected set; } = null!;
+        [MaxLength(Constants.Validations.PostTypeMaxLength)]
+        public string? PostType { get; set; }
+        public Guid AuthorId { get; set; }
+        public ProfileModel Author { get; set; } = null!;
+        // Max text lenght
+        public string Text { get; set; } = null!;
 
-        public Guid CourseId { get; protected set; }
-        public CourseModel Course { get; protected set; } = null!;
+        public Guid CourseId { get; set; }
+        public CourseModel Course { get; set; } = null!;
 
         [IndexColumn]
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public int PostNumber { get; protected set; }
+        public DateTime CreationTime { get; set; }
 
-        public DateTime CreationTime { get; protected set; }
+        public ICollection<PostFileModel> PostFiles { get; set; } = null!;
 
-        public ICollection<PostFileModel> PostFiles { get; protected set; }
-        = new List<PostFileModel>();
+        public ICollection<PostLikeModel> Likes { get; set; } = null!;
 
-        public ICollection<PostLikeModel> Likes { get; protected set; }
-            = new List<PostLikeModel>();
-        
-        public ICollection<PostCommentModel> Comments { get; protected set; }
-            = new List<PostCommentModel>();
+        public ICollection<PostCommentModel> Comments { get; set; } = null!;
 
-        internal PostModel(Guid id, string? postType, Guid authorId, string text, Guid courseId, bool isRemoved, DateTime creationTime) : base(isRemoved, id)
+        public PostModel(Guid id, string? postType, Guid authorId, string text, Guid courseId, DateTime creationTime) : base(id)
         {
             PostType = postType;
             AuthorId = authorId;
             Text = text;
             CourseId = courseId;
             CreationTime = creationTime;
+            PostFiles = new List<PostFileModel>();
+            Likes = new List<PostLikeModel>();
+            Comments = new List<PostCommentModel>();
         }
 
         protected PostModel()
@@ -46,16 +67,10 @@ namespace Uniwiki.Server.Persistence.Models
 
         }
 
-        internal void Edit(string text, string? postType, PostFileModel[] postFiles)
+        internal void Edit(string text, string? postType)
         {
             Text = text;
             PostType = postType;
-            PostFiles = postFiles;
-        }
-
-        internal void SetPostFiles(PostFileModel[] postFileModels)
-        {
-            PostFiles = postFileModels;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page "/EmailConfirmed/{Secret}"
-@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@inherits UniwikiComponentBase
 @using Uniwiki.Shared.RequestResponse.Authentication
 
 
@@ -64,14 +64,14 @@
 @code
 {
 
-	[Inject] private IRequestSender RequestSender { get; set; }
-	[Inject] public ILoginService LoginService { get; set; }
-	[Inject] public LocalLoginService LocalLoginService { get; set; }
-	[Inject] public INavigationService NavigationService { get; set; }
-	[Inject] public IToastService ToastService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] LocalLoginService LocalLoginService { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
+	[Inject] IToastService ToastService { get; set; } = null!;
 
-	[Parameter] public string Secret { get; set; }
-	[Parameter] public string Email { get; set; }
+	[Parameter] public string Secret { get; set; } = null!;
+	[Parameter] public string Email { get; set; } = null!;
 
 	private bool _confirming = false;
 	private bool _success = false;
@@ -114,12 +114,12 @@
 			// Send request
 			var response = await RequestSender.SendRequestAsync(request, () => { });
 
-			Email = response.Profile.Email;
+			Email = response.AuthorizedUser.Email!;
 			_success = true;
 
 			// If the response contains the login token, then save it
 			if(response.LoginToken != null)
-				await LocalLoginService.LocalLogin(response.Profile, response.LoginToken);
+				await LocalLoginService.LocalLogin(response.AuthorizedUser, response.LoginToken);
 		}
 		catch (Exception)
 		{

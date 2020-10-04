@@ -26,7 +26,9 @@ namespace Uniwiki.Client.Host
 
             // On Development environment validate the DI scopes
             if (builder.HostEnvironment.IsDevelopment())
+            {
                 builder.Services.BuildServiceProvider(true);
+            }
 
             Console.WriteLine("Client environment: " + builder.HostEnvironment.Environment);
             

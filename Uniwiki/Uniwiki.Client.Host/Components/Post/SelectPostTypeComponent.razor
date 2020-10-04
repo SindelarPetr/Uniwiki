@@ -15,7 +15,7 @@
 </div>
 
 @code {
-	[Parameter] public string[] PostTypes { get; set; }
+	[Parameter] public string[] PostTypes { get; set; } = null!;
 	[Parameter] public string? SelectedPostType { get; set; }
 	[Parameter] public EventCallback<string?> SelectedPostTypeChanged { get; set; }
 
@@ -28,10 +28,16 @@
 	{
 		base.OnParametersSet();
 
-		if (PostTypes.Contains(SelectedPostType))
-			_buttonSelectedPostType = SelectedPostType;
+		if (SelectedPostType == null)
+			_buttonSelectedPostType = _inputSelectedPostType = null;
 		else
-			_inputSelectedPostType = SelectedPostType;
+		{
+
+			if (PostTypes.Contains(SelectedPostType))
+				_buttonSelectedPostType = SelectedPostType;
+			else
+				_inputSelectedPostType = SelectedPostType;
+		}
 	}
 
 	private async Task HandleButtonPostType(string postType)

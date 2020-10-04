@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
+using Shared.Services;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
@@ -17,11 +18,11 @@ namespace Uniwiki.Server.Application.ServerActions
     {
         private readonly UniversityRepository _universityRepository;
         private readonly StudyGroupRepository _studyGroupRepository;
-        private readonly IStringStandardizationService _stringStandardizationService;
+        private readonly StringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.Admin;
 
-        public AddStudyGroupServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, UniversityRepository universityRepository, StudyGroupRepository studyGroupRepository, IStringStandardizationService stringStandardizationService, TextService textService) : base(serviceProvider)
+        public AddStudyGroupServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, UniversityRepository universityRepository, StudyGroupRepository studyGroupRepository, StringStandardizationService stringStandardizationService, TextService textService) : base(serviceProvider)
         {
             _universityRepository = universityRepository;
             _studyGroupRepository = studyGroupRepository;
@@ -45,7 +46,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var studyGroupUrl = _stringStandardizationService.CreateUrl(shortName, url => _studyGroupRepository.TryGetStudyGroup(url) == null);
 
             // Create the study group
-            var studyGroup = _studyGroupRepository.AddStudyGroup(universityId, shortName, longName, studyGroupUrl, context.UserId!.Value, request.PrimaryLanguage);
+            var studyGroup = _studyGroupRepository.AddStudyGroup(universityId, shortName, longName, studyGroupUrl, request.PrimaryLanguage);
 
             // Create study group DTO
             // var studyGroupDto = studyGroup.;

@@ -2,7 +2,6 @@
 using Shared.Services;
 using Shared.Services.Abstractions;
 using System.Runtime.CompilerServices;
-using Uniwiki.Shared.Services;
 
 [assembly: InternalsVisibleTo("Shared.Tests")]
 namespace Shared
@@ -12,7 +11,7 @@ namespace Shared
         public static void AddSharedServices(this IServiceCollection services)
         {
             services.AddSingleton<ITimeService, TimeService>();
-            services.AddSingleton<IStringStandardizationService, StringStandardizationService>();
+            services.AddSingleton<StringStandardizationService>();
             services.AddSingleton<IFileHelperService, FileHelperService>();
         }
     }

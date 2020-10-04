@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Uniwiki.Server.Application\Uniwiki.Server.Application.csproj" />
     <ProjectReference Include="..\Uniwiki.Shared\Uniwiki.Shared.csproj" />
   </ItemGroup>
 

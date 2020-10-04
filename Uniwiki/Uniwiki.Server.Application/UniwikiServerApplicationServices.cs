@@ -1,5 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Server.Appliaction;
 using Server.Appliaction.ServerActions;
 using Shared.Services.Abstractions;
@@ -15,11 +19,24 @@ namespace Uniwiki.Server.Application
 {
     public static class UniwikiServerApplicationServices
     {
-        public static void AddUniwikiServerApplicationServices(this IServiceCollection services)
+        public static readonly InMemoryDatabaseRoot InMemoryDatabaseRoot = new InMemoryDatabaseRoot();
+
+        public static void AddUniwikiServerApplicationServices(this IServiceCollection services, ILoggerFactory? loggerFactory = null)
         {
             services.AddServerApplication();
             services.AddUniwikiSharedServices();
-            services.AddUniwikiServerPersistence();
+
+            services.AddUniwikiServerPersistence(options => {
+                if (loggerFactory != null)
+                {
+                    options.UseLoggerFactory(loggerFactory);
+                }
+                options.EnableSensitiveDataLogging();
+                options.UseSqlServer(
+                    "Data Source=PSINDELAR01\\SQLEXPRESS01;Initial Catalog=UniwikiLocalDatabase;Integrated Security=True");
+            }
+                //options.UseInMemoryDatabase("InMemoryDB", InMemoryDatabaseRoot).EnableSensitiveDataLogging()
+                );
 
             services.AddTransient<IEmailService, EmailService>(); // Transient, because it uses HttpContext inside
             services.AddScoped<IServerActionProvider, ServerActionProvider>();
@@ -31,10 +48,10 @@ namespace Uniwiki.Server.Application
             services.AddSingleton<IHashService, HashService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddSingleton<IApplicationHostEnvironment, ServerHostEnvironment>();
-            services.AddScoped<IEmailConfirmationSenderService, EmailConfirmationSenderService>();
+            services.AddScoped<EmailConfirmationSenderService, EmailConfirmationSenderService>();
             services.AddScoped<RecentCoursesService>();
-            services.AddScoped<IPostCategoryService, PostCategoryService>();
             services.AddScoped<FetchPostsService>();
+            services.AddScoped<PostFileService>();
 
             AddServerActions(services);
         }
@@ -43,7 +60,7 @@ namespace Uniwiki.Server.Application
         {
             // Get server action types
             var serverActionTypes = new ServerActionProvider().ProvideServerActions();
-            
+
             // Add all server action types to service collection.
             foreach (var serverActionType in serverActionTypes)
             {

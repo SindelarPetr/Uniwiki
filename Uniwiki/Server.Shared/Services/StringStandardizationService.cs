@@ -9,7 +9,7 @@ using Shared.Services.Abstractions;
 
 namespace Shared.Services
 {
-    internal class StringStandardizationService : IStringStandardizationService
+    public class StringStandardizationService
     {
         public string CreateUrl(string text, Func<string, bool> isUniq)
         {
@@ -52,7 +52,9 @@ namespace Shared.Services
             foreach (char letter in arrayText)
             {
                 if (CharUnicodeInfo.GetUnicodeCategory(letter) != UnicodeCategory.NonSpacingMark)
+                {
                     sbReturn.Append(letter);
+                }
             }
             return sbReturn.ToString();
         }

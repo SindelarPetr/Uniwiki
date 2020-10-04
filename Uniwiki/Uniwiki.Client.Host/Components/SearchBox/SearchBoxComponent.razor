@@ -27,7 +27,7 @@
 	@* Filters *@
 	<div class="mx-3 mb-2 d-flex flex-wrap">
 
-		<button class="btn btn-@(StaticStateService.SelectedStudyGroup == null ? "secondary" : "primary")" type="button" @onclick="HandleFilterClicked"><i class="fas fa-filter mr-2"></i>@(StaticStateService.SelectedStudyGroup != null ? StaticStateService.SelectedStudyGroup.University.ShortName + "-" + StaticStateService.SelectedStudyGroup.ShortName : TextService.SearchBox_SelectGroup)</button>
+		<button class="btn btn-@(StaticStateService.SelectedStudyGroup == null ? "secondary" : "primary")" type="button" @onclick="HandleFilterClicked"><i class="fas fa-filter mr-2"></i>@(StaticStateService.SelectedStudyGroup != null ? StaticStateService.SelectedStudyGroup.UniversityShortName + "-" + StaticStateService.SelectedStudyGroup.StudyGroupShortName: TextService.SearchBox_SelectGroup)</button>
 
 		@if (StaticStateService.SelectedStudyGroup != null)
 		{
@@ -53,7 +53,11 @@
 			</div>
 			@foreach (var course in _recentCourses.Reverse())
 			{
-				<CourseItemComponent Course="course" />
+				<CourseItemComponent 
+									 Code="@course.CourseCode" 
+									 Name="@course.CourseLongName" 
+									 UniversityAndFaculty="@(course.UniversityShortName + " - " + course.StudyGroupLongName)" 
+									 FullUrl="@PageRoutes.CoursePage.BuildRoute(course.CourseUrl, course.StudyGroupUrl, course.UniversityUrl)" />
 			}
 		}
 		@* /Recent courses *@
@@ -101,7 +105,11 @@
 
 			@foreach (var course in _foundCourses)
 			{
-				<CourseItemComponent Course="course" CourseClicked="HandleCourseClicked" />
+				<CourseItemComponent 
+									 Code="@course.Code" 
+									 Name="@course.Name" 
+									 UniversityAndFaculty="@course.UniversityAndFaculty" 
+									 FullUrl="@PageRoutes.CoursePage.BuildRoute(course.FullUrl)"/>
 			}
 		}
 		@* /Found courses *@
@@ -110,19 +118,19 @@
 
 @code {
 	private FoundCourseDto[] _foundCourses = new FoundCourseDto[0];
-	private FoundCourseDto[] _recentCourses = new FoundCourseDto[0];
-	private FoundCourseDto[] _recentCoursesFromStorage = new FoundCourseDto[0];
+	private RecentCourseDto[] _recentCourses = new RecentCourseDto[0];
+	private RecentCourseDto[] _recentCoursesFromStorage = new RecentCourseDto[0];
 
 	private bool HasFoundCourses => _foundCourses.Length > 0;
 
-	[Inject] public IRequestSender RequestSender { get; set; }
-	[Inject] public IJsInteropService JsInteropService { get; set; }
-	[Inject] public IToastService ToastService { get; set; }
-	[Inject] public INavigationService NavigationService { get; set; }
-	[Inject] public ILoginService LoginService { get; set; }
-	[Inject] public IModalService ModalService { get; set; }
-	[Inject] public StaticStateService StaticStateService { get; set; }
-	[Inject] public ILocalStorageManagerService LocalStorageManagerService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] IJsInteropService JsInteropService { get; set; } = null!;
+	[Inject] IToastService ToastService { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] IModalService ModalService { get; set; } = null!;
+	[Inject] StaticStateService StaticStateService { get; set; } = null!;
+	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; } = null!;
 
 	private ElementReference? _searchTextInput;
 
@@ -190,9 +198,9 @@
 		// await OnStudyGroupSelected(course.StudyGroup, false);
 	}
 
-	public async Task OnStudyGroupSelected(StudyGroupDto studyGroup, bool updateResults = true)
+	public async Task OnStudyGroupSelected(StudyGroupToSelectDto studyGroup, bool updateResults = true)
 	{
-		if (studyGroup.Id == StaticStateService.SelectedStudyGroup?.Id)
+		if (studyGroup.StudyGroupId == StaticStateService.SelectedStudyGroup?.StudyGroupId)
 			return;
 
 		StaticStateService.SetSelectedStudyGroup(studyGroup);
@@ -228,7 +236,7 @@
 		if (order != _searchOrder)
 			return;
 
-		var request = new GetSearchResultsRequestDto(SearchText, StaticStateService.SelectedStudyGroup?.University.Id, StaticStateService.SelectedStudyGroup?.Id);
+		var request = new GetSearchResultsRequestDto(SearchText, StaticStateService.SelectedStudyGroup?.UniversityId, StaticStateService.SelectedStudyGroup?.StudyGroupId);
 		var response = await RequestSender.SendRequestAsync(request, () =>
 		{
 			StateHasChanged();
@@ -248,7 +256,7 @@
 			// if he is authenticated, then show the recieved recent courses
 			if (LoginService.IsAuthenticated)
 			{
-				_recentCourses = response.RecentCourses ?? new FoundCourseDto[0];
+				_recentCourses = response.RecentCourses ?? new RecentCourseDto[0];
 
 				// Save the recent courses to the local storage
 				if (response.RecentCourses != null && response.RecentCourses.Any())
@@ -266,7 +274,7 @@
 		else
 		{
 			// Dont show any recent courses
-			_recentCourses = new FoundCourseDto[0];
+			_recentCourses = new RecentCourseDto[0];
 		}
 
 		_foundCourses = response.Courses ?? new FoundCourseDto[0];
@@ -278,22 +286,15 @@
 
 	public async Task HandleFilterClicked()
 	{
-		// Show modal window
-		var modal = ModalService.Show<SelectStudyGroupModal>(TextService.SelectFacultyModal_Title);
-		var result = await modal.Result;
+		// Open dialog for selecting study group
+		var studyGroup = await ModalService.SelectStudyGroup(TextService);
 
-		// Check if the modal is canceled
-		if (result.Cancelled)
+		// if a study group was selected
+		if (studyGroup != null)
 		{
-			return;
+			// Set the study group as selected
+			await OnStudyGroupSelected(studyGroup);
 		}
-
-		// Get selected study group
-		var studyGroup = (StudyGroupDto)result.Data;
-		Console.WriteLine(studyGroup.LongName);
-
-		// Set the study group as selected
-		await OnStudyGroupSelected(studyGroup);
 	}
 
 	public async Task HandleAddStudyGroup()
@@ -310,7 +311,7 @@
 
 		if (!result.Cancelled)
 		{
-			var studyGroup = (StudyGroupDto)result.Data;
+			var studyGroup = (StudyGroupToSelectDto)result.Data;
 
 			await OnStudyGroupSelected(studyGroup);
 			await FocusSearchInput();

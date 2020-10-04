@@ -9,7 +9,7 @@
 			<a class="btn btn-link mr-auto pl-0 pt-0" href="@PageRoutes.ProfilePage.BuildRoute(Comment.AuthorNameIdentifier)">@Comment.AuthorFullName</a>
 
 
-			@if (LoginService.IsAuthenticated && LoginService.User.Id == Comment.AuthorId)
+			@if (LoginService.IsAuthenticated && LoginService.User!.Id == Comment.AuthorId)
 			{
 				<div class="dropleft">
 					<button class="btn border-0 btn-outline-secondary mt-auto" type="button" id="contextBtn-@Comment.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
@@ -38,12 +38,12 @@
 </div>
 
 @code {
-	[Inject] ILoginService LoginService { get; set; }
-	[Inject] ITimeService TimeService { get; set; }
-	[Inject] IRequestSender RequestSender { get; set; }
-	[Inject] IToastService ToastService { get; set; }
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] ITimeService TimeService { get; set; } = null!;
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] IToastService ToastService { get; set; } = null!;
 
-	[Parameter] public PostCommentDto Comment { get; set; }
+	[Parameter] public PostCommentDto Comment { get; set; } = null;
 	[Parameter] public EventCallback<PostViewModel> OnCommentModified { get; set; }
 
 	private bool _editMode;
@@ -61,11 +61,28 @@
 			return;
 		}
 
+		// For faster UI feedback just set it to liked immediately
+		Comment.LikedByClient = true;
+		Comment.LikesCount++;
+		StateHasChanged();
+
 		// Create request
 		var request = new LikePostCommentRequestDto(Comment.Id);
 
-		// Send the request
-		var response = await RequestSender.SendRequestAsync(request, () => { });
+		LikePostCommentResponseDto response;
+		try
+		{
+			// Send the request
+			response = await RequestSender.SendRequestAsync(request, () => { });
+		}
+		catch (Exception)
+		{
+			// Return to the previous state
+			Comment.LikedByClient = false;
+			Comment.LikesCount--;
+			StateHasChanged();
+			throw;
+		}
 
 		// Display result
 		await OnCommentModified.InvokeAsync(response.Post);
@@ -80,14 +97,34 @@
 			return;
 		}
 
+
+		// For faster UI feedback just set it to liked immediately
+		Comment.LikedByClient = false;
+		Comment.LikesCount--;
+		StateHasChanged();
+
 		// Create request
 		var request = new UnlikePostCommentRequestDto(Comment.Id);
+		UnlikePostCommentResponseDto response;
 
-		// Send the request
-		var response = await RequestSender.SendRequestAsync(request, () => { });
+		try
+		{
+			// Send the request
+			response = await RequestSender.SendRequestAsync(request, () => { });
+		}
+		catch (Exception)
+		{
+			// Return to the previous state
+			Comment.LikedByClient = true;
+			Comment.LikesCount++;
+			StateHasChanged();
+
+			throw;
+		}
 
 		// Display result
 		await OnCommentModified.InvokeAsync(response.Post);
+
 	}
 
 	public async Task HandleRemoveComment()

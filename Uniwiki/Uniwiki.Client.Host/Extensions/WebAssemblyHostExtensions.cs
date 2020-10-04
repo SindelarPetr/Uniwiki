@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Services.Abstractions;
+using Uniwiki.Client.Host.Services;
 using Uniwiki.Client.Host.Services.Abstractions;
 
 namespace Uniwiki.Client.Host.Extensions

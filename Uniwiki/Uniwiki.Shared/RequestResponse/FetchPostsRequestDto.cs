@@ -7,15 +7,15 @@ namespace Uniwiki.Shared.RequestResponse
     public class FetchPostsRequestDto : RequestBase<FetchPostsResponseDto>
     {
         public Guid CourseId { get; set; }
-        public int LastPostNumber { get; set; }
+        public DateTime LastPostCreationTime { get; set; }
         public int PostsToFetch { get; set; }
         public string? PostType { get; set; }
         public bool UsePostTypeFilter { get; set; }
 
-        public FetchPostsRequestDto(Guid courseId, int lastPostNumber, int postsToFetch, bool usePostTypeFilter, string? postType)
+        public FetchPostsRequestDto(Guid courseId, DateTime lastPostCreationTime, int postsToFetch, bool usePostTypeFilter, string? postType)
         {
             CourseId = courseId;
-            LastPostNumber = lastPostNumber;
+            LastPostCreationTime = lastPostCreationTime;
             PostsToFetch = postsToFetch;
             UsePostTypeFilter = usePostTypeFilter;
             PostType = postType;

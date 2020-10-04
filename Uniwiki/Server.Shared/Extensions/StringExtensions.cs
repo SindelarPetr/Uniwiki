@@ -10,7 +10,9 @@ namespace Shared.Extensions
         public static string Neutralize(this string text)
         {
             if (string.IsNullOrWhiteSpace(text))
+            {
                 return text;
+            }
 
             text = text.Normalize(NormalizationForm.FormD).ToLower();
             var chars = text.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray();
@@ -20,7 +22,9 @@ namespace Shared.Extensions
         public static string FormatString(this string text, params object[] args)
         {
             if (text == null)
+            {
                 return null;
+            }
 
             var argsWithoutNulls = args.Select(a => a ?? string.Empty).ToArray();
             return string.Format(text, argsWithoutNulls);

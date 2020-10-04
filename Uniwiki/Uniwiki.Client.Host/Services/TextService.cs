@@ -17,12 +17,16 @@ namespace Uniwiki.Client.Host.Services
             _languageService = languageService;
         }
 
+        public string Cancel => _languageService.GetTranslation("Zrušit", "Cancel");
+        public string Toast_WaitForAllFiles => _languageService.GetTranslation("Počkejte než se nahrají všechny soubory. Pokud se některé nahrávání selhaly, pak to zkuste znovu, nebo soubor odebrete.", "Wait till the uploading of all files finishes. If some failed, then either try again or remove it.");
+        public string Toast_FillInATextForThePost =>
+            _languageService.GetTranslation("Napište text k příspěvku", "You must add some text for the post.");
         public string AddCoursePage_WhichFaculty 
             =>_languageService.GetTranslation("Na jakou univerzitu a fakultu má být předmět zařazen?", "At which university and faculty is the course taught?");
         public string RegisterPage_YouCanChangeItOnProfile =>_languageService.GetTranslation("(Můžete změnit později na vaší profilové stránce)", "(You can change it later on your profile page)");
-        public string SearchBox_SearchingOnlyAtFaculty(StudyGroupDto faculty) =>_languageService.GetTranslation(
-            $"(Hledáte pouze na { faculty.University.ShortName } { faculty.LongName })", 
-            $"(Searching only at { faculty.University.ShortName } { faculty.LongName })");
+        public string SearchBox_SearchingOnlyAtFaculty(StudyGroupToSelectDto faculty) =>_languageService.GetTranslation(
+            $"(Hledáte pouze na { faculty.UniversityShortName } { faculty.StudyGroupLongName })", 
+            $"(Searching only at { faculty.UniversityShortName } { faculty.StudyGroupLongName })");
         public string WhereDoYouStudy =>_languageService.GetTranslation("Kde studujete?", "Where do you study?");
         public string SelectUniversityAndFaculty =>_languageService.GetTranslation("Vybrat univerzitu a fakultu", "Select my university and faculty");
         public string OriginalFileName =>_languageService.GetTranslation("Původně ", "Originally ");
@@ -88,7 +92,7 @@ namespace Uniwiki.Client.Host.Services
         public string Error_ErrorOnServer =>_languageService.GetTranslation("Na serveru se vyskytla chyba.", "There was an error on the server.");
         public string Error_InvalidSecretCode =>_languageService.GetTranslation("Zadaný kód je neplatný.", "The provided code is either used or broken.");
 
-        public string HomePage_SubTitle =>_languageService.GetTranslation("Hledejte studijní materiály", "Search study materials");
+        public string HomePage_SubTitle =>_languageService.GetTranslation("Sdílejte studijní materiály se spolužáky", "Share study materials with your classmates.");
         public string SearchCourse =>_languageService.GetTranslation("Předměty", "Courses");
         public string Button_SignOut =>_languageService.GetTranslation("Odhlásit se", "Sign out");
         public string Button_LogIn =>_languageService.GetTranslation("Přihlásit se", "Log in");
@@ -188,13 +192,19 @@ $"The link to reset your password has been sent to your email <strong>{_language
         public string FileSize(in long fileSizeInBytes)
         {
             if (fileSizeInBytes / 1_000 == 0)
+            {
                 return "> 1 KB";
+            }
 
             if (fileSizeInBytes / 1_000_000 == 0)
+            {
                 return (fileSizeInBytes / 1_000) + " KB";
+            }
 
             if (fileSizeInBytes / 1_000_000_000 == 0)
+            {
                 return (fileSizeInBytes / 1_000_000) + " MB";
+            }
 
             return (fileSizeInBytes / 1_000_000_000) + " GB";
         }

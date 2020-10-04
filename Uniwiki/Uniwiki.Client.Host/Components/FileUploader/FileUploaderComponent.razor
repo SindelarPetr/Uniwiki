@@ -16,7 +16,7 @@
 	private readonly IDictionary<string, UploadFile> _files = new Dictionary<string, UploadFile>();
 	private DotNetObjectReference<InputFileCallbacks> _callbacksAsNetRef;
 
-	[Inject] IJsInteropService JsInteropService { get; set; }
+	[Inject] IJsInteropService JsInteropService { get; set; } = null!;
 
 	[Parameter]
 	public EventCallback<UploadFile> OnSelected { get; set; }

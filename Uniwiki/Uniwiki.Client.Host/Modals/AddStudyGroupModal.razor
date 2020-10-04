@@ -51,8 +51,8 @@
 </EditForm>
 
 @code {
-	[Inject] IRequestSender RequestSender { get; set; }
-	[Inject] ILanguageService LanguageService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] ILanguageService LanguageService { get; set; } = null!;
 
 	[CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 

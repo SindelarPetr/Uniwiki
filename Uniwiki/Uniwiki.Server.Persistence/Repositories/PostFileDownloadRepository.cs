@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
@@ -21,7 +21,7 @@ namespace Uniwiki.Server.Persistence.Repositories
         }
 
         public PostFileDownloadModel? TryGetLatestDownload(Guid loginTokenId, Guid fileDownloadedId) 
-            => All.LastOrDefault(d => d.TokenId == loginTokenId && d.FileDownloadedId == fileDownloadedId);
+            => All.OrderByDescending(d => d.DownloadTime).FirstOrDefault(d => d.TokenId == loginTokenId && d.FileDownloadedId == fileDownloadedId);
 
         public PostFileDownloadModel AddPostFileDownload(Guid loginTokenId, Guid fileDownloadedId, DateTime downloadTime)
         {

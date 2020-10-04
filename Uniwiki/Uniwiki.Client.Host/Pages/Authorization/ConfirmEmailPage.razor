@@ -33,11 +33,11 @@
 @code
 {
 
-	[Inject] public IRequestSender RequestSender { get; set; }
-	[Inject] public ILoginService LoginService { get; set; }
-	[Inject] public IToastService ToastService { get; set; }
-	[Inject] public IPeriodicalTimer PeriodicalTimer { get; set; }
-	[Inject] public INavigationService NavigationService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] IToastService ToastService { get; set; } = null!;
+	[Inject] IPeriodicalTimer PeriodicalTimer { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
 
 	[Parameter] public string Email { get; set; }
 

@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container my-auto text-center">
+	<h1 class="display-1 my-4">Uniwiki</h1>
+	<h4 class="my-4">🏆 The best place for sharing study materials</h4>
+	<h4 class="my-4">♻️ Because sharing is caring</h4>
+	<h4 class="my-4">👿 If you dont share you dont care, which is bad</h4>
+	<h3 class="font-weight-bold mt-5">Select your university</h3>
+	<div class="">
+		<div class="d-flex shadow border rounded mt-3">
+			<img class="card-img-top img-fluid" src="https://via.placeholder.com/120x120.png?text=University+Logo" style="object-fit: contain; max-height:100%; width:auto; max-width:100%" />
+
+			<div class="my-auto mx-3 text-left w-100">
+				<h4>ČVUT</h4>
+				<p>České vysoké učení technické v Praze</p>
+				<a class="btn btn-primary btn-block" href="@PageRoutes.UniversityPage.BuildRoute("cvut")">Select</a>
+			</div>
+		</div>
+
+		<div class="d-flex shadow border rounded mt-3">
+			<img class="card-img-top img-fluid" src="https://via.placeholder.com/120x120.png?text=University+Logo" style="object-fit: contain; max-height:100%; width:auto; max-width:100%" />
+
+			<div class="my-auto mx-3 text-left w-100">
+				<h4>UK</h4>
+				<p>Univerzita Karlova</p>
+				<button class="btn btn-primary btn-block" type="button">Select</button>
+			</div>
+		</div>
+
+		<div class="d-flex shadow border rounded mt-3">
+			<img class="card-img-top img-fluid" src="https://via.placeholder.com/120x120.png?text=University+Logo" style="object-fit: contain; max-height:100%; width:auto; max-width:100%" />
+
+			<div class="my-auto mx-3 text-left w-100">
+				<h4>HSE</h4>
+				<p>Higher School of Economics</p>
+				<button class="btn btn-primary btn-block" type="button">Select</button>
+			</div>
+		</div>
+	</div>
+</div>

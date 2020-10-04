@@ -37,12 +37,12 @@ else
 {
 <p></p>}
 
-@code { [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+@code { [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = null!;
 
-	[Inject] IToastService ToastService { get; set; }
-	[Inject] IRequestSender RequestSender { get; set; }
-	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; }
-	[Inject] LocalLoginService LocalLoginService { get; set; }
+	[Inject] IToastService ToastService { get; set; } = null!;
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; } = null!;
+	[Inject] LocalLoginService LocalLoginService { get; set; } = null!;
 
 	public ProvideFeedbackRequestDto Request { get; set; }
 

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Shared.Exceptions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
@@ -52,13 +53,13 @@ namespace Uniwiki.Server.Persistence.Repositories
             return fileModels.Select(f => f.postFile);
         }
 
-        public PostFileModel AddPostFile(string path, string nameWithoutExtension, string extension, bool isSaved, Guid profileId, Guid courseId, DateTime creationTime, long size)
+        public Guid AddPostFile(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, Guid profileId, Guid courseId, DateTime creationTime, long size)
         {
-            var postFile = new PostFileModel(Guid.NewGuid(), path, nameWithoutExtension, extension, isSaved, profileId, courseId, creationTime, size, false);
+            var postFile = new PostFileModel(id, path, nameWithoutExtension, extension, isSaved, profileId, courseId, creationTime, size);
 
             All.Add(postFile);
 
-            return postFile;
+            return postFile.Id;
         }
 
         /// <summary>
@@ -95,16 +96,12 @@ namespace Uniwiki.Server.Persistence.Repositories
             }
         }
 
-        public IQueryable<PostModel> PairPostFilesWithPost(PostFileModel[] files, PostModel post)
+        public void PairPostFilesWithPost(PostFileModel[] files, Guid postId)
         {
-            post.SetPostFiles(files);
-
             foreach (var file in files)
             {
-                file.SetPost(post);
+                file.SetPostId(postId);
             }
-
-            return UniwikiContext.Posts.Where(p => p.Id == post.Id);
         }
     }
 }

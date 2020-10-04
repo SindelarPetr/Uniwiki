@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 using Uniwiki.Shared;
 

@@ -1,0 +1,59 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+@model CourseViewModel
+
+<div class="container my-auto text-left">
+	<h1>@Model.CourseName</h1>
+	<h3>@Model.UniveristyShortName - @Model.FacultyLongName</h3>
+	<a class="btn btn-primary btn-block" href="/Uni/univer/facu/cours/AddOrEditPost"><i class="fas fa-upload mr-3"></i> Add a new post</a>
+
+	@foreach (var post in Model.PostItems)
+	{
+		<div class="p-3 border shadow rounded bg-white text-left mt-3">
+			<div class="d-flex mb-3">
+				<div class="my-auto mr-2">
+					<a href="@post.PostAuthor.Url">
+						<h6 class="">@post.PostAuthor.NameAndSurname</h6>
+					</a>
+					<span class="text-secondary my-auto dont-break-out">@post.CreationTime.ToString("dd.MM.yyyyy")</span>
+				</div>
+
+				<span class="text-info font-weight-bold my-auto ml-auto dont-break-out">@post.Category</span>
+				@*@if (LoginService.IsAuthenticated && Post.Author.Id == LoginService.User.Id)
+					{
+						<div class="dropleft d-flex">
+							<button class="btn border-0 btn-outline-secondary my-auto" type="button" id="contextBtn-@Post.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+							<div class="dropdown-menu" aria-labelledby="contextBtn-@Post.Id">
+								<button class="dropdown-item" type="button" @onclick="HandleEditPost">@TextService.Edit</button>
+								<button class="dropdown-item" type="button" @onclick="HandleRemovePost">@TextService.Remove</button>
+							</div>
+						</div>
+					}*@
+			</div>
+			<hr />
+			<div class="text-left">
+				@post.Text
+			</div>
+
+			@if (post.PostFiles.Any())
+			{
+				@foreach (var file in post.PostFiles)
+				{
+					<a class="btn btn-secondary btn-block d-flex align-items-center mt-3" href="#"><i class="fas fa-file mr-2"></i> @file.FileName <span class="ml-auto">@file.Size</span></a>
+				}
+			}
+			<hr />
+
+			@if (post.LikedByUser)
+			{
+				<button class="btn btn-danger">@post.LikesCount <i class="fas fa-heart mx-1"></i> Liked</button>
+			}
+			else
+			{
+				<button class="btn btn-secondary">@post.LikesCount <i class="far fa-heart mx-1"></i> Like</button>
+			}
+			<a class="btn btn-secondary" href="@post.Url">@post.CommentsCount <i class="far fa-comment-alt mx-1"></i> Discussion</a>
+		</div>
+	}
+</div>

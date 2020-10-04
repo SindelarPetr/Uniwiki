@@ -1,6 +1,6 @@
 ﻿@page "/AddCourse"
 @using Uniwiki.Shared.RequestResponse
-@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@inherits UniwikiComponentBase
 @layout ThinFormLayout
 
 <div class="p-3 text-left">
@@ -44,10 +44,10 @@
 
 @code{
 
-	[Inject] public IModalService ModalService { get; set; }
-	[Inject] public IRequestSender RequestSender { get; set; }
-	[Inject] public INavigationService NavigationService { get; set; }
-	[Inject] public StaticStateService StaticStateService { get; set; }
+	[Inject] IModalService ModalService { get; set; } = null!;
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
+	[Inject] StaticStateService StaticStateService { get; set; } = null!;
 
 	public AddCourseRequestDto AddCourseRequestDto { get; private set; }
 

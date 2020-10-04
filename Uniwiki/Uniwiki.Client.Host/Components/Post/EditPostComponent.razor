@@ -1,10 +1,7 @@
-﻿@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+﻿@inherits UniwikiComponentBase
 @using global::Shared.Dtos
 @using Uniwiki.Shared.RequestResponse
 @using Newtonsoft.Json
-@using Uniwiki.Client.Host.Exceptions
-
-@*<MyFluentValidator></MyFluentValidator>*@
 
 @* Post Category *@
 <div class="d-flex flex-wrap mb-3">
@@ -18,7 +15,8 @@
 
 <p class="lead">
 	<h5>@TextService.Message</h5>
-	<textarea class="form-control @(string.IsNullOrWhiteSpace(Request.Text) ? "border-danger" : string.Empty)" placeholder="@TextService.CoursePage_WriteYourMessageHere" @bind:event="oninput" @bind="Request.Text" onkeyup="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" style="height: 100px;overflow-y: hidden; border-width:2px"></textarea>
+	
+	<EditPostTextareaComponent OnChange="@((text) => Request.Text = text)" Text="@Request.Text" />
 </p>
 
 <h5>@TextService.Files</h5>
@@ -26,7 +24,7 @@
 @* Files *@
 @foreach (var file in Request.PostFiles)
 {
-	<PostFileComponent File="file" OnRemove="HandleRemove" />
+	<PostFileComponent File="file" OnRemove="HandleRemove" @key="file.Id" />
 }
 @* /Files *@
 @* Uploading files *@
@@ -64,9 +62,15 @@
 <FileUploaderComponent OnSelected="HandleOnSelect" @key="Request.PostId" />
 
 <div class="d-flex mt-3">
+	@if (PostToEdit != null)
+	{
+		<button class="btn btn-secondary" type="button" @onclick="HandleCancel">
+			@TextService.Cancel
+		</button>
+	}
 	<div class="ml-auto">
 		<span class="mr-3 @(_fileUploads.Any(f => f.Failed) ? "text-danger" : "text-secondary")">@FilesValidationMessage</span>
-		<button class="btn btn-primary" disabled="@string.IsNullOrWhiteSpace(Request.Text)" type="button" @onclick="HandleCommitPost">
+		<button class="btn btn-primary" type="button" @onclick="HandleCommitPost" disabled="@_fileUploads.Any()">
 			@(PostToEdit == null ? TextService.CoursePage_AddPost : TextService.EditPost_EditPost)
 			@if (_committingPost)
 			{
@@ -78,15 +82,16 @@
 
 @code {
 
-	[Inject] ILoginService LoginService { get; set; }
-	[Inject] IToastService ToastService { get; set; }
-	[Inject] IFileUploadQueueService FileUploadQueueService { get; set; }
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] IToastService ToastService { get; set; } = null!;
+	[Inject] IFileUploadQueueService FileUploadQueueService { get; set; } = null!;
 
-	[Parameter] public Func<EditPostRequestDto, Task> OnCommitPost { get; set; }
+	[Parameter] public Func<EditPostRequestDto, Task> OnCommitPost { get; set; } = null!;
+	[Parameter] public EventCallback OnCancel { get; set; }
 
 	[Parameter] public Guid CourseId { get; set; }
-	[Parameter] public string[] AllPostTypes { get; set; }
-	[Parameter] public PostViewModel? PostToEdit { get; set; }
+	[Parameter] public string[] AllPostTypes { get; set; } = null!;
+	[Parameter] public PostViewModel? PostToEdit { get; set; } 
 
 	private string? SelectedPostType { get; set; }
 
@@ -112,8 +117,21 @@
 
 	private async Task HandleCommitPost()
 	{
-		if (_committingPost || String.IsNullOrWhiteSpace(Request.Text) || _fileUploads.Any())
+		if (_committingPost)
+		{
 			return;
+		}
+
+		if (_fileUploads.Any())
+		{
+			ToastService.ShowError(TextService.Toast_WaitForAllFiles);
+		}
+
+		if (String.IsNullOrWhiteSpace(Request.Text))
+		{
+			ToastService.ShowError(TextService.Toast_FillInATextForThePost);
+			return;
+		}
 
 		_committingPost = true;
 		StateHasChanged();
@@ -138,9 +156,11 @@
 
 	private void ResetRequest()
 	{
-		Request = PostToEdit == null
+		var refreshedRequest = PostToEdit == null
 			? new EditPostRequestDto(Guid.Empty, string.Empty, null, new PostFileDto[0])
 			: new EditPostRequestDto(PostToEdit.Id, PostToEdit.Text, PostToEdit.PostType, PostToEdit.Files);
+
+		refreshedRequest.CopyPropertiesTo(Request);
 	}
 
 	public async Task HandleOnSelect(UploadFile uploadFile)
@@ -234,4 +254,8 @@
 		return Task.CompletedTask;
 	}
 
+	public Task HandleCancel()
+	{
+		return OnCancel.InvokeAsync(null);
+	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
@@ -18,14 +19,16 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         private readonly ProfileRepository _profileRepository;
         private readonly IInputValidationService _inputValidationService;
         private readonly TextService _textService;
-        private readonly IEmailConfirmationSenderService _emailConfirmationSenderService;
+        private readonly EmailConfirmationSenderService _emailConfirmationSenderService;
+        private readonly UniwikiContext _uniwikiContext;
 
-        public ResendConfirmationEmailServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, IInputValidationService inputValidationService, TextService textService, IEmailConfirmationSenderService emailConfirmationSenderService) : base(serviceProvider)
+        public ResendConfirmationEmailServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, IInputValidationService inputValidationService, TextService textService, EmailConfirmationSenderService emailConfirmationSenderService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _inputValidationService = inputValidationService;
             _textService = textService;
             _emailConfirmationSenderService = emailConfirmationSenderService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override async Task<ResendConfirmationEmailResponseDto> ExecuteAsync(ResendConfirmationEmailRequestDto request, RequestContext context)
@@ -37,14 +40,19 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             _inputValidationService.ValidateEmail(email);
 
             // Get profile
-            var profile = _profileRepository.GetProfileByEmail(email);
+            var profile = _uniwikiContext
+                .Profiles
+                .Select(p => new {p.Email, p.IsConfirmed, p.Id})
+                .First(p => p.Email == email);
 
             // Throw error if the user is already confirmed
             if (profile.IsConfirmed)
+            {
                 throw new RequestException(_textService.ResendConfirmation_ProfileIsAlreadyConfirmed(profile.Email));
+            }
 
             // Send the new email confirmation secret
-            await _emailConfirmationSenderService.SendConfirmationEmail(profile);
+            await _emailConfirmationSenderService.SendConfirmationEmail(profile.Id, profile.Email);
 
             // Create the response
             var response = new ResendConfirmationEmailResponseDto();

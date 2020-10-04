@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Server.Appliaction.ServerActions;
 using Server.Appliaction.Services.Abstractions;
@@ -25,10 +27,11 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly IFileHelperService _fileHelperService;
         private readonly CourseRepository _courseRepository;
         private readonly TextService _textService;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public UploadPostFileServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService, CourseRepository courseRepository, TextService textService) : base(serviceProvider)
+        public UploadPostFileServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostFileRepository postFileRepository, ITimeService timeService, IUploadFileService uploadFileService, ILogger<UploadPostFileServerAction> logger, IFileHelperService fileHelperService, CourseRepository courseRepository, TextService textService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postFileRepository = postFileRepository;
@@ -38,6 +41,7 @@ namespace Uniwiki.Server.Application.ServerActions
             _fileHelperService = fileHelperService;
             _courseRepository = courseRepository;
             _textService = textService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override async Task<UploadPostFileResponseDto> ExecuteAsync(UploadPostFileRequestDto request, RequestContext context)
@@ -73,7 +77,10 @@ namespace Uniwiki.Server.Application.ServerActions
             _logger.LogInformation("Writing the file record to the DB: FileId: '{FileId}', FileName: '{FileName}', Size: {Size}", id, originalName, file.Length);
 
             // Create a new file record in the DB
-            var postFileModel = _postFileRepository.AddPostFile(path, fileName, extension, false, context.UserId!.Value, request.CourseId, creationTime, file.Length);
+            var postFileId = _postFileRepository.AddPostFile(id, path, fileName, extension, false, context.UserId!.Value, request.CourseId, creationTime, file.Length);
+
+            // Save the changes to make sure there is a record about the file (and we need to load it a few lines later)
+            _uniwikiContext.SaveChanges();
 
             // Log information about the file
             _logger.LogInformation("Copying the file to the file system: FileId: '{FileId}'", id);
@@ -92,14 +99,11 @@ namespace Uniwiki.Server.Application.ServerActions
             }
 
             // Set the file as saved
-            _postFileRepository.FileSaved(postFileModel);
+            _postFileRepository.FileSaved(_uniwikiContext.PostFiles.First(f => f.Id == postFileId));
 
-            throw new NotImplementedException();
+            var postFileDto = _uniwikiContext.PostFiles.AsNoTracking().Where(f => f.Id == postFileId).ToPostFileDto().First();
 
-            // Create DTO
-            // var postFileDto = postFileModel.ToDto();
-
-            // return new UploadPostFileResponseDto(postFileDto);
+            return new UploadPostFileResponseDto(postFileDto);
         }
     }
 }

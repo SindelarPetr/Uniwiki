@@ -1,0 +1,16 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+@model FacultyViewModel
+
+<div class="container my-auto text-left">
+	<h1>Select a course</h1>
+	<h3>@Model.ShortName - @Model.LongName</h3>
+	<h5>@Model.UniversityLongName</h5>
+	@foreach (var course in Model.Courses)
+	{
+		<a class="my-3 btn btn-secondary btn-block btn-lg" href="@course.Url">
+			@course.Name @course.Code
+		</a>
+	}
+</div>

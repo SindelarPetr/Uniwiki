@@ -36,14 +36,14 @@ namespace Uniwiki.Client.Host.Services
             _languageService = languageService;
         }
 
-        public Task<T> SendRequestAsync<T>(RequestBase<T> request, Action? finalAction = null, [CallerMemberName] string callerName = null, [CallerLineNumber] int lineNumber = 0) where T : ResponseBase
+        public Task<T> SendRequestAsync<T>(RequestBase<T> request, Action? finalAction = null, [CallerMemberName] string? callerName = null, [CallerLineNumber] int lineNumber = 0) where T : ResponseBase
         {
             var dataCreator = new Func<string, HttpContent>(serializedData => new StringContent(serializedData, Encoding.UTF8, "application/json"));
 
             return SendRequestInnerAsync(request, dataCreator, "api/server", finalAction, callerName, lineNumber);
         }
 
-        private async Task<T> SendRequestInnerAsync<T>(RequestBase<T> request, Func<string, HttpContent> dataCreator, string apiPath, Action? finalAction = null, string callerName = null, int lineNumber = 0) where T : ResponseBase
+        private async Task<T> SendRequestInnerAsync<T>(RequestBase<T> request, Func<string, HttpContent> dataCreator, string apiPath, Action? finalAction = null, string? callerName = null, int lineNumber = 0) where T : ResponseBase
         {
             try
             {
@@ -76,10 +76,12 @@ namespace Uniwiki.Client.Host.Services
 
                 // Fix fixable errors
                 if (deserializedResponse.Fixes != null)
+                {
                     foreach (var fix in deserializedResponse.Fixes)
                     {
                         await _fixingService.Fix(fix.ErrorFix);
                     }
+                }
 
                 // Display the received error and throw an exception
                 if (deserializedResponse.Error != null)

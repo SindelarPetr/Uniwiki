@@ -1,4 +1,5 @@
-﻿using Shared.RequestResponse;
+﻿using System;
+using Shared.RequestResponse;
 using Uniwiki.Shared.ModelDtos;
 
 namespace Uniwiki.Shared.RequestResponse
@@ -11,9 +12,9 @@ namespace Uniwiki.Shared.RequestResponse
         public string? PostType { get;  }
         public bool ShowAll { get;  }
         public int PostsToFetch { get; }
-        public int? LastPostNumber { get; }
+        public DateTime? LastPostCreationTime { get; }
 
-        public GetCourseRequestDto(string universityUrl, string studyGroupUrl, string courseUrl, string? postType, bool showAll, int postsToFetch, int? lastPostNumber)
+        public GetCourseRequestDto(string universityUrl, string studyGroupUrl, string courseUrl, string? postType, bool showAll, int postsToFetch, DateTime? lastPostCreationTime)
         {
             UniversityUrl = universityUrl;
             StudyGroupUrl = studyGroupUrl;
@@ -21,7 +22,7 @@ namespace Uniwiki.Shared.RequestResponse
             PostType = postType;
             ShowAll = showAll;
             PostsToFetch = postsToFetch;
-            LastPostNumber = lastPostNumber;
+            LastPostCreationTime = lastPostCreationTime;
         }
     }
 }

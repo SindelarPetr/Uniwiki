@@ -1,5 +1,5 @@
 ﻿@page "/Uni/{UniversityUrl}/{StudyGroupUrl}/{CourseUrl}"
-@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@inherits UniwikiComponentBase
 @implements IDisposable
 @using Uniwiki.Shared.RequestResponse
 @using Uniwiki.Client.Host.Extensions
@@ -13,7 +13,7 @@
 		<div class="container container-sm">
 		@* Top bar *@
 		<div class="mb-3" id="accordion">
-			<div class="card">
+			<div class="card shadow">
 				<div class="card-header mb-0 d-flex shadow-sm" id="headingOne">
 					@* Filter posts *@
 					<div class="dropdown">
@@ -107,18 +107,18 @@
 
 
 @code {
-	[Inject] IRequestSender RequestSender { get; set; }
-	[Inject] ILoginService LoginService { get; set; }
-	[Inject] INavigationService NavigationService { get; set; }
-	[Inject] IJsInteropService JsInteropService { get; set; }
-	[Inject] IScrollService ScrollService { get; set; }
-	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
+	[Inject] IJsInteropService JsInteropService { get; set; } = null!;
+	[Inject] IScrollService ScrollService { get; set; } = null!;
+	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; } = null!;
 
-	[Parameter] public string UniversityUrl { get; set; }
-	[Parameter] public string StudyGroupUrl { get; set; }
-	[Parameter] public string CourseUrl { get; set; }
+	[Parameter] public string UniversityUrl { get; set; } = null!;
+	[Parameter] public string StudyGroupUrl { get; set; } = null!;
+	[Parameter] public string CourseUrl { get; set; } = null!;
 
-	private GetCourseResponseDto _pageData;
+	private GetCourseResponseDto _pageData = null!;
 
 	public bool IsLoaded => _pageData != null;
 
@@ -162,13 +162,14 @@
 				_filteredPostType,
 				showAll,
 				Constants.MaxPostsToFetch,
-				_pageData.Posts == null || _pageData.Posts.Length == 0 ? null : (int?)_pageData.Posts.Last().PostNumber
+				null // Loads the most recent posts
 			),
 			() => {
 				_isFiltering = false;
 				StateHasChanged();
 			});
-		_posts = new List<PostViewModel>(_pageData.Posts);
+
+		_posts = _pageData.Posts;
 		_canFetchMorePosts = _pageData.CanFetchMore;
 
 		_isFiltering = false;
@@ -178,7 +179,7 @@
 	public async Task HandlePostCreated(PostViewModel postDto)
 	{
 		// Check if the post is visible according to filters
-		if (_filteredPostType != null && _filteredPostType != postDto.PostType)
+		if (_showAllPostTypes == false && _filteredPostType != postDto.PostType)
 		{
 			_filteredPostType = postDto.PostType;
 		}
@@ -189,6 +190,8 @@
 
 		// Reload the feed with posts
 		await ReloadPosts(_filteredPostType, _showAllPostTypes);
+
+		StateHasChanged();
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -197,7 +200,7 @@
 
 		if (_requestedScroll.HasValue)
 		{
-			await JsInteropService.ScrollIntoView(_requestedScroll.Value.ToString());
+			await JsInteropService.ScrollIntoView("root");
 			_requestedScroll = null;
 		}
 	}
@@ -211,7 +214,7 @@
 		StateHasChanged();
 
 		// Create request
-		var request = new FetchPostsRequestDto(_pageData.CourseId, _posts.Last().PostNumber, Constants.MaxPostsToFetch, !_showAllPostTypes, _filteredPostType);
+		var request = new FetchPostsRequestDto(_pageData.CourseId, _posts.Last().CreationTime, Constants.MaxPostsToFetch, !_showAllPostTypes, _filteredPostType);
 
 		// Send request
 		var response = await RequestSender.SendRequestAsync(request, () =>

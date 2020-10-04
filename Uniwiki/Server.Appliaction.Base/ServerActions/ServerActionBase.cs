@@ -47,7 +47,9 @@ namespace Server.Appliaction.ServerActions
 
             // Changing the type failed
             if (tRequest == null)
+            {
                 throw new InvalidOperationException(_textService.Error_FailedToRecogniseRequest(request, typeof(TRequest)));
+            }
 
             // Standardize the request
             tRequest = standardizer?.Standardize(tRequest) ?? tRequest;
@@ -57,7 +59,9 @@ namespace Server.Appliaction.ServerActions
 
             // Throw error if validation failed
             if (!isValid)
+            {
                 throw new RequestException(_textService.RequestWasNotSuccessfullyValidated);
+            }
 
             // Execute the server request
             var result = await ExecuteAsync(tRequest, context);
@@ -70,12 +74,16 @@ namespace Server.Appliaction.ServerActions
         private void ThrowIfNotAuthenticated(AuthenticationLevel userLevel)
         {
             if (!Enum.IsDefined(typeof(AuthenticationLevel), userLevel))
+            {
                 throw new InvalidEnumArgumentException(nameof(userLevel), (int) userLevel, typeof(AuthenticationLevel));
+            }
 
             if ((int)userLevel < (int)AuthenticationLevel)
             {
                 if (AuthenticationLevel == AuthenticationLevel.PrimaryToken)
-                    throw new RequestException(_textService.Error_YouNeedToLogInForThis); 
+                {
+                    throw new RequestException(_textService.Error_YouNeedToLogInForThis);
+                }
 
                 throw new RequestException(_textService.Error_YouAreNotAuthorizedForThisRequest); 
             }

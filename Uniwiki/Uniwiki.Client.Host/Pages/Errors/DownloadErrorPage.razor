@@ -1,6 +1,6 @@
 ﻿@page "/DownloadError"
 @using System.Web
-@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@inherits UniwikiComponentBase
 @layout MainLayout
 
 	<div class="container mb-5 mt-3">
@@ -17,7 +17,7 @@
 
 @code
 {
-	[Inject] public INavigationService NavigationService { get; set; }
+	[Inject] INavigationService NavigationService { get; set; } = null!;
 
 	public async Task HandleGoBack()
 	{

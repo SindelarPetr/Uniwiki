@@ -35,7 +35,7 @@ namespace Uniwiki.Server.Application.ServerActions
             _postLikeRepository.LikePost(request.PostId, context.UserId!.Value, _timeService.Now);
 
             // Reload the post
-            var postDto = _uniwikiContext.Posts.Where(p => p.Id == request.PostId).ToDto(context.UserId).Single();
+            var postDto = _uniwikiContext.Posts.Where(p => p.Id == request.PostId).ToPostViewModel(context.UserId).Single();
 
             // Create result
             var result = new LikePostResponseDto(postDto);

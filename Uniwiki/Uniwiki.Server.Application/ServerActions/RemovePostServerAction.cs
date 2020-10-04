@@ -15,20 +15,22 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly PostRepository _postRepository;
         private readonly ProfileRepository _profileRepository;
         private readonly TextService _textService;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public RemovePostServerAction(IServiceProvider serviceProvider, PostRepository postRepository, ProfileRepository profileRepository, TextService textService) : base(serviceProvider)
+        public RemovePostServerAction(IServiceProvider serviceProvider, PostRepository postRepository, ProfileRepository profileRepository, TextService textService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _postRepository = postRepository;
             _profileRepository = profileRepository;
             _textService = textService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<RemovePostResponseDto> ExecuteAsync(RemovePostRequestDto request, RequestContext context)
         {
             // Get post
-            var post = _postRepository.FindById(request.PostId).Single();
+            var post = _uniwikiContext.Posts.Find(request.PostId) ?? throw new RequestException(_textService.CouldNotFindPost_Removing);
 
             // Verify if the post belongs to the user, who is removing it, or that the user is admin
             if (context.UserId != post.AuthorId)
@@ -37,7 +39,7 @@ namespace Uniwiki.Server.Application.ServerActions
             }
 
             // Remove the post
-            _postRepository.Remove(post);
+            _uniwikiContext.Posts.Remove(post);
 
             // Create response
             var response = new RemovePostResponseDto();

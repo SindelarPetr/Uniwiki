@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
@@ -21,22 +21,22 @@ namespace Uniwiki.Server.Persistence.Repositories
             _textService = textService;
         }
 
-        public ProfileModel GetProfileForNewPasswordSecret(Guid secret) => All.FirstOrDefault(s => s.Secret == secret && s.IsValid)?.Profile ?? throw new RequestException(_textService.Error_FailedToCreateTheNewPassword);
+        public ProfileModel GetProfileForNewPasswordSecret(Guid secret) 
+            => All.FirstOrDefault(s => s.Secret == secret && s.IsValid)?.Profile 
+               ?? throw new RequestException(_textService.Error_FailedToCreateTheNewPassword);
         
-        public NewPasswordSecretModel? TryGetSecretForProfile(ProfileModel profile)
-        {
-            return All.FirstOrDefault(s => s.Profile == profile);
-        }
+        public NewPasswordSecretModel? TryGetSecretForProfile(Guid profileId) 
+            => All.FirstOrDefault(s => s.ProfileId == profileId);
 
-        public void InvalidateSecrets(ProfileModel profile)
+        public void InvalidateSecrets(Guid profileId)
         {
-            foreach (var secret in All.Where(s => s.Profile == profile && s.IsValid))
+            foreach (var secret in All.Where(s => s.ProfileId == profileId && s.IsValid))
             {
                 secret.Invalidate();
             }
         }
 
-        public NewPasswordSecretModel GetValidSecretById(Guid secret) 
+        public NewPasswordSecretModel GetValidSecret(Guid secret) 
             => All.FirstOrDefault(s => s.Secret == secret && s.IsValid) ??
             throw new RequestException( _textService.Error_FailedToCreateTheNewPassword);
 

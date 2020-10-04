@@ -22,7 +22,7 @@ namespace Uniwiki.Shared.Validators
 
             RuleFor(f => f.Password).Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty().WithMessage(textService.Validation_TypeYourPassword)
-                .MinMaxLengthWithMessages(textService, constants.PasswordMinLength, Constants.PasswordMaxLength);
+                .MinMaxLengthWithMessages(textService, constants.PasswordMinLength, Constants.Validations.PasswordMaxLength);
             //.MinimumLength(1).WithMessage(textService.Validation_TypePasswordMatchingRequirements);
 
             RuleFor(f => f.AgreeToTermsOfUse)

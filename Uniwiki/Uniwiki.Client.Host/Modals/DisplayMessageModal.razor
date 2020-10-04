@@ -8,11 +8,11 @@
 
 @code {
 
-    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
-    
-    [Parameter] public string Message { get; set; }
+	[CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = null!;
 
-    void SubmitForm() => BlazoredModal.Close();
-    void Cancel() => BlazoredModal.Cancel();
+	[Parameter] public string Message { get; set; } = null!;
+
+	void SubmitForm() => BlazoredModal.Close();
+	void Cancel() => BlazoredModal.Cancel();
 
 }

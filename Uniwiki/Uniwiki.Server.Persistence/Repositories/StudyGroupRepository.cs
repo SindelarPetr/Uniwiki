@@ -4,21 +4,22 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 using Shared.Exceptions;
+using Shared.Services;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class StudyGroupRepository : RemovableRepositoryBase<StudyGroupModel, Guid> 
+    public class StudyGroupRepository : RepositoryBase<StudyGroupModel, Guid> 
     {
         private readonly TextService _textService;
 
         public override string NotFoundByIdMessage => _textService.FacultyNotFound;
 
-        public StudyGroupRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.StudyGroups)
+        public StudyGroupRepository(UniwikiContext uniwikiContext, StringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.StudyGroups)
         {
             _textService = textService;
         }
@@ -29,13 +30,13 @@ namespace Uniwiki.Server.Persistence.Repositories
         public bool IsStudyGroupNameUniq(Guid universityId, string nameForSearching) 
             => All.Where(g => g.UniversityId == universityId).All(g => g.LongNameForSearching != nameForSearching);
 
-        public IQueryable<StudyGroupModel> AddStudyGroup(Guid universityId, string shortName, string longName, string url, Guid profileId, Language primaryLanguage)
+        public IQueryable<StudyGroupModel> AddStudyGroup(Guid universityId, string shortName, string longName, string url, Language primaryLanguage)
         {
             // Create ID
             var id = Guid.NewGuid();
 
             // Create the study group
-            var studyGroup = new StudyGroupModel(id, universityId, shortName, longName, url, profileId, primaryLanguage, false);
+            var studyGroup = new StudyGroupModel(id, universityId, shortName, longName, url, primaryLanguage);
 
             // Add the study group to the DB
             All.Add(studyGroup);

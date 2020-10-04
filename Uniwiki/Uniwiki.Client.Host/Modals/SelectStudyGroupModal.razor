@@ -12,8 +12,8 @@
 			<div class="list-group mb-4">
 				@foreach (var group in uni.StudyGroupsToSelect)
 				{
-					<button class="list-group-item list-group-item-action text-primary @(LoginService.User?.HomeStudyGroupId == group.StudyGroupId ? "" : string.Empty)" type="button" @onclick="@(() => HandleStudyGroupSelected(group))">
-						<i class="fas fa-@(LoginService.User?.HomeStudyGroupId == group.StudyGroupId ? "home" : "chevron-right") mr-3"></i>@group.StudyGroupShortName - @group.StudyGroupLongName
+					<button class="list-group-item list-group-item-action text-primary @(LoginService.User?.HomeStudyGroup?.StudyGroupId == group.StudyGroupId ? "" : string.Empty)" type="button" @onclick="@(() => HandleStudyGroupSelected(group))">
+						<i class="fas fa-@(LoginService.User?.HomeStudyGroup?.StudyGroupId == group.StudyGroupId ? "home" : "chevron-right") mr-3"></i>@group.StudyGroupShortName - @group.StudyGroupLongName
 					</button>
 				}
 			</div>

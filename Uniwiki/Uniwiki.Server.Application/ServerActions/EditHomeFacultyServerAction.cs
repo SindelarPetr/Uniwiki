@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
@@ -25,14 +26,15 @@ namespace Uniwiki.Server.Application.ServerActions
 
         protected override Task<EditHomeFacultyResponseDto> ExecuteAsync(EditHomeFacultyRequestDto request, RequestContext context)
         {
-            
             // Edit the home faculty of the user
             var updatedProfile = _profileRepository.EditHomeFaculty(context.UserId!.Value, request.FacultyId);
 
-            var profileDto = updatedProfile.ToAuthorizedUser().Single();
+            var profileDto = updatedProfile.ToProfileViewModel();
+
+            var authenticatedUserDto = updatedProfile.ToAuthorizedUserDto();
 
             // Create response
-            var response = new EditHomeFacultyResponseDto(profileDto);
+            var response = new EditHomeFacultyResponseDto(profileDto, authenticatedUserDto);
 
             return Task.FromResult(response);
         }

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
-using Uniwiki.Server.Application.Configuration;
 using Uniwiki.Server.Application.Services.Abstractions;
+using Uniwiki.Server.Shared.Configuration;
 using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Application.Services
@@ -52,7 +52,9 @@ namespace Uniwiki.Server.Application.Services
         {
             // Dont send emails if the address of Uniwiki is unknown
             if(string.IsNullOrWhiteSpace(_baseUrl) || SendingEmailsDisabled)
+            {
                 return;
+            }
 
             // Get the configuration
             var senderAddress = _uniwikiConfiguration.Email.SenderAddress;
@@ -62,7 +64,7 @@ namespace Uniwiki.Server.Application.Services
             var displayName = _uniwikiConfiguration.Email.DisplayName;
 
             // Prepare message
-            MailMessage message = new MailMessage();
+            var message = new MailMessage();
             message.From = new MailAddress(senderAddress, displayName);
             message.To.Add(new MailAddress(recipientEmail));
             message.Subject = subject;
@@ -70,7 +72,7 @@ namespace Uniwiki.Server.Application.Services
             message.Body = messageText;
 
             // Prepare SMTP client
-            SmtpClient smtp = new SmtpClient();
+            var smtp = new SmtpClient();
             smtp.Port = port;
             smtp.Host = host;
             smtp.EnableSsl = true;

@@ -13,7 +13,9 @@ namespace Shared.Services
         {
             var dotsCount = fullFileName.Count(ch => ch == '.');
             if (dotsCount == 1 && fullFileName.First() == '.')
+            {
                 return (fullFileName, string.Empty);
+            }
 
             var extension = Path.GetExtension(fullFileName);
             var fileName = Path.GetFileNameWithoutExtension(fullFileName);

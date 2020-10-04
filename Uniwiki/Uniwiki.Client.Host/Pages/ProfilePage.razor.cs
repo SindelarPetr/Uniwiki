@@ -9,21 +9,22 @@ using Uniwiki.Client.Host.Services.Abstractions;
 using Uniwiki.Shared;
 using Uniwiki.Shared.ModelDtos;
 using Uniwiki.Shared.RequestResponse;
+using Uniwiki.Shared.RequestResponse.Authentication;
 
 namespace Uniwiki.Client.Host.Pages
 {
     public partial class ProfilePage
     {
-        [Inject] private IRequestSender RequestSender { get; set; }
-        [Inject] private ILoginService LoginService { get; set; }
-        [Inject] private INavigationService NavigationService { get; set; }
-        [Inject] private LocalLoginService LocalLoginService { get; set; }
-        [Inject] private IModalService ModalService { get; set; }
-        [Inject] private StaticStateService StaticStateService { get; set; }
+        [Inject] IRequestSender RequestSender { get; set; } = null!;
+        [Inject] ILoginService LoginService { get; set; } = null!;
+        [Inject] INavigationService NavigationService { get; set; } = null!;
+        [Inject] LocalLoginService LocalLoginService { get; set; } = null!;
+        [Inject] IModalService ModalService { get; set; } = null!;
+        [Inject] StaticStateService StaticStateService { get; set; } = null!;
 
-        [Parameter] public string Url { get; set; }
+        [Parameter] public string Url { get; set; } = null!;
 
-        private GetProfileResponse _pageData;
+        private GetProfileResponse _pageData = null!;
 
         private bool _edittingHomeFaculty;
 
@@ -34,9 +35,9 @@ namespace Uniwiki.Client.Host.Pages
             _pageData = await RequestSender.SendRequestAsync(new GetProfileRequest(Url));
 
             // Update the authenticated profile
-            if (_pageData.Authenticated)
+            if (_pageData.IsAuthenticated)
             {
-               await LocalLoginService.UpdateUser(_pageData.AuthenticatedUser);
+                await LocalLoginService.UpdateUser(_pageData.AuthorizedUser!);
             }
         }
 
@@ -50,19 +51,12 @@ namespace Uniwiki.Client.Host.Pages
         public async Task HandleSelectMyUniversityAndFaculty()
         {
             // Show the dialog with the faculties
-            var modal = ModalService.Show<SelectStudyGroupModal>(TextService.SelectFacultyModal_Title);
+            var studyGroup = await ModalService.SelectStudyGroup(TextService);
 
-            // Wait for the result
-            var result = await modal.Result;
-
-            // if the user cancelled the dialog, dont do anything
-            if (result.Cancelled)
-                return;
-
-            // Get the selected faculty
-            var selectedFaculty = (StudyGroupDto)result.Data;
-
-            await EditHomeFaculty(selectedFaculty.Id);
+            if(studyGroup != null)
+            {
+                await EditHomeFaculty(studyGroup.StudyGroupId);
+            }
         }
 
         public async Task HandleRemoveMyUniversityAndFaculty()
@@ -71,7 +65,9 @@ namespace Uniwiki.Client.Host.Pages
             var confirmed = await ModalService.Confirm(TextService.ProfilePage_ConfirmRemoveHomeUniversityAndFaculty);
 
             if (!confirmed)
+            {
                 return;
+            }
 
             await EditHomeFaculty(null);
         }
@@ -79,6 +75,7 @@ namespace Uniwiki.Client.Host.Pages
         private async Task EditHomeFaculty(Guid? homeFacultyId)
         {
             _edittingHomeFaculty = true;
+
             StateHasChanged();
 
             // Create the request
@@ -88,13 +85,20 @@ namespace Uniwiki.Client.Host.Pages
             var response = await RequestSender.SendRequestAsync(request, () => { _edittingHomeFaculty = false; StateHasChanged(); });
 
             // Update the profile
-            await LocalLoginService.UpdateUser(response.Profile);
+            await LocalLoginService.UpdateUser(response.AuthorizedUser!);
 
             // Display the updated user
             _pageData.Profile = response.Profile;
 
             // Save the new home university to the static state
-            StaticStateService.SetSelectedStudyGroup(new StudyGroupToSelectDto(response.Profile.HomeStudyGroupLongName, response.Profile.HomeStudyGroupShortName, response.Profile.HomeStudyGroupId.Value, response.Profile.HomeStudyGroupUniversityShortName) response.Profile.HomeFaculty);
+            StaticStateService.SetSelectedStudyGroup(
+                response.Profile.HomeStudyGroup == null ? null 
+                    : new StudyGroupToSelectDto(
+                    response.Profile.HomeStudyGroup.LongName, 
+                    response.Profile.HomeStudyGroup.ShortName, 
+                    response.Profile.HomeStudyGroup.StudyGroupId, 
+                    response.Profile.HomeStudyGroup.UniversityShortName,
+                    response.Profile.HomeStudyGroup.UniversityId));
         }
     }
 }

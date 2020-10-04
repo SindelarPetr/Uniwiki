@@ -11,21 +11,25 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Serilog.Core;
 using Shared;
-using Uniwiki.Server.Application.Configuration;
 using Uniwiki.Server.Application.Services;
 using Uniwiki.Server.Host.Services;
 using Uniwiki.Server.Host.Services.Abstractions;
+using Uniwiki.Server.Persistence;
+using Uniwiki.Server.Shared.Configuration;
 
 namespace Uniwiki.Server.Host.Mvc
 {
     public class MvcStartup
     {
         private readonly IConfiguration _configuration;
+        private readonly ILoggerFactory _loggerFactory;
 
-        public MvcStartup(IConfiguration configuration)
+        public MvcStartup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
+            _loggerFactory = loggerFactory;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -33,7 +37,7 @@ namespace Uniwiki.Server.Host.Mvc
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSharedServices();
-            services.AddHostServices();
+            services.AddHostServices(_loggerFactory);
             services.AddScoped<IMvcRequestExceptionHandlerService, MvcRequestExceptionHandlerService>();
             services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddTransient<IConfigureOptions<KestrelServerOptions>, KestrelServerOptionsSetup>(); // For kestrel
@@ -48,9 +52,11 @@ namespace Uniwiki.Server.Host.Mvc
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider, ILogger<MvcStartup> logger)
         {
             logger.LogInformation($"Configuring server... Stage: '{env.EnvironmentName}', Content root: '{env.ContentRootPath}, Web root path: '{env.WebRootPath}', Web root exists: {env.WebRootFileProvider.GetDirectoryContents("/").Exists}, Application name: '{env.ApplicationName}'");
-            
+
             using (var scope = serviceProvider.CreateScope())
-                scope.ServiceProvider.GetRequiredService<IDataManipulationService>().InitializeFakeData().GetAwaiter().GetResult();
+            {
+                scope.ServiceProvider.GetRequiredService<DataManipulationService>().InitializeFakeData().GetAwaiter().GetResult();
+            }
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {

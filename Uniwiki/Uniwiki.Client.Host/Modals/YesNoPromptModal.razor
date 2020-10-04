@@ -7,7 +7,7 @@
 
 @code {
 
-    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = null!;
 
     void Yes() => BlazoredModal.Close();
 

@@ -1,21 +1,29 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Uniwiki.Server.Persistence.ModelIds;
-using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class PostLikeModel : ModelBase<PostLikeModelId>
+    public class PostLikeModel
     {
-        public Guid PostId { get; protected set; }
-        public PostModel Post { get; protected set; } = null!;
-        public Guid ProfileId { get; protected set; }
-        public ProfileModel Profile { get; protected set; } = null!;
-        public DateTime DateTime { get; protected set; }
-        public bool IsLiked { get; protected set; }
+        public class Map : IEntityTypeConfiguration<PostLikeModel>
+        {
+            public void Configure(EntityTypeBuilder<PostLikeModel> builder) 
+                => builder.HasKey(m => new PostLikeModelId(m.PostId, m.ProfileId));
+        }
+
+        public Guid PostId { get; set; }
+        public PostModel Post { get; set; } = null!;
+        public Guid ProfileId { get; set; }
+        public ProfileModel Profile { get; set; } = null!;
+        public DateTime DateTime { get; set; }
+        public bool IsLiked { get; set; }
 
         // Keep it internal - its created in a repository method
-        internal PostLikeModel(Guid postId, Guid profileId, DateTime dateTime, bool isLiked)
-            : base(new PostLikeModelId(postId, profileId))
+        public PostLikeModel(Guid postId, Guid profileId, DateTime dateTime, bool isLiked)
         {
             PostId = postId;
             ProfileId = profileId;

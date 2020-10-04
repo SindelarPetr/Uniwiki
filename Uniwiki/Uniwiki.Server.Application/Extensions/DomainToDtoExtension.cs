@@ -8,7 +8,7 @@ namespace Uniwiki.Server.Application.Extensions
 {
     public static class DomainToDtoExtension
     {
-        //public static AuthorizedUserDto ToAuthorizedUser(this ProfileModel profileModel)
-        //    => new AuthorizedUserDto()
+        //public static AuthorizedUser ToAuthorizedUserDto(this ProfileModel profileModel)
+        //    => new AuthorizedUser()
     }
 }

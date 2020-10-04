@@ -2,7 +2,7 @@
 @using Uniwiki.Client.Host.Services
 @using Uniwiki.Shared.RequestResponse.Authentication
 @layout ThinFormLayout
-@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@inherits UniwikiComponentBase
 
 
 <div class="card-header h2 py-4 d-flex">
@@ -35,7 +35,7 @@
 		@* Faculty *@
 		<label class="mt-3" for="inputFaculty"><i class="fas fa-university"></i> @TextService.WhereDoYouStudy <small>@TextService.RegisterPage_YouCanChangeItOnProfile</small></label>
 		<div class="d-flex">
-			<button class="btn btn-secondary btn-block flex-grow-1" type="button" id="inputFaculty" @onclick="HandleSelectFaulty">@(SelectedFaculty == null ? TextService.SelectUniversityAndFaculty : SelectedFaculty.University.ShortName + "-" + SelectedFaculty.LongName)</button>
+			<button class="btn btn-secondary btn-block flex-grow-1" type="button" id="inputFaculty" @onclick="HandleSelectFaulty">@(SelectedFaculty == null ? TextService.SelectUniversityAndFaculty : SelectedFaculty.UniversityShortName + "-" + SelectedFaculty.StudyGroupLongName)</button>
 			@if (SelectedFaculty != null)
 			{
 				<button class="btn btn-secondary ml-2" type="button" @onclick="HandleResetSelectedFaculty"><i class="fas fa-times"></i></button>
@@ -89,14 +89,14 @@
 
 @code {
 
-	[Inject] private IRequestSender RequestSender { get; set; }
-	[Inject] private INavigationService NavigationService { get; set; }
-	[Inject] private ILoginService LoginService { get; set; }
-	[Inject] private StaticStateService StaticStateService { get; set; }
-	[Inject] private IModalService ModalService { get; set; }
-	[Inject] private ILocalStorageManagerService LocalStorageManagerService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] StaticStateService StaticStateService { get; set; } = null!;
+	[Inject] IModalService ModalService { get; set; } = null!;
+	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; } = null!;
 
-	public RegisterRequestDto Request { get; set; }
+	public RegisterRequestDto Request { get; set; } = null!;
 
 	private string _email = string.Empty;
 	private Task<bool?> _isEmailAvailableTask = Task.FromResult<bool?>(null);
@@ -105,14 +105,14 @@
 	private PasswordVisibilityUtility _passwordVisibilityUtility1 = new PasswordVisibilityUtility();
 	private PasswordVisibilityUtility _passwordVisibilityUtility2 = new PasswordVisibilityUtility();
 
-	private StudyGroupDto? _selecedFaculty;
-	private StudyGroupDto? SelectedFaculty
+	private StudyGroupToSelectDto? _selecedFaculty;
+	private StudyGroupToSelectDto? SelectedFaculty
 	{
 		get => _selecedFaculty;
 		set
 		{
 			_selecedFaculty = value;
-			Request.HomeFacultyId = value?.Id;
+			Request.HomeFacultyId = value?.StudyGroupId;
 		}
 	}
 
@@ -161,22 +161,19 @@
 		StaticStateService.SetLoginPageEmail(string.Empty);
 
 		// Navigate to the page about the requirement of confirming the email
-		NavigationService.NavigateTo(PageRoutes.ConfirmEmailPage.BuildRoute(response.UserProfile.Email));
+		NavigationService.NavigateTo(PageRoutes.ConfirmEmailPage.BuildRoute(response.UserEmail));
 	}
 
 	public async Task HandleSelectFaulty()
 	{
 		// Show the dialog
-		var dialog = ModalService.Show<SelectStudyGroupModal>(TextService.SelectFacultyModal_Title);
-
-		// Wait for the user to select his faculty
-		var dialogResult = await dialog.Result;
+		var studyGroup = await ModalService.SelectStudyGroup(TextService);
 
 		// If success
-		if (!dialogResult.Cancelled)
+		if (studyGroup != null)
 		{
 			// Then save the selected faculty
-			SelectedFaculty = dialogResult.Data as StudyGroupDto;
+			SelectedFaculty = studyGroup;
 		}
 	}
 

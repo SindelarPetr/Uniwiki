@@ -1,26 +1,34 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Uniwiki.Server.Persistence.Models.Base;
 using Uniwiki.Server.Persistence.Repositories.Base;
+using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class PostFileModel : RemovableModelBase<Guid>
+    public class PostFileModel : ModelBase<Guid>
     {
-        public string Path { get; protected set; } = null!;
-        public string OriginalFullName => $"{NameWithoutExtension}{Extension}";
-        public string NameWithoutExtension { get; protected set; } = null!;
-        public string Extension { get; protected set; } = null!;
-        public bool IsSaved { get; protected set; }
-        public Guid ProfileId { get; protected set; }
-        public ProfileModel Profile { get; protected set; } = null!;
-        public Guid CourseId { get; protected set; }
-        public CourseModel Course { get; protected set; } = null!;
-        public DateTime CreationTime { get; protected set; }
-        public long Size { get; protected set; }
-        public Guid? PostId { get; protected set; } // At the beginning its uninitialized! Because files are uploaded before a post is created
-        public PostModel? Post { get; protected set; }
 
-        internal PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, Guid profileId, Guid courseId, DateTime creationTime, long size, bool isRemoved)
-            : base(isRemoved, id)
+        [MaxLength(300)]
+        public string Path { get; set; } = null!;
+        [MaxLength(Constants.Validations.FileNameMaxLength + 1 + Constants.Validations.FileExtensionMaxLength)]
+        public string OriginalFullName => $"{NameWithoutExtension}{Extension}";
+        [MaxLength(Constants.Validations.FileNameMaxLength)]
+        public string NameWithoutExtension { get; set; } = null!;
+        [MaxLength(Constants.Validations.FileExtensionMaxLength)]
+        public string Extension { get; set; } = null!;
+        public bool IsSaved { get; set; }
+        public Guid ProfileId { get; set; }
+        public ProfileModel Profile { get; set; } = null!;
+        public Guid CourseId { get; set; }
+        public CourseModel Course { get; set; } = null!;
+        public DateTime CreationTime { get; set; }
+        public long Size { get; set; }
+        public Guid? PostId { get; set; } // At the beginning its uninitialized! Because files are uploaded before a post is created
+        public PostModel? Post { get; set; }
+
+        public PostFileModel(Guid id, string path, string nameWithoutExtension, string extension, bool isSaved, Guid profileId, Guid courseId, DateTime creationTime, long size)
+            : base(id)
         {
             Path = path;
             NameWithoutExtension = nameWithoutExtension;
@@ -70,9 +78,9 @@ namespace Uniwiki.Server.Persistence.Models
             NameWithoutExtension = newFileNameWithoutExtension;
         }
 
-        internal void SetPost(PostModel post)
+        internal void SetPostId(Guid postId)
         {
-            Post = post;
+            PostId = postId;
         }
     }
 }

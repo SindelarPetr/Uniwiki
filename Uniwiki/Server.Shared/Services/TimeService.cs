@@ -1,7 +1,7 @@
-﻿using Shared.Services.Abstractions;
-using System;
+﻿using System;
+using Shared.Services.Abstractions;
 
-namespace Uniwiki.Shared.Services
+namespace Shared.Services
 {
     internal class TimeService : ITimeService
     {

@@ -32,7 +32,7 @@ namespace Uniwiki.Server.Application.ServerActions
             _postLikeRepository.UnlikePost(request.PostId, context.UserId!.Value);
 
             // Find the updated post
-            var updatedPost = _uniwikiContext.Posts.Where(p => p.Id == request.PostId).ToDto(context.UserId).Single();
+            var updatedPost = _uniwikiContext.Posts.Where(p => p.Id == request.PostId).ToPostViewModel(context.UserId).Single();
 
             // Create result
             var result = new UnlikePostResponseDto(updatedPost);

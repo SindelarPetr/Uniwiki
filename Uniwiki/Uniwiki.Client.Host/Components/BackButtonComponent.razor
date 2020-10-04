@@ -3,7 +3,7 @@
 </button>
 
 @code {
-	[Inject] INavigationService NavigationService { get; set; }
+	[Inject] INavigationService NavigationService { get; set; } = null!;
 
 	public async Task HandleClick()
 	{

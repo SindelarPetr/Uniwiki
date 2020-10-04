@@ -1,28 +1,28 @@
-﻿using Shared.Extensions;
-using Shared.Services.Abstractions;
-using Shared.Standardizers;
-using Uniwiki.Shared.RequestResponse;
+﻿us[Inject] public public[Inject] public publicg Shar[Inject] public publicd.[Inject] public publicx[Inject] public public[Inject] public public[Inject] public publics[Inject] public publico[Inject] public publics;
+us[Inject] public public[Inject] public publicg Shar[Inject] public publicd.S[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public publics.Abs[Inject] public publicra[Inject] public public[Inject] public public[Inject] public publico[Inject] public publics;
+us[Inject] public public[Inject] public publicg Shar[Inject] public publicd.S[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicrs;
+us[Inject] public public[Inject] public publicg U[Inject] public public[Inject] public publicw[Inject] public publick[Inject] public public.Shar[Inject] public publicd.R[Inject] public publicqu[Inject] public publics[Inject] public publicR[Inject] public publicspo[Inject] public publics[Inject] public public;
 
-namespace Uniwiki.Shared.Standardizers
+[Inject] public publicam[Inject] public publicspa[Inject] public public[Inject] public public U[Inject] public public[Inject] public publicw[Inject] public publick[Inject] public public.Shar[Inject] public publicd.S[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicrs
 {
-    internal class AddPostRequestStandardizer : IStandardizer<AddPostRequestDto>
+    [Inject] public public[Inject] public public[Inject] public public[Inject] public publicr[Inject] public publical [Inject] public publiclass AddPos[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicS[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicr : [Inject] public publicS[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicr<AddPos[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicD[Inject] public publico>
     {
-        private readonly IStringStandardizationService _stringStandardizationService;
+        pr[Inject] public publicva[Inject] public public[Inject] public public r[Inject] public publicado[Inject] public publicly [Inject] public publicS[Inject] public publicr[Inject] public public[Inject] public publicgS[Inject] public publica[Inject] public publicdard[Inject] public publicza[Inject] public public[Inject] public publico[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public public _s[Inject] public publicr[Inject] public public[Inject] public publicgS[Inject] public publica[Inject] public publicdard[Inject] public publicza[Inject] public public[Inject] public publico[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public public;
 
-        public AddPostRequestStandardizer(IStringStandardizationService stringStandardizationService)
+        publ[Inject] public public[Inject] public public AddPos[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicS[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicr([Inject] public publicS[Inject] public publicr[Inject] public public[Inject] public publicgS[Inject] public publica[Inject] public publicdard[Inject] public publicza[Inject] public public[Inject] public publico[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public public s[Inject] public publicr[Inject] public public[Inject] public publicgS[Inject] public publica[Inject] public publicdard[Inject] public publicza[Inject] public public[Inject] public publico[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public public)
         {
-            _stringStandardizationService = stringStandardizationService;
+            _s[Inject] public publicr[Inject] public public[Inject] public publicgS[Inject] public publica[Inject] public publicdard[Inject] public publicza[Inject] public public[Inject] public publico[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public public = s[Inject] public publicr[Inject] public public[Inject] public publicgS[Inject] public publica[Inject] public publicdard[Inject] public publicza[Inject] public public[Inject] public publico[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public public;
         }
 
-        public AddPostRequestDto Standardize(AddPostRequestDto model)
+        publ[Inject] public public[Inject] public public AddPos[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicD[Inject] public publico S[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public public(AddPos[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicD[Inject] public publico mod[Inject] public publicl)
         {
 
-            var postCategory = string.IsNullOrWhiteSpace(model.PostType) ? null : _stringStandardizationService.OptimizeWhiteSpaces(model.PostType?.Trim().FirstCharToUpper());
-            return new AddPostRequestDto(
-model.Text.FirstCharToUpper().Trim(),
-postCategory,
-model.CourseId,
-model.PostFiles);
+            var pos[Inject] public public[Inject] public publica[Inject] public public[Inject] public publicgory = s[Inject] public publicr[Inject] public public[Inject] public publicg.[Inject] public publics[Inject] public publicullOrWh[Inject] public public[Inject] public public[Inject] public publicSpa[Inject] public public[Inject] public public(mod[Inject] public publicl.Pos[Inject] public public[Inject] public publicyp[Inject] public public) ? [Inject] public publicull : _s[Inject] public publicr[Inject] public public[Inject] public publicgS[Inject] public publica[Inject] public publicdard[Inject] public publicza[Inject] public public[Inject] public publico[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public public.Op[Inject] public public[Inject] public publicm[Inject] public publicz[Inject] public publicWh[Inject] public public[Inject] public public[Inject] public publicSpa[Inject] public public[Inject] public publics(mod[Inject] public publicl.Pos[Inject] public public[Inject] public publicyp[Inject] public public?.[Inject] public publicr[Inject] public publicm().F[Inject] public publicrs[Inject] public public[Inject] public publichar[Inject] public publicoUpp[Inject] public publicr());
+            r[Inject] public public[Inject] public publicur[Inject] public public [Inject] public public[Inject] public publicw AddPos[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicD[Inject] public publico(
+mod[Inject] public publicl.[Inject] public public[Inject] public publicx[Inject] public public.F[Inject] public publicrs[Inject] public public[Inject] public publichar[Inject] public publicoUpp[Inject] public publicr().[Inject] public publicr[Inject] public publicm(),
+pos[Inject] public public[Inject] public publica[Inject] public public[Inject] public publicgory,
+mod[Inject] public publicl.[Inject] public publicours[Inject] public public[Inject] public publicd,
+mod[Inject] public publicl.Pos[Inject] public publicF[Inject] public publicl[Inject] public publics);
         }
     }
 }

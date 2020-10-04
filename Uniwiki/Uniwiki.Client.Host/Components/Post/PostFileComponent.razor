@@ -54,17 +54,17 @@ else
 }
 
 @code {
-		[Inject] ILoginService LoginService { get; set; }
-		[Inject] IJsInteropService JsInteropService { get; set; }
-		[Inject] IPeriodicalTimer PeriodicalTimer { get; set; }
-		[Inject] IJSRuntime JsRuntime { get; set; }
-		[Inject] IModalService ModalService { get; set; }
-		[Inject] INavigationService NavigationService { get; set; }
-		[Inject] ILanguageService LanguageService { get; set; }
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] IJsInteropService JsInteropService { get; set; } = null!;
+	[Inject] IPeriodicalTimer PeriodicalTimer { get; set; } = null!;
+	[Inject] IJSRuntime JsRuntime { get; set; } = null!;
+	[Inject] IModalService ModalService { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
+	[Inject] ILanguageService LanguageService { get; set; } = null!;
 
-		[Parameter] public PostFileDto File { get; set; }
+	[Parameter] public PostFileDto File { get; set; } = null!;
 
-		[Parameter] public Func<PostFileDto, Task>? OnRemove { get; set; }
+	[Parameter] public Func<PostFileDto, Task>? OnRemove { get; set; } 
 
 	private bool IsEditable => OnRemove != null;
 
@@ -102,7 +102,7 @@ else
 
 		PeriodicalTimer.Start(TimeSpan.FromSeconds(1), Constants.DownloadAgainTime.Seconds, HandleTimerTick);
 
-		var url = ApiRoutes.FileController.GetPostFile(File.Id, LoginService.LoginToken.SecondaryTokenId, File.OriginalFullName, LanguageService.Language);
+		var url = ApiRoutes.FileController.GetPostFile(File.Id, LoginService.LoginToken!.SecondaryTokenId, File.OriginalFullName, LanguageService.Language);
 
 		NavigationService.NavigateTo(url, true);
 	}
@@ -115,7 +115,7 @@ else
 	private async Task HandleRemoveFile()
 	{
 		// Ask if user is sure
-		if (await ModalService.Confirm(TextService.Modal_ConfirmPostFileRemoval(File.OriginalFullName)))
+		if (OnRemove != null && await ModalService.Confirm(TextService.Modal_ConfirmPostFileRemoval(File.OriginalFullName)))
 			await OnRemove(File);
 	}
 

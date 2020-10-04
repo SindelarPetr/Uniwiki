@@ -1,24 +1,17 @@
 ﻿
-<button class="px-3 py-2 mb-2 d-block rounded search-item text-dark d-flex align-items-center border border-primary shadow-sm btn btn-block " @onclick="HandleCourseClicked">
+<a class="px-3 py-2 mb-2 d-block rounded search-item text-dark d-flex align-items-center border border-primary shadow-sm btn btn-block" href="@FullUrl">
 	<div class="text-left">
-		<h5 class="my-0 py-0 dont-break-out">@Course.Name</h5>
-		<span class="dont-break-out">@Course.UniversityAndFaculty</span>
+		<h5 class="my-0 py-0 dont-break-out">@Name</h5>
+		<span class="dont-break-out">@UniversityAndFaculty</span>
 	</div>
-	<span class="ml-auto badge badge-secondary badge-pill">@Course.Code</span>
-</button>
+	<span class="ml-auto badge badge-secondary badge-pill">@Code</span>
+</a>
 
 @code {
-	[Inject] public INavigationService NavigationService { get; set; }
+	[Inject] INavigationService NavigationService { get; set; } = null!;
 
-	[Parameter] public FoundCourseDto Course { get; set; }
-	[Parameter] public EventCallback<FoundCourseDto> CourseClicked { get; set; }
-
-	public async Task HandleCourseClicked()
-	{
-		var routeToCourse = PageRoutes.CoursePage.BuildRoute(Course.FullUrl);
-
-		await CourseClicked.InvokeAsync(Course);
-
-		NavigationService.NavigateTo(routeToCourse);
-	}
+	[Parameter] public string Name { get; set; } = null!;
+	[Parameter] public string? Code { get; set; }
+	[Parameter] public string UniversityAndFaculty { get; set; } = null!;
+	[Parameter] public string FullUrl { get; set; } = null!;
 }

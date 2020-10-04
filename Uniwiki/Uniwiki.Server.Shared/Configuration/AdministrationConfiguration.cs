@@ -1,4 +1,4 @@
-﻿namespace Uniwiki.Server.Application.Configuration
+﻿namespace Uniwiki.Server.Shared.Configuration
 {
     public class AdministrationConfiguration
     {

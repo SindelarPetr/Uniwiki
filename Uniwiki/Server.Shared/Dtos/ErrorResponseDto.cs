@@ -4,7 +4,7 @@
 
     public class ErrorResponseDto
     {
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
 
         public ErrorResponseDto(string message)
         {
@@ -20,7 +20,7 @@
 
     public class FixResponseDto
     {
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
         public ErrorFix ErrorFix { get; set; }
 
         public FixResponseDto(string message, ErrorFix errorFix)

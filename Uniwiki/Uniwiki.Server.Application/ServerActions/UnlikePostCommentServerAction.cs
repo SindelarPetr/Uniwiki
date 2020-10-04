@@ -29,7 +29,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var postId = _postCommentLikeRepository.UnlikeComment(request.PostCommentId, context.UserId!.Value);
             
             // Find the post
-            var post = _uniwikiContext.Posts.ToDto(context.UserId).Single(p => p.Id == postId);
+            var post = _uniwikiContext.Posts.ToPostViewModel(context.UserId).Single(p => p.Id == postId);
 
             // Create response
             var response = new UnlikePostCommentResponseDto(post);

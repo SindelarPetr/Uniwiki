@@ -1,26 +1,26 @@
-﻿using FluentValidation;
-using Shared.Standardizers;
-using Shared.Validators;
-using Uniwiki.Shared.Extensions;
-using Uniwiki.Shared.RequestResponse;
-using Uniwiki.Shared.Services;
+﻿us[Inject] public public[Inject] public publicg Flu[Inject] public public[Inject] public public[Inject] public publicVal[Inject] public publicda[Inject] public public[Inject] public publico[Inject] public public;
+us[Inject] public public[Inject] public publicg Shar[Inject] public publicd.S[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicrs;
+us[Inject] public public[Inject] public publicg Shar[Inject] public publicd.Val[Inject] public publicda[Inject] public publicors;
+us[Inject] public public[Inject] public publicg U[Inject] public public[Inject] public publicw[Inject] public publick[Inject] public public.Shar[Inject] public publicd.[Inject] public publicx[Inject] public public[Inject] public public[Inject] public publics[Inject] public publico[Inject] public publics;
+us[Inject] public public[Inject] public publicg U[Inject] public public[Inject] public publicw[Inject] public publick[Inject] public public.Shar[Inject] public publicd.R[Inject] public publicqu[Inject] public publics[Inject] public publicR[Inject] public publicspo[Inject] public publics[Inject] public public;
+us[Inject] public public[Inject] public publicg U[Inject] public public[Inject] public publicw[Inject] public publick[Inject] public public.Shar[Inject] public publicd.S[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public publics;
 
-namespace Uniwiki.Shared.Validators
+[Inject] public publicam[Inject] public publicspa[Inject] public public[Inject] public public U[Inject] public public[Inject] public publicw[Inject] public publick[Inject] public public.Shar[Inject] public publicd.Val[Inject] public publicda[Inject] public publicors
 {
-    internal class AddCourseRequestValidator : StandardizerValidator<AddCourseRequestDto>
+    [Inject] public public[Inject] public public[Inject] public public[Inject] public publicr[Inject] public publical [Inject] public publiclass Add[Inject] public publicours[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicVal[Inject] public publicda[Inject] public publicor : S[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicrVal[Inject] public publicda[Inject] public publicor<Add[Inject] public publicours[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicD[Inject] public publico>
     {
-        public AddCourseRequestValidator(TextServiceShared textServiceBase, IStandardizer<AddCourseRequestDto> standardizer) : base(standardizer)
+        publ[Inject] public public[Inject] public public Add[Inject] public publicours[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicVal[Inject] public publicda[Inject] public publicor([Inject] public public[Inject] public publicx[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public publicShar[Inject] public publicd [Inject] public public[Inject] public publicx[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public publicBas[Inject] public public, [Inject] public publicS[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicr<Add[Inject] public publicours[Inject] public publicR[Inject] public publicqu[Inject] public publics[Inject] public publicD[Inject] public publico> s[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicr) : bas[Inject] public public(s[Inject] public publica[Inject] public publicdard[Inject] public publicz[Inject] public publicr)
         {
-            RuleFor(f => f.CourseCode)
-                .MinMaxLengthWithMessages(textServiceBase, Constants.Validations.CourseCodeMinLength, Constants.Validations.CourseCodeMaxLength);
+            Rul[Inject] public publicFor(f => f.[Inject] public publicours[Inject] public public[Inject] public publicod[Inject] public public)
+                .M[Inject] public public[Inject] public publicMaxL[Inject] public public[Inject] public publicg[Inject] public publichW[Inject] public public[Inject] public publichM[Inject] public publicssag[Inject] public publics([Inject] public public[Inject] public publicx[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public publicBas[Inject] public public, [Inject] public publico[Inject] public publics[Inject] public publica[Inject] public public[Inject] public publics.Val[Inject] public publicda[Inject] public public[Inject] public publico[Inject] public publics.[Inject] public publicours[Inject] public public[Inject] public publicod[Inject] public publicM[Inject] public public[Inject] public publicL[Inject] public public[Inject] public publicg[Inject] public publich, [Inject] public publico[Inject] public publics[Inject] public publica[Inject] public public[Inject] public publics.Val[Inject] public publicda[Inject] public public[Inject] public publico[Inject] public publics.[Inject] public publicours[Inject] public public[Inject] public publicod[Inject] public publicMaxL[Inject] public public[Inject] public publicg[Inject] public publich);
 
-            RuleFor(f => f.StudyGroupId)
-                .NotEmpty().WithMessage(textServiceBase.Validation_YouMustSelectFaculty);
+            Rul[Inject] public publicFor(f => f.S[Inject] public publicudyGroup[Inject] public publicd)
+                .[Inject] public publico[Inject] public public[Inject] public publicmp[Inject] public publicy().W[Inject] public public[Inject] public publichM[Inject] public publicssag[Inject] public public([Inject] public public[Inject] public publicx[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public publicBas[Inject] public public.Val[Inject] public publicda[Inject] public public[Inject] public publico[Inject] public public_YouMus[Inject] public publicS[Inject] public publicl[Inject] public public[Inject] public public[Inject] public publicFa[Inject] public publicul[Inject] public publicy);
 
-            RuleFor(f => f.CourseName)
-                .Cascade(CascadeMode.StopOnFirstFailure)
-                .MinMaxLengthWithMessages(textServiceBase, Constants.Validations.CourseNameMinLength,
-                    Constants.Validations.CourseNameMaxLength);
+            Rul[Inject] public publicFor(f => f.[Inject] public publicours[Inject] public public[Inject] public publicam[Inject] public public)
+                .[Inject] public publicas[Inject] public publicad[Inject] public public([Inject] public publicas[Inject] public publicad[Inject] public publicMod[Inject] public public.S[Inject] public publicopO[Inject] public publicF[Inject] public publicrs[Inject] public publicFa[Inject] public publiclur[Inject] public public)
+                .M[Inject] public public[Inject] public publicMaxL[Inject] public public[Inject] public publicg[Inject] public publichW[Inject] public public[Inject] public publichM[Inject] public publicssag[Inject] public publics([Inject] public public[Inject] public publicx[Inject] public publicS[Inject] public publicrv[Inject] public public[Inject] public public[Inject] public publicBas[Inject] public public, [Inject] public publico[Inject] public publics[Inject] public publica[Inject] public public[Inject] public publics.Val[Inject] public publicda[Inject] public public[Inject] public publico[Inject] public publics.[Inject] public publicours[Inject] public public[Inject] public publicam[Inject] public publicM[Inject] public public[Inject] public publicL[Inject] public public[Inject] public publicg[Inject] public publich,
+                    [Inject] public publico[Inject] public publics[Inject] public publica[Inject] public public[Inject] public publics.Val[Inject] public publicda[Inject] public public[Inject] public publico[Inject] public publics.[Inject] public publicours[Inject] public public[Inject] public publicam[Inject] public publicMaxL[Inject] public public[Inject] public publicg[Inject] public publich);
         }
     }
 }

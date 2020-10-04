@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
+using Shared.Services;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
@@ -19,13 +20,14 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
         private readonly ProfileRepository _profileRepository;
         private readonly ITimeService _timeService;
         private readonly TextService _textService;
-        private readonly IStringStandardizationService _stringStandardizationService;
+        private readonly StringStandardizationService _stringStandardizationService;
         private readonly IHashService _hashService;
-        private readonly IEmailConfirmationSenderService _emailConfirmationSenderService;
+        private readonly EmailConfirmationSenderService _emailConfirmationSenderService;
         private readonly StudyGroupRepository _studyGroupRepository;
         private readonly RecentCoursesService _recentCoursesService;
+        private readonly UniwikiContext _uniwikiContext;
 
-        public RegisterServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, ITimeService timeService, TextService textService, IStringStandardizationService stringStandardizationService, IHashService hashService, IEmailConfirmationSenderService emailConfirmationSenderService, StudyGroupRepository studyGroupRepository, RecentCoursesService recentCoursesService)
+        public RegisterServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, ITimeService timeService, TextService textService, StringStandardizationService stringStandardizationService, IHashService hashService, EmailConfirmationSenderService emailConfirmationSenderService, StudyGroupRepository studyGroupRepository, RecentCoursesService recentCoursesService, UniwikiContext uniwikiContext)
             : base(serviceProvider)
         {
             _profileRepository = profileRepository;
@@ -36,6 +38,7 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
             _emailConfirmationSenderService = emailConfirmationSenderService;
             _studyGroupRepository = studyGroupRepository;
             _recentCoursesService = recentCoursesService;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override async Task<RegisterResponseDto> ExecuteAsync(RegisterRequestDto request, RequestContext context)
@@ -64,13 +67,15 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
 
                 // Create the profile
                 profile = _profileRepository.AddProfile(request.Email, names[0], names[1], url, password.hashedPassword, password.salt, $"/img/profilePictures/no-profile-picture.jpg", _timeService.Now, false, AuthenticationLevel.PrimaryToken, request.HomeFacultyId);
+
+                _uniwikiContext.SaveChanges();
             }
 
-            // Set the recent courses
-            _recentCoursesService.SetAsRecentCourses(request.RecentCourses, profile.Id);
+            // TODO: Set the recent courses
+            // _recentCoursesService.SetAsRecentCourses(request.RecentCourses, profile.Id);
 
             // Send the confirmation email
-            await _emailConfirmationSenderService.SendConfirmationEmail(profile);
+            await _emailConfirmationSenderService.SendConfirmationEmail(profile.Id, profile.Email);
 
             return new RegisterResponseDto(request.Email, profile.Id);
         }

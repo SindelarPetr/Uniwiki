@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Toolbelt.ComponentModel.DataAnnotations;
+using Uniwiki.Server.Persistence.Maps;
 using Uniwiki.Server.Persistence.Maps.Base;
 using Uniwiki.Server.Persistence.Models;
 
 namespace Uniwiki.Server.Persistence
 {
     // TODO: Change the lengths of all the strings in the DB (the default is max size = 4000, most of our things are like 200)
-    public class UniwikiContext : DbContext
+    public class UniwikiContext : DbContext, IDisposable
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -46,23 +52,10 @@ namespace Uniwiki.Server.Persistence
 
         public DbSet<FeedbackModel> Feedbacks => Set<FeedbackModel>();
 
-        public UniwikiContext(IServiceProvider serviceProvider)
+        public UniwikiContext(IServiceProvider serviceProvider, DbContextOptions builder)
+        : base(builder)
         {
             _serviceProvider = serviceProvider;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            base.OnConfiguring(options);
-            options
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors();
-
-            // TODO: This should be loaded from the constructor
-            // TODO: Move the connection string to the configuration
-            // TODO: Make it possible to switch between the options in configuration
-            // options.UseSqlServer("Server=localhost\\SQLEXPRESS01; initial catalog=UniwikiLocalDatabase;Database=master;Trusted_Connection=True; integrated security=SSPI");
-            options.UseInMemoryDatabase("UniwikiLocalDatabase");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -78,51 +71,40 @@ namespace Uniwiki.Server.Persistence
                 ((IModelMapBase)builder).Map(modelBuilder);
             }
 
+            // TODO: Remove this
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
             modelBuilder.BuildIndexesFromAnnotations();
         }
 
-    }
-
-    public struct PostCategoryModelId
-    {
-        public string Name;
-        public Guid CourseId;
-
-        public PostCategoryModelId(string name, CourseModel course)
-            : this(name, course.Id) { }
-
-        public PostCategoryModelId(string name, Guid courseId)
+        public override int SaveChanges()
         {
-            Name = name;
-            CourseId = courseId;
+            UpdateSoftDeleteStatuses();
+            return base.SaveChanges();
         }
 
-        public override bool Equals(object? obj)
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            return obj is PostCategoryModelId other &&
-                   Name.Equals(other.Name) &&
-                   CourseId.Equals(other.CourseId);
+            UpdateSoftDeleteStatuses();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
-        public override int GetHashCode()
+        private void UpdateSoftDeleteStatuses()
         {
-            return HashCode.Combine(Name, CourseId);
-        }
-
-        public void Deconstruct(out string name, out Guid courseId)
-        {
-            name = Name;
-            courseId = CourseId;
-        }
-
-        public static implicit operator (string Name, Guid CourseId)(PostCategoryModelId value)
-        {
-            return (value.Name, value.CourseId);
-        }
-
-        public static implicit operator PostCategoryModelId((string Name, Guid CourseId) value)
-        {
-            return new PostCategoryModelId(value.Name, value.CourseId);
+            // Soft deleting
+            foreach (var entry in ChangeTracker.Entries().Where(e => e.Entity is ISoftDeletable))
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.CurrentValues[PersistenceConstants.IsDeleted] = 0;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified;
+                        entry.CurrentValues[PersistenceConstants.IsDeleted] = 1;
+                        break;
+                }
+            }
         }
     }
 }

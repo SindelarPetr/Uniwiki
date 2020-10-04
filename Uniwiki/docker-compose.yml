@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  uniwiki.server.host:
+    image: ${DOCKER_REGISTRY-}uniwikiserverhost
+    build:
+      context: .
+      dockerfile: Uniwiki.Server.Host/Dockerfile

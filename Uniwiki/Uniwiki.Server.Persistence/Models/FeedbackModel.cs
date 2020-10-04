@@ -1,18 +1,22 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Uniwiki.Server.Persistence.Models.Base;
 using Uniwiki.Server.Persistence.Repositories.Base;
+using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class FeedbackModel : RemovableModelBase<Guid>
+    public class FeedbackModel : ModelBase<Guid>
     {
-        public Guid? UserId { get; protected set; }
-        public ProfileModel? User { get; protected set; }
-        public int? Rating { get; protected set; }
-        public string Text { get; protected set; } = null!;
-        public DateTime CreationTime { get; protected set; }
+        public Guid? UserId { get; set; }
+        public ProfileModel? User { get; set; }
+        public int? Rating { get; set; }
+        // Lets keep max length for this text
+        public string Text { get; set; } = null!;
+        public DateTime CreationTime { get; set; }
 
-        internal FeedbackModel(Guid id, bool isRemoved, Guid? userId, int? rating, string text, DateTime creationTime)
-            :base(isRemoved, id)
+        internal FeedbackModel(Guid id, Guid? userId, int? rating, string text, DateTime creationTime)
+            :base(id)
         {
             UserId = userId;
             Rating = rating;

@@ -161,7 +161,9 @@ namespace Uniwiki.Server.Host.Controllers
             while ((line = file.ReadLine()) != null)
             {
                 if (buffor.Count >= lastLinesCount)
+                {
                     buffor.Dequeue();
+                }
 
                 buffor.Enqueue(line);
             }
@@ -190,7 +192,9 @@ namespace Uniwiki.Server.Host.Controllers
             var response = clientData.Response as GetFeedbackSummaryResponseDto;
 
             if (response == null)
+            {
                 return "Error";
+            }
 
             return
                 $"Average rating: {response.AverageRating}\n" +

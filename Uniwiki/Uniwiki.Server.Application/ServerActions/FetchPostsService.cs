@@ -17,20 +17,20 @@ namespace Uniwiki.Server.Application.ServerActions
             _postRepository = postRepository;
         }
 
-        public (IQueryable<PostViewModel> postViewModels, bool canFetchMore) FetchPosts(bool usePostTypeFilter, Guid courseId, string? postType, int? lastPostNumber, int postsToFetch, Guid? userId)
+        public (IEnumerable<PostViewModel> postViewModels, bool canFetchMore) FetchPosts(bool usePostTypeFilter, Guid courseId, string? postType, DateTime? lastPostCreationTime, int postsToFetch, Guid? userId)
         {
             // Get posts for the 
             var posts = !usePostTypeFilter
-                ? _postRepository.FetchPosts(courseId, lastPostNumber, postsToFetch)
-                : _postRepository.FetchPostsOfPostType(courseId, postType, lastPostNumber, postsToFetch);
+                ? _postRepository.FetchPosts(courseId, lastPostCreationTime, postsToFetch)
+                : _postRepository.FetchPostsOfPostType(courseId, postType, lastPostCreationTime, postsToFetch);
 
             // Check if can fetch more posts
             var canFetchMore = !usePostTypeFilter
-                ? _postRepository.CanFetchMore(courseId, lastPostNumber)
-                : _postRepository.CanFetchMoreOfPostType(courseId, postType, lastPostNumber);
+                ? _postRepository.CanFetchMore(courseId, lastPostCreationTime)
+                : _postRepository.CanFetchMoreOfPostType(courseId, postType, lastPostCreationTime);
 
             // Convert posts to DTOs
-            var postDtos = posts.ToDto(userId);
+            var postDtos = posts.ToPostViewModel(userId);
 
             return (postDtos, canFetchMore);
         }

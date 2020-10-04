@@ -4,26 +4,27 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class EmailConfirmationSecretRepository : RepositoryBase<EmailConfirmationSecretModel, Guid> //, EmailConfirmationSecretRepository
+    public class EmailConfirmationSecretRepository //: RepositoryBase<EmailConfirmationSecretModel, Guid> //, EmailConfirmationSecretRepository
     {
+        private readonly UniwikiContext _uniwikiContext;
         private readonly TextService _textService;
 
-        public override string NotFoundByIdMessage => _textService.EmailConfirmationSecretNotFound;
+        //public override string NotFoundByIdMessage => _textService.EmailConfirmationSecretNotFound;
 
         public EmailConfirmationSecretRepository(UniwikiContext uniwikiContext, TextService textService)
-            : base(uniwikiContext, uniwikiContext.EmailConfirmationSecrets)
         {
+            _uniwikiContext = uniwikiContext;
             _textService = textService;
         }
 
         public void SaveEmailConfirmationSecret(EmailConfirmationSecretModel emailConfirmationSecret)
         {
-            All.Add(emailConfirmationSecret);
+            _uniwikiContext.EmailConfirmationSecrets.Add(emailConfirmationSecret);
         }
 
         public void ConfirmEmail(EmailConfirmationSecretModel secret)
@@ -31,32 +32,28 @@ namespace Uniwiki.Server.Persistence.Repositories
             var profile = secret.Profile;
 
             profile.SetAsConfirmed();
-
-            SaveChanges();
         }
 
-        public void InvalidateSecrets(ProfileModel profile)
+        public void InvalidateSecrets(Guid profileId)
         {
-            foreach (var emailConfirmationSecretModel in All.Where(s => s.Profile == profile && s.IsValid))
-            {
-                emailConfirmationSecretModel.Invalidate();
-            }
-
-            SaveChanges();
+            _uniwikiContext.EmailConfirmationSecrets
+                .Where(s => s.ProfileId == profileId && s.IsValid)
+                .ToList()
+                .ForEach(s => s.Invalidate());
         }
 
-        public EmailConfirmationSecretModel? TryGetValidEmailConfirmationSecret(ProfileModel profile)
+        public EmailConfirmationSecretModel? TryGetValidEmailConfirmationSecret(Guid profileId)
         {
-            return All.FirstOrDefault(s => s.ProfileId == profile.Id && s.IsValid);
+           return  _uniwikiContext
+                .EmailConfirmationSecrets
+                .FirstOrDefault(s => s.ProfileId == profileId && s.IsValid);
         }
 
-        public EmailConfirmationSecretModel AddEmailConfirmationSecret(ProfileModel profile, Guid secret, DateTime creationTime)
+        public EmailConfirmationSecretModel AddEmailConfirmationSecret(Guid profileId, Guid secret, DateTime creationTime)
         {
-            EmailConfirmationSecretModel emailConfirmationSecretModel = new EmailConfirmationSecretModel(Guid.NewGuid(), profile, secret, creationTime, true);
+            EmailConfirmationSecretModel emailConfirmationSecretModel = new EmailConfirmationSecretModel(Guid.NewGuid(), profileId, secret, creationTime, true);
 
-            All.Add(emailConfirmationSecretModel);
-
-            SaveChanges();
+            _uniwikiContext.EmailConfirmationSecrets.Add(emailConfirmationSecretModel);
 
             return emailConfirmationSecretModel;
         }

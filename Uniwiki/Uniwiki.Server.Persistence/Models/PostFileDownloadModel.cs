@@ -1,15 +1,18 @@
 ﻿using System;
+using Toolbelt.ComponentModel.DataAnnotations.Schema.V5;
+using Uniwiki.Server.Persistence.Models.Base;
 using Uniwiki.Server.Persistence.Repositories.Base;
 
 namespace Uniwiki.Server.Persistence.Models
 {
     public class PostFileDownloadModel : ModelBase<Guid>
     {
-        public Guid TokenId { get; protected set; }
-        public LoginTokenModel Token { get; protected set; } = null!;
-        public Guid FileDownloadedId { get; protected set; }
-        public PostFileModel FileDownloaded { get; protected set; } = null!;
-        public DateTime DownloadTime { get; protected set; }
+        public Guid TokenId { get; set; }
+        public LoginTokenModel Token { get; set; } = null!;
+        public Guid FileDownloadedId { get; set; }
+        public PostFileModel FileDownloaded { get; set; } = null!;
+        [IndexColumn]
+        public DateTime DownloadTime { get; set; }
         
 
         internal PostFileDownloadModel(Guid id, Guid tokenId, Guid fileDownloadedId, DateTime downloadTime)

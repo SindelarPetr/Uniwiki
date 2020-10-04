@@ -2,11 +2,11 @@
 @using Uniwiki.Client.Host.Extensions
 @using Uniwiki.Shared.RequestResponse
 
-<div class="mb-3 shadow-lg post bg-white rounded border" id="@Post.Id">
+<div class="mb-3 shadow post bg-white rounded border" id="@Post.Id">
 	<div class="p-3">
 		@if (_editMode)
 		{
-			<EditPostComponent AllPostTypes="AllPostTypes" CourseId="CourseId" PostToEdit="Post" OnCommitPost="HandleCommitPost" />
+			<EditPostComponent AllPostTypes="AllPostTypes" CourseId="CourseId" PostToEdit="Post" OnCommitPost="HandleCommitPost" OnCancel="HandleEditCancel" />
 		}
 		else
 		{
@@ -116,7 +116,7 @@
 		<div class="mx-3 d-flex my-3">
 			@if (LoginService.IsAuthenticated)
 			{
-				<img src="@LoginService.User.ProfilePictureSrc" alt="Profile picture" class="rounded-circle border border-light mr-2" style="width: 2rem; height: 2rem; object-fit: cover" />
+				<img src="@LoginService.User!.ProfilePictureSrc" alt="Profile picture" class="rounded-circle border border-light mr-2" style="width: 2rem; height: 2rem; object-fit: cover" />
 			}
 			<textarea class="form-control mr-2" placeholder="@TextService.AddComent" oninput="this.style.height = Math.max(this.scrollHeight) + 'px'" style="overflow-y: hidden" rows="1" @bind="_commentText" @ref="_commentTextInput"></textarea>
 			<button class="btn btn-secondary mb-auto @(_sendingComment ? "disabled" : String.Empty)" @onclick="HandleSendComment">
@@ -133,16 +133,16 @@
 
 </div>
 @code {
-	[Inject] ILoginService LoginService { get; set; }
-	[Inject] ITimeService TimeService { get; set; }
-	[Inject] IRequestSender RequestSender { get; set; }
-	[Inject] IJsInteropService JsInteropService { get; set; }
-	[Inject] IToastService ToastService { get; set; }
-	[Inject] IModalService ModalService { get; set; }
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] ITimeService TimeService { get; set; } = null!;
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] IJsInteropService JsInteropService { get; set; } = null!;
+	[Inject] IToastService ToastService { get; set; } = null!;
+	[Inject] IModalService ModalService { get; set; } = null!;
 
 	[Parameter] public Guid CourseId { get; set; }
-	[Parameter] public string[] AllPostTypes { get; set; }
-	[Parameter] public PostViewModel Post { get; set; }
+	[Parameter] public string[] AllPostTypes { get; set; } = null!;
+	[Parameter] public PostViewModel Post { get; set; } = null!;
 	[Parameter] public EventCallback OnRemoved { get; set; }
 
 	private bool _showFiles = false;
@@ -195,11 +195,29 @@
 			return;
 		}
 
+		// Set it to liked locally for better UX
+		Post.LikedByClient = true;
+		Post.LikesCount++;
+		StateHasChanged();
+
 		// Create request
 		var request = new LikePostRequestDto(Post.Id);
 
-		// Send request
-		var response = await RequestSender.SendRequestAsync(request);
+		LikePostResponseDto response;
+		try
+		{
+			// Send request
+			response = await RequestSender.SendRequestAsync(request);
+		}
+		catch (Exception ex)
+		{
+			// Revert the changes
+			Post.LikedByClient = false;
+			Post.LikesCount--;
+			StateHasChanged();
+
+			throw;
+		}
 
 		// Display result
 		Post = response.Post;
@@ -215,11 +233,30 @@
 			return;
 		}
 
+		// Set it to unliked locally for better UX
+		Post.LikedByClient = false;
+		Post.LikesCount--;
+		StateHasChanged();
+
 		// Create request
 		var request = new UnlikePostRequestDto(Post.Id);
 
-		// Send request
-		var response = await RequestSender.SendRequestAsync(request);
+		UnlikePostResponseDto response;
+		try
+		{
+			// Send request
+			response = await RequestSender.SendRequestAsync(request);
+		}
+		catch (Exception ex)
+		{
+			// Revert the changes
+			Post.LikedByClient = false;
+			Post.LikesCount--;
+			StateHasChanged();
+
+			throw;
+		}
+
 
 		// Display result
 		Post = response.Post;
@@ -241,7 +278,7 @@
 		_sendingComment = true;
 		StateHasChanged();
 
-		var request = new AddCommentRequestDto(Post.Id, _commentText);
+		var request = new AddPostCommentRequestDto(Post.Id, _commentText);
 
 		var response = await RequestSender.SendRequestAsync(request, () =>
 		{
@@ -294,6 +331,11 @@
 		await RequestSender.SendRequestAsync(request);
 
 		await OnRemoved.InvokeAsync(null);
+	}
+
+	public async Task HandleEditCancel()
+	{
+		_editMode = false;
 	}
 
 }

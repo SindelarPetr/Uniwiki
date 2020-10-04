@@ -14,6 +14,8 @@ namespace Uniwiki.Shared.Tests.FakeServices
         public string GetTranslation(string czech, string english)
             => Language.Czech == Language ? czech : english;
 
+        public T GetTranslation<T>(T czech, T english) => Language.Czech == Language ? czech : english;
+
         public string Sanitize(string text) => HttpUtility.HtmlEncode(text);
 
         public void SetLanguage(Language language) => Language = language;

@@ -28,7 +28,7 @@ namespace Uniwiki.Server.Application.ServerActions
         protected override Task<FetchPostsResponseDto> ExecuteAsync(FetchPostsRequestDto request, RequestContext context)
         {
             var (postDtos, canFetchMore) = _fetchPostsService.FetchPosts(request.UsePostTypeFilter, request.CourseId, request.PostType,
-                request.LastPostNumber, request.PostsToFetch, context.UserId);
+                request.LastPostCreationTime, request.PostsToFetch, context.UserId);
 
             // Create the response
             var response = new FetchPostsResponseDto(postDtos.ToArray(), canFetchMore);

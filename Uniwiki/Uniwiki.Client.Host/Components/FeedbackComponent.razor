@@ -10,14 +10,14 @@
 }
 
 @code {
-	[Inject] IModalService ModalService { get; set; }
-	[Inject] ILoginService LoginService { get; set; }
-	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; }
-	[Inject] AuthenticationStateProvider authenticationStateProvider { get; set; }
+	[Inject] IModalService ModalService { get; set; } = null!;
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; } = null!;
+	[Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; } = null!;
 
-	[CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; }
+	[CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; } = null!;
 
-	[Parameter] public string Title { get; set; }
+	[Parameter] public string Title { get; set; } = null!;
 
 	private bool _showThis = false;
 
@@ -32,7 +32,7 @@
 
 		await AuthenticationState;
 
-		var loginFeedbackProvided = LoginService.IsAuthenticated && LoginService.User.FeedbackProvided;
+		var loginFeedbackProvided = LoginService.IsAuthenticated && LoginService.User!.FeedbackProvided;
 
 		_showThis = !loginFeedbackProvided && !(await LocalStorageManagerService.IsFeedbackProvided());
 	}

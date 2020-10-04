@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Shared.RequestResponse;
 using Uniwiki.Shared.ModelDtos;
 
@@ -7,7 +9,7 @@ namespace Uniwiki.Shared.RequestResponse
     public class GetCourseResponseDto : ResponseBase
     {
         public string? FocusedPostType { get; set; }
-        public PostViewModel[] Posts { get; set; }
+        public List<PostViewModel> Posts { get; set; }
         public FilterPostTypeDto[] FilterPostTypes { get; set; }
         public Guid CourseId { get; set; }
         public string?[] NewPostPostTypes { get; set; }
@@ -19,7 +21,7 @@ namespace Uniwiki.Shared.RequestResponse
         public GetCourseResponseDto(string? focusedPostType, PostViewModel[] posts, FilterPostTypeDto[] filterPostTypes, Guid courseId, string?[] newPostPostTypes, bool canFetchMore, RecentCourseDto recentCourse, string courseLongName, string courseUniversityAndFaculty)
         {
             FocusedPostType = focusedPostType;
-            Posts = posts;
+            Posts = posts.ToList();
             FilterPostTypes = filterPostTypes;
             CourseId = courseId;
             NewPostPostTypes = newPostPostTypes;

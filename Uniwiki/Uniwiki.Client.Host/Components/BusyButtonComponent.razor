@@ -10,19 +10,13 @@
 
 	[Parameter] public bool IsBusy { get; set; }
 	[Parameter] public bool IsFormControl { get; set; } = true;
-	[Parameter] public RenderFragment ChildContent { get; set; }
-	[Parameter] public Action OnClick { get; set; }
-	[Parameter] public Func<Task> OnClickAsync { get; set; }
-	[Parameter] public string Class { get; set; }
-
-	public BusyButtonComponent()
-	{
-		Console.WriteLine("Constructor: BusyButtonComponent");
-	}
+	[Parameter] public RenderFragment ChildContent { get; set; } = null!;
+	[Parameter] public Action OnClick { get; set; } = null!;
+	[Parameter] public Func<Task> OnClickAsync { get; set; } = null!;
+	[Parameter] public string Class { get; set; } = null!;
 
 	private async Task PerformOnClick()
 	{
-		Console.WriteLine("Performing click");
 		if (OnClickAsync != null)
 		{
 			await OnClickAsync();

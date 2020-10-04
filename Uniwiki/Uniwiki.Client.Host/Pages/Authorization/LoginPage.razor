@@ -1,5 +1,5 @@
 ﻿@page "/login"
-@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@inherits UniwikiComponentBase
 @using Uniwiki.Client.Host.Services
 @using Uniwiki.Shared.RequestResponse.Authentication
 @layout ThinFormLayout
@@ -54,12 +54,12 @@
 
 @code{
 
-	[Inject] private ILoginService LoginService { get; set; }
-	[Inject] private INavigationService NavigationService { get; set; }
-	[Inject] private ILocalStorageManagerService LocalStorageManagerService { get; set; }
-	[Inject] private StaticStateService StaticStateService { get; set; }
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
+	[Inject] ILocalStorageManagerService LocalStorageManagerService { get; set; } = null!;
+	[Inject] StaticStateService StaticStateService { get; set; } = null!;
 
-	public LoginRequestDto Request { get; set; }
+	public LoginRequestDto Request { get; set; } = null!;
 
 	private bool _isBusy;
 
@@ -79,7 +79,7 @@
 	{
 		await base.OnInitializedAsync();
 
-		Request = new LoginRequestDto(string.Empty, string.Empty, new FoundCourseDto[0]);
+		Request = new LoginRequestDto(string.Empty, string.Empty, new RecentCourseDto[0]);
 	}
 
 	public async Task Login()

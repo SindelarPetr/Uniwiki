@@ -4,22 +4,23 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using Shared.Extensions;
+using Shared.Services;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class UniversityRepository : RemovableRepositoryBase<UniversityModel, Guid> 
+    public class UniversityRepository : RepositoryBase<UniversityModel, Guid> 
     {
-        private readonly IStringStandardizationService _stringStandardizationService;
+        private readonly StringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
 
         public override string NotFoundByIdMessage => _textService.Error_UniversityNotFound;
 
-        public UniversityRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.Universities)
+        public UniversityRepository(UniwikiContext uniwikiContext, StringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.Universities)
         {
             _stringStandardizationService = stringStandardizationService;
             _textService = textService;
@@ -30,7 +31,9 @@ namespace Uniwiki.Server.Persistence.Repositories
         public IEnumerable<UniversityModel> FindUniversities(string text)
         {
             if (String.IsNullOrWhiteSpace(text))
+            {
                 return new UniversityModel[0];
+            }
 
             var neutralizedText = text.Neutralize();
 
@@ -45,7 +48,9 @@ namespace Uniwiki.Server.Persistence.Repositories
             var uni = All.FirstOrDefault(u => u.Url == universityUrl);
 
             if(uni == null)
+            {
                 throw new RequestException( _textService.Error_UniversityNotFound);
+            }
 
 
             return uni.StudyGroups;
@@ -65,7 +70,7 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public UniversityModel AddUniversity(string fullName, string shortName, string url)
         {
-            var university = new UniversityModel(Guid.NewGuid(), fullName, shortName, url, false);
+            var university = new UniversityModel(Guid.NewGuid(), fullName, shortName, url);
 
             All.Add(university);
 

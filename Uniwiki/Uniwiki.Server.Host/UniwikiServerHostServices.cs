@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Server.Appliaction.Services.Abstractions;
 using Server.Host;
 using Uniwiki.Server.Application;
@@ -12,10 +13,10 @@ namespace Uniwiki.Server.Host
 {
     public static class UniwikiServerHostServices
     {
-        public static void AddHostServices(this IServiceCollection services)
+        public static void AddHostServices(this IServiceCollection services, ILoggerFactory loggerFactory = null)
         {
             services.AddServerHost();
-            services.AddUniwikiServerApplicationServices();
+            services.AddUniwikiServerApplicationServices(loggerFactory);
             services.AddHttpContextAccessor();
             services.AddScoped<IMvcProcessor, MvcProcessor>();
             services.AddSingleton<IRequestDeserializer, RequestDeserializer>();

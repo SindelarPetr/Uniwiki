@@ -41,9 +41,7 @@ namespace Uniwiki.Shared
         private readonly IApplicationHostEnvironment _applicationHostEnvironment;
 
         public int PasswordMinLength => _applicationHostEnvironment.IsProduction() ? 6 : 1; // Require 6 digit password just for production
-        public const int PasswordMaxLength = 40;
-
-
+        
         public class Validations
         {
             public const int CourseCodeMaxLength = 10;
@@ -58,12 +56,21 @@ namespace Uniwiki.Shared
             public const int PostTextMaxLength = 50_000;
             public const int PostTextMinLength = 1;
 
-            public static readonly char[] AllowedFileSpecialCharacters = {'<', '>', '(', ')', '.', ' ', '[', ']', '{', '}', '-', '=', '*', '!', '@', '#', '%', '+', '_', ',', '$' };
+            public readonly static char[] AllowedFileSpecialCharacters = {'<', '>', '(', ')', '.', ' ', '[', ']', '{', '}', '-', '=', '*', '!', '@', '#', '%', '+', '_', ',', '$' };
             public const int FileNameMaxLength = 240;
+            public const int FileExtensionMaxLength = 20;
             public const int PostTypeMaxLength = 25;
 
             public const int UserNameAndSurnameMinLength = 3;
-            public const int UserNameAndSurnameMaxLength = 35;
+            public const int UserNameMaxLength = 35;
+            public const int UserSurnameMaxLength = 35;
+            public const int UserNameAndSurnameMaxLength = UserNameMaxLength + 1 + UserSurnameMaxLength;
+
+            public const int UrlMaxLength = 200;
+            public const int EmailMaxLength = 254;
+            public const int PasswordMaxLength = 128;
+            public const int UniversityLongName = 100;
+            public const int UniversityShortName = 15;
         }
     }
 }

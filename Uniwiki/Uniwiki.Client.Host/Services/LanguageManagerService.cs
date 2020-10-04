@@ -51,11 +51,15 @@ namespace Uniwiki.Client.Host.Services
         {
             // English
             if (code.ToLower().StartsWith("en"))
+            {
                 return Language.English;
+            }
 
             // Czech
             if (code.ToLower().StartsWith("cs"))
+            {
                 return Language.Czech;
+            }
 
             // Default
             return Constants.DefaultLanguage;

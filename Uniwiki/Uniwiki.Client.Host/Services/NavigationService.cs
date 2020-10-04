@@ -27,7 +27,9 @@ namespace Uniwiki.Client.Host.Services
 
             // If he could not navigate back
             if (!success)
+            {
                 NavigateTo(_navigationManager.BaseUri);
+            }
         }
 
         public void NavigateToTheCurrentUrl()

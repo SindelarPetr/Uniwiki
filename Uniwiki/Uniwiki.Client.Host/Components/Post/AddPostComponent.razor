@@ -1,20 +1,20 @@
-﻿@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+﻿@inherits UniwikiComponentBase
 @using Uniwiki.Shared.RequestResponse
 
 <EditPostComponent AllPostTypes="AllPostTypes" CourseId="CourseId" OnCommitPost="HandleCommitPost" />
 
 @code {
-	[Inject] IRequestSender RequestSender { get; set; }
-	[Inject] ILoginService LoginService { get; set; }
-	[Inject] IToastService ToastService { get; set; }
-	[Inject] ILocalAuthenticationStateProvider LocalAuthenticationStateProvider { get; set; }
-	[Inject] INavigationService NavigationService { get; set; }
-	[Inject] IJsInteropService JsInteropService { get; set; }
-	[Inject] ITimeService TimeService { get; set; }
+	[Inject] IRequestSender RequestSender { get; set; } = null!;
+	[Inject] ILoginService LoginService { get; set; } = null!;
+	[Inject] IToastService ToastService { get; set; } = null!;
+	[Inject] ILocalAuthenticationStateProvider LocalAuthenticationStateProvider { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
+	[Inject] IJsInteropService JsInteropService { get; set; } = null!;
+	[Inject] ITimeService TimeService { get; set; } = null!;
 
-	[Parameter] public Func<PostViewModel, Task> OnPostCreated { get; set; }
+	[Parameter] public Func<PostViewModel, Task> OnPostCreated { get; set; } = null!;
 	[Parameter] public Guid CourseId { get; set; }
-	[Parameter] public string[] AllPostTypes { get; set; }
+	[Parameter] public string[] AllPostTypes { get; set; } = null!;
 
 	private async Task HandleCommitPost(EditPostRequestDto editPostRequest)
 	{

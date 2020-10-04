@@ -6,11 +6,11 @@ namespace Uniwiki.Client.Host.Components.FileUploader
 {
     public class UploadFile
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = null!;
         public DateTime LastModified { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public long Size { get; set; }
-        public string Type { get; set; }
+        public string Type { get; set; } = null!;
 
         public bool Started { get; private set; }
         public double Progress { get; private set; }
@@ -25,7 +25,7 @@ namespace Uniwiki.Client.Host.Components.FileUploader
         public event Action? OnFailed;
         public event Action<string>? OnSuccess;
 
-        public IJsInteropService JsInteropService { get; set; }
+        public IJsInteropService JsInteropService { get; set; } = null!;
 
         public void SetStart()
         {
@@ -69,10 +69,8 @@ namespace Uniwiki.Client.Host.Components.FileUploader
             return JsInteropService.StartFileUpload(Id, dataForServer);
         }
 
-        public ValueTask Abort()
-        {
+        public ValueTask Abort() =>
             // Reset to default
-            return JsInteropService.AbortFileUpload(Id);
-        }
+            JsInteropService.AbortFileUpload(Id);
     }
 }

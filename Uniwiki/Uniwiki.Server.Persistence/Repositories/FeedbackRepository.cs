@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
@@ -42,7 +42,7 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public FeedbackModel AddFeedback(Guid? userId, int? rating, string text, DateTime creationTime)
         {
-            var feedback = new FeedbackModel(Guid.NewGuid(), false, userId, rating, text, creationTime);
+            var feedback = new FeedbackModel(Guid.NewGuid(), userId, rating, text, creationTime);
 
             All.Add(feedback);
 

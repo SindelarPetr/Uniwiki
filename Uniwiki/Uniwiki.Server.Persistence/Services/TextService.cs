@@ -71,14 +71,18 @@ namespace Uniwiki.Server.Persistence.Services
         public string Error_FilesNotFound(string[] notFoundNames)
         {
             if (!notFoundNames.Any())
+            {
                 throw new ArgumentException("There must be at least one name of a not found file.", nameof(notFoundNames));
+            }
 
             // Get file names in format: "file1, file2, file3"
             var names = notFoundNames.Aggregate((a, b) => $"{a}, {b}");
 
             if (names.Length == 0)
+            {
                 return _languageService.GetTranslation($"Nepodařilo se nalézt soubor: {names}. Zkuste jej odebrat a nahrát znovu.",
                     $"Could not upload file: {names}. Try to upload it again.");
+            }
 
             return _languageService.GetTranslation($"Nepodařilo se nalézt soubory: {names}. Zkuste je odebrat a nahrát znovu.",
                 $"Could not upload files: {names}. Try to remove them and upload them again.");

@@ -44,7 +44,9 @@ namespace Uniwiki.Server.Application.ServerActions
 
             // Check if the download time is longer than required time
             if (latestDownload != null && latestDownload.DownloadTime + Constants.DownloadAgainTime > currentTime)
+            {
                 throw new RequestException(_textService.Error_WaitBeforeRepeatedDownload);
+            }
 
             // Add it to the DB
             _postFileDownloadRepository.AddPostFileDownload(context.LoginToken!.Id, request.FileId, currentTime);

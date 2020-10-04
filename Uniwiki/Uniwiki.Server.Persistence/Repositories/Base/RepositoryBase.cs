@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
-using Uniwiki.Server.Persistence.RepositoryAbstractions.Base;
+using Uniwiki.Server.Persistence.Models.Base;
+
 
 namespace Uniwiki.Server.Persistence.Repositories.Base
 {

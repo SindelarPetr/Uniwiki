@@ -8,6 +8,10 @@ namespace Uniwiki.Server.Application.Services
     {
         private readonly ILanguageService _languageService;
 
+        public string CouldNotFindPost_Removing => _languageService.GetTranslation(
+            "Nepodařilo se nalézt příspěvk. Pravděpodobně byl příspěvek již odebrán.",
+            "Could not find the post to remove, perhaps it was already removed.");
+
         public TextService(ILanguageService languageService)
         {
             _languageService = languageService;
@@ -83,6 +87,9 @@ namespace Uniwiki.Server.Application.Services
         public string Error_PostCommentNotFound => _languageService.GetTranslation("Daný komentář nebyl nalezen.", "The specified comment has not been found.");
 
         public string Error_CourseNotFound => _languageService.GetTranslation("Předmět nenalezen.", "Course not found.");
+
+        public string UserNotFound =>
+            _languageService.GetTranslation("Uživatel nebyl nalezen.", "The user has not been found.");
 
         public string ResendConfirmation_ProfileIsAlreadyConfirmed(string email) => _languageService.GetTranslation(
             $"Email {email} byl již potvrzen.", 

@@ -1,21 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class PostCommentRepository : RemovableRepositoryBase<PostCommentModel, Guid> 
+    public class PostCommentRepository
     {
-        private readonly TextService _textService;
+        private readonly UniwikiContext _uniwikiContext;
 
-        public override string NotFoundByIdMessage => _textService.Error_PostCommentNotFound;
-
-        public PostCommentRepository(UniwikiContext uniwikiContext, TextService textService)
-            : base(uniwikiContext, uniwikiContext.PostComments)
+        public PostCommentRepository(UniwikiContext uniwikiContext)
+           // : base(uniwikiContext, uniwikiContext.PostComments)
         {
-            _textService = textService;
+            _uniwikiContext = uniwikiContext;
         }
 
         public PostCommentModel EditComment(PostCommentModel comment, string text)
@@ -27,11 +26,11 @@ namespace Uniwiki.Server.Persistence.Repositories
 
         public Guid AddPostComment(Guid authorId, Guid postId, string commentText, DateTime creationTime)
         {
-            var postComment = new PostCommentModel(Guid.NewGuid(), authorId, postId, commentText, creationTime, false);
+            var postComment = new PostCommentModel(Guid.NewGuid(), authorId, postId, commentText, creationTime);
 
-            All.Add(postComment);
+            // postComment.Likes = new List<PostCommentLikeModel>();
 
-            SaveChanges();
+            _uniwikiContext.PostComments.Add(postComment);
 
             return postComment.Id;
         }

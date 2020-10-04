@@ -38,7 +38,7 @@ namespace Uniwiki.Server.Application.ServerActions
             var postId = _postCommentLikeRepository.LikeComment(request.PostCommentId, context.UserId!.Value, _timeService.Now);
 
             // Find the post
-            var updatedPost = _uniwikiContext.Posts.ToDto(context.UserId).Single(p => p.Id == postId);
+            var updatedPost = _uniwikiContext.Posts.ToPostViewModel(context.UserId).Single(p => p.Id == postId);
 
             // Create response
             var response = new LikePostCommentResponseDto(updatedPost);

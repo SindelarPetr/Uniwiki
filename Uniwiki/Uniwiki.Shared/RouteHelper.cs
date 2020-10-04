@@ -15,11 +15,15 @@ namespace Uniwiki.Shared
         internal static string BuildRouteParts(params string[] parts)
         {
             if (parts == null)
+            {
                 throw new ArgumentNullException(nameof(parts));
+            }
 
             // Return empty string if there were no parts supplied
             if (parts.Length == 0)
+            {
                 return string.Empty;
+            }
 
             string result = parts[0];
             for (var i = 1; i < parts.Length; i++)
@@ -39,11 +43,15 @@ namespace Uniwiki.Shared
         internal static string BuildRoutePartsFromUrlFriendlyParts(params string[] parts)
         {
             if (parts == null)
+            {
                 throw new ArgumentNullException(nameof(parts));
+            }
 
             // Return empty string if there were no parts supplied
             if (parts.Length == 0)
+            {
                 return string.Empty;
+            }
 
             string result = parts[0];
             for (var i = 1; i < parts.Length; i++)

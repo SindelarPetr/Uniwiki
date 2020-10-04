@@ -21,9 +21,9 @@
 
 @code {
 
-	[Inject] ILanguageManagerService LanguageManagerService { get; set; }
-	[Inject] INavigationService NavigationService { get; set; }
-	[Inject] IApplicationHostEnvironment ApplicationHostEnvironment { get; set; }
+	[Inject] ILanguageManagerService LanguageManagerService { get; set; } = null!;
+	[Inject] INavigationService NavigationService { get; set; } = null!;
+	[Inject] IApplicationHostEnvironment ApplicationHostEnvironment { get; set; } = null!;
 
 	private Language _currentLang;
 

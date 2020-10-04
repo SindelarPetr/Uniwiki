@@ -1,5 +1,5 @@
 ﻿@page "/Profile/{Url}"
-@inherits Uniwiki.Client.Host.Shared.UniwikiComponentBase
+@inherits UniwikiComponentBase
 @layout ThinFormLayout
 
 <div class="card-body">
@@ -22,7 +22,7 @@
 				 alt="Profile picture"
 				 class="rounded-circle border shadow"
 				 style="width: 12rem; height: 12rem; object-fit: cover" />
-			@if (_pageData.Authenticated)
+			@if (_pageData.IsAuthenticated)
 			{
 				@*<button class="btn btn-link mt-3" type="button" onclick="alert('@TextService.ProfilePage_CannotUploadPictureYet')">@TextService.ProfilePage_UploadProfilePicture</button>*@
 			}
@@ -31,7 +31,7 @@
 
 				@if (_edittingHomeFaculty)
 				{
-					@if (_pageData.Authenticated)
+					@if (_pageData.IsAuthenticated)
 					{
 						<div class="spinner-border text-primary" role="status">
 							<span class="sr-only">@TextService.Spinner_Loading...</span>
@@ -40,9 +40,9 @@
 				}
 				else
 				{
-					@if (_pageData.Profile.HomeStudyGroupId == null)
+					@if (_pageData.Profile.HomeStudyGroup?.StudyGroupId == null)
 					{
-						@if (_pageData.Authenticated)
+						@if (_pageData.IsAuthenticated)
 						{
 							<h5 class="my-3">Where do you study?</h5>
 							<button class="btn btn-primary btn-block" type="button" @onclick="HandleSelectMyUniversityAndFaculty">Select my university and faculty</button>
@@ -50,8 +50,8 @@
 					}
 					else
 					{
-						<p class="mb-0">Studying at <strong>@_pageData.Profile.HomeStudyGroupUniversityName @_pageData.Profile.HomeStudyGroupLongName</strong></p>
-						@if (_pageData.Authenticated)
+						<p class="mb-0">Studying at <strong>@_pageData.Profile.HomeStudyGroup.UniversityShortName @_pageData.Profile.HomeStudyGroup.LongName</strong></p>
+						@if (_pageData.IsAuthenticated)
 						{
 							<div class="text-right">
 								<button class="btn btn-link p-0 m-0 ml-2" type="button" @onclick="HandleSelectMyUniversityAndFaculty">@TextService.Change</button>
@@ -62,7 +62,7 @@
 				}
 
 
-				@if (_pageData.Authenticated)
+				@if (_pageData.IsAuthenticated)
 				{
 					<hr />
 					<button class="btn btn-link text-muted btn-block ml-0 p-0" type="button" @onclick="Logout">@TextService.Button_SignOut</button>

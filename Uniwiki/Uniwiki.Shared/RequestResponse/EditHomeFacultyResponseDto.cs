@@ -6,11 +6,13 @@ namespace Uniwiki.Shared.RequestResponse
 {
     public class EditHomeFacultyResponseDto : ResponseBase
     {
-        public EditHomeFacultyResponseDto(AuthorizedUserDto profile)
+        public EditHomeFacultyResponseDto(ProfileViewModel profile, AuthorizedUserDto? authorizedUser)
         {
             Profile = profile;
+            AuthorizedUser = authorizedUser;
         }
 
-        public AuthorizedUserDto Profile { get; }
+        public ProfileViewModel Profile { get; }
+        public AuthorizedUserDto? AuthorizedUser { get; }
     }
 }

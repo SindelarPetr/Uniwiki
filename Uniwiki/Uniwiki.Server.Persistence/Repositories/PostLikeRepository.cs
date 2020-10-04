@@ -9,15 +9,16 @@ using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class PostLikeRepository : RepositoryBase<PostLikeModel, PostLikeModelId>
+    public class PostLikeRepository // : RepositoryBase<PostLikeModel, PostLikeModelId>
     {
+        private readonly UniwikiContext _uniwikiContext;
         private readonly TextService _textService;
 
-        public override string NotFoundByIdMessage => _textService.Error_PostLikeNotFound;
+        public string NotFoundByIdMessage => _textService.Error_PostLikeNotFound;
 
         public PostLikeRepository(UniwikiContext uniwikiContext, TextService textService)
-            : base(uniwikiContext, uniwikiContext.PostLikes)
         {
+            _uniwikiContext = uniwikiContext;
             _textService = textService;
         }
 
@@ -25,7 +26,7 @@ namespace Uniwiki.Server.Persistence.Repositories
         {
             // Try to find existing like
             var existingLikeId = new PostLikeModelId(postId, profileId);
-            var existingLike = All.Find(existingLikeId.GetKeyValues());
+            var existingLike = _uniwikiContext.PostLikes.Find(existingLikeId.GetKeyValues());
 
             // If there is no like
             if (existingLike == null)
@@ -34,7 +35,7 @@ namespace Uniwiki.Server.Persistence.Repositories
                 var like = new PostLikeModel(postId, profileId, dateTime, true);
 
                 // Save it to the DB
-                All.Add(like);
+                _uniwikiContext.PostLikes.Add(like);
             }
             else
             {
@@ -48,15 +49,13 @@ namespace Uniwiki.Server.Persistence.Repositories
                 // Like it
                 existingLike.Like();
             }
-
-            SaveChanges();
         }
 
         public void UnlikePost(Guid postId, Guid profileId)
         {
             // Try to find an existing like
             var existingLikeId = new PostLikeModelId(postId, profileId);
-            var existingLike = All.Find(existingLikeId.GetKeyValues());
+            var existingLike = _uniwikiContext.PostLikes.Find(existingLikeId.GetKeyValues());
 
             // Check if there already is a like or its already unliked
             if (existingLike == null || existingLike.IsLiked == false)
@@ -67,8 +66,6 @@ namespace Uniwiki.Server.Persistence.Repositories
 
             // Unlike it
             existingLike.Unlike();
-
-            SaveChanges();
         }
     }
 }

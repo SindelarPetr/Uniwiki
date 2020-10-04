@@ -32,7 +32,9 @@ namespace Uniwiki.Client.Host.Services
             }
 
             if (!Enum.IsDefined(typeof(Language), intLang))
+            {
                 return null;
+            }
 
             var lang = (Language)intLang;
 

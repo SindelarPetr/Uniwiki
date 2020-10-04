@@ -1,0 +1,80 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+@model PostViewModel
+
+<div class="container">
+	<h1>Post in @Model.CourseName</h1>
+	<h2 class="h6"><a href="@Model.UniversityUrl">@Model.UniversityName</a> - <a href="@Model.FacultyUrl">@Model.FacultyName</a></h2>
+	<div class="p-3 border shadow rounded bg-white text-left mt-3">
+		<div class="d-flex mb-3">
+			<div class="my-auto mr-2">
+				<a href="@Model.AuthorUrl">
+					<h6 class="">@Model.AuthorName</h6>
+				</a>
+				<span class="text-secondary my-auto dont-break-out">@Model.CreationTime.ToString("dd.MM.yyyyy")</span>
+			</div>
+
+			<span class="text-info font-weight-bold my-auto ml-auto dont-break-out">@Model.Category</span>
+		</div>
+		<hr />
+		<div>
+			@Model.Text
+		</div>
+
+		@if (Model.PostFiles.Any())
+		{
+			@foreach (var file in Model.PostFiles)
+			{
+				<a class="btn btn-secondary btn-block d-flex align-items-center mt-3" href="#"><i class="fas fa-file mr-2"></i> @file.FileName <span class="ml-auto">@file.Size</span></a>
+			}
+		}
+		<hr />
+		<div>
+			@if (Model.LikedByUser)
+			{
+				<button class="btn btn-danger">@Model.LikesCount <i class="fas fa-heart mx-1"></i> Liked</button>
+			}
+			else
+			{
+				<button class="btn btn-secondary">@Model.LikesCount <i class="far fa-heart mx-1"></i> Like</button>
+			}
+		</div>
+		<hr />
+		<h3>Discussion</h3>
+
+		@foreach (var comment in Model.Comments)
+		{
+			<div class="border rounded p-3 mt-3">
+				<div class="d-flex">
+					<a href="@comment.AuthorUrl">@comment.AuthorName</a>
+					<span class="ml-auto">@comment.CreationTime.ToString("d")</span>
+				</div>
+				<div>
+					@comment.Text
+				</div>
+				@if (Model.LikedByUser)
+				{
+					<div class="d-flex">
+						<button class="btn btn-danger btn-sm ml-auto">@Model.LikesCount <i class="fas fa-heart mx-1"></i> Liked</button>
+					</div>
+				}
+				else
+				{
+					<button class="btn btn-secondary">@Model.LikesCount <i class="far fa-heart mx-1"></i> Like</button>
+				}
+			</div>
+		}
+
+		<form>
+			<div class="input-group mt-3">
+				<input type="text" class="form-control" placeholder="Add a comment" aria-label="Recipient's username" name="text">
+				<div class="input-group-append">
+					<button class="btn btn-primary" type="submit"><i class="far fa-paper-plane mr-2"></i> Send</button>
+				</div>
+			</div>
+		</form>
+
+
+	</div>
+</div>

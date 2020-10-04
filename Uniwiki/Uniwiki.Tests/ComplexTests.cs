@@ -243,62 +243,62 @@ namespace Uniwiki.Tests
             provider.InjectDependencies(objectWithInjects);
 
             Assert.IsTrue(objectWithInjects.HasPublicDependency(), "The object did not receive the public dependency");
-            Assert.IsTrue(objectWithInjects.HasPrivateDependency(), "The object did not receive the private dependency");
+            Assert.IsTrue(objectWithInjects.HasPrivateDependency(), "The object did not receive th[Inject] dependency");
         }
 
-        private CreateNewPasswordPage CreateCreateNewPasswordPage(ServiceProvider provider, CreateNewPasswordRequestDto request, string secret)
+        private PageRoutes.CreateNewPasswordPage CreateCreateNewPasswordPage(ServiceProvider provider, CreateNewPasswordRequestDto request, string secret)
         {
-            var page = new CreateNewPasswordPage();
+            var page = new PageRoutes.CreateNewPasswordPage();
             provider.InjectDependencies(page);
             page.Request = request;
             page.Secret = secret;
             return page;
         }
 
-        private RegisterPage CreateRegisterPage(ServiceProvider provider, RegisterRequestDto request)
+        private PageRoutes.RegisterPage CreateRegisterPage(ServiceProvider provider, RegisterRequestDto request)
         {
-            var page = new RegisterPage();
+            var page = new PageRoutes.RegisterPage();
             provider.InjectDependencies(page);
             page.Request = request;
             return page;
         }
 
-        private EmailConfirmedPage CreateEmailConfirmedPage(ServiceProvider provider, string secret, string email)
+        private PageRoutes.EmailConfirmedPage CreateEmailConfirmedPage(ServiceProvider provider, string secret, string email)
         {
-            var page = new EmailConfirmedPage();
+            var page = new PageRoutes.EmailConfirmedPage();
             provider.InjectDependencies(page);
             page.Secret = secret;
             page.Email = email;
             return page;
         }
 
-        private LoginPage CreateLoginPage(ServiceProvider provider, LoginRequestDto request)
+        private PageRoutes.LoginPage CreateLoginPage(ServiceProvider provider, LoginRequestDto request)
         {
-            var page = new LoginPage();
+            var page = new PageRoutes.LoginPage();
             provider.InjectDependencies(page);
             page.Request = request;
             return page;
         }
 
-        private ChangePasswordPage CreateChangePasswordPage(ServiceProvider provider, ChangePasswordRequestDto request)
+        private PageRoutes.ChangePasswordPage CreateChangePasswordPage(ServiceProvider provider, ChangePasswordRequestDto request)
         {
-            var page = new ChangePasswordPage();
+            var page = new PageRoutes.ChangePasswordPage();
             provider.InjectDependencies(page);
             page.Request = request;
             return page;
         }
 
-        private ProfilePage CreateProfilePage(ServiceProvider provider, string url)
+        private PageRoutes.ProfilePage CreateProfilePage(ServiceProvider provider, string url)
         {
-            var page = new ProfilePage();
+            var page = new PageRoutes.ProfilePage();
             provider.InjectDependencies(page);
             page.Url = url;
             return page;
         }
 
-        private RestorePasswordPage CreateRestorePasswordPage(ServiceProvider provider, RestorePasswordRequestDto request)
+        private PageRoutes.RestorePasswordPage CreateRestorePasswordPage(ServiceProvider provider, RestorePasswordRequestDto request)
         {
-            var page = new RestorePasswordPage();
+            var page = new PageRoutes.RestorePasswordPage();
             provider.InjectDependencies(page);
             page.Request = request;
             return page;
@@ -361,7 +361,9 @@ namespace Uniwiki.Tests
         public Task Back()
         {
             if(NavigationStack.Any())
+            {
                 NavigationStack.RemoveAt(NavigationStack.Count - 1);
+            }
 
             return Task.CompletedTask;
         }
@@ -394,12 +396,16 @@ namespace Uniwiki.Tests
                 var baseType = type.BaseType;
 
                 if(baseType == null)
+                {
                     Assert.Fail("The serverAction with type " + type.FullName + " does not have a baseType");
+                }
 
                 var genericArguments = baseType.GetGenericArguments();
 
                 if(genericArguments.Length == 1)
+                {
                     Assert.Fail("The serverAction with type " + type.FullName + " does not have one generic argument.");
+                }
 
                 _requestsAndServerActions.Add(genericArguments[0], serverAction);
             }
@@ -650,8 +656,8 @@ namespace Uniwiki.Tests
 
     public class FakeObjectWithInjects
     {
-        [Inject] private IRequestSender RequestSender { get; set; }
-        [Inject] public ITimeService TimeService { get; set; }
+        [Inject] IRequestSender RequestSender { get; set; } = null!;
+        [Inject] ITimeService TimeService { get; set; }
 
         public bool HasPrivateDependency() => RequestSender != null;
         public bool HasPublicDependency() => TimeService != null;

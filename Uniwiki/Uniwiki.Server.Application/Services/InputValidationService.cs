@@ -18,7 +18,9 @@ namespace Uniwiki.Server.Application.Services
             {
                 var addr = new System.Net.Mail.MailAddress(email);
                 if(addr.Address != email)
+                {
                     throw new RequestException(_textService.Error_EmailHasWrongFormat);
+                }
             }
             catch
             {

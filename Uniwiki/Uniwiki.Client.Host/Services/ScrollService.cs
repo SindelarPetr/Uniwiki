@@ -21,7 +21,9 @@ namespace Uniwiki.Client.Host.Services
         public async Task InitializeScroll()
         {
             if(_isInitialized)
+            {
                 return;
+            }
 
             _thisAsNetRef = DotNetObjectReference.Create(this);
             await _jsInteropService.SetScrollCallback(_thisAsNetRef);
@@ -36,7 +38,9 @@ namespace Uniwiki.Client.Host.Services
         public async Task CallScrolledToEnd()
         {
             if (ScrolledToEnd != null)
+            {
                 await ScrolledToEnd();
+            }
         }
     }
 }

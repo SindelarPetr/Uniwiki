@@ -4,23 +4,24 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using Shared.Extensions;
+using Shared.Services;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Persistence.Models;
 using Uniwiki.Server.Persistence.Repositories.Base;
-using Uniwiki.Server.Persistence.RepositoryAbstractions;
+
 using Uniwiki.Server.Persistence.Services;
 
 namespace Uniwiki.Server.Persistence.Repositories
 {
-    public class CourseRepository : RemovableRepositoryBase<CourseModel, Guid>
+    public class CourseRepository : RepositoryBase<CourseModel, Guid>
     {
         private readonly UniwikiContext _uniwikiContext;
-        private readonly IStringStandardizationService _stringStandardizationService;
+        private readonly StringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
 
         public override string NotFoundByIdMessage => _textService.Error_CourseNotFound;
 
-        public CourseRepository(UniwikiContext uniwikiContext, IStringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.Courses)
+        public CourseRepository(UniwikiContext uniwikiContext, StringStandardizationService stringStandardizationService, TextService textService) : base(uniwikiContext, uniwikiContext.Courses)
         {
             _uniwikiContext = uniwikiContext;
             _stringStandardizationService = stringStandardizationService;
@@ -65,7 +66,7 @@ namespace Uniwiki.Server.Persistence.Repositories
             var codeStandardized = _stringStandardizationService.StandardizeSearchText(code);
             var fullNameStandardized = _stringStandardizationService.StandardizeSearchText(fullName);
 
-            var course = new CourseModel(Guid.NewGuid(), code, codeStandardized, fullName, fullNameStandardized, authorId, facultyId, universityUrl, url, studyGroupUrl, false);
+            var course = new CourseModel(Guid.NewGuid(), code, codeStandardized, fullName, fullNameStandardized, authorId, facultyId, universityUrl, url, studyGroupUrl);
 
             All.Add(course);
 

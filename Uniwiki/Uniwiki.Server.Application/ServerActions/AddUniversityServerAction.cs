@@ -31,13 +31,15 @@ namespace Uniwiki.Server.Application.ServerActions
 
             // Throw error if the name is not uniq
             if (!nameIsUniq)
+            {
                 throw new RequestException(_textService.Error_UniversityNameOrUrlNotUniq(request.FullName, request.Url));
+            }
 
             // Create the university
             var university = _universityRepository.AddUniversity(request.FullName, request.ShortName, request.Url);
 
             // Create response
-            var response = new AddUniversityResponseDto(university.ToDto());
+            var response = new AddUniversityResponseDto(university.ToUniversityDto());
 
             return Task.FromResult(response);
         }

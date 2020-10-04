@@ -29,7 +29,7 @@ namespace Uniwiki.Server.Host.Mvc
                 .ReadFrom
                 .Configuration(configuration)
                 .CreateLogger();
-
+            
             try
             {
                 // Log start
@@ -65,7 +65,7 @@ namespace Uniwiki.Server.Host.Mvc
                 {
                     options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
                 })
-                .UseSerilog() // Use serilog for logging
+                .UseSerilog(dispose: true) // Use serilog for logging
                 .UseStartup<MvcStartup>();
 
             return builder;

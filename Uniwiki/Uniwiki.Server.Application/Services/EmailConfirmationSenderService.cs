@@ -9,7 +9,7 @@ using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Application.Services
 {
-    internal class EmailConfirmationSenderService : IEmailConfirmationSenderService
+    internal class EmailConfirmationSenderService
     {
         private readonly EmailConfirmationSecretRepository _emailConfirmationSecretRepository;
         private readonly ITimeService _timeService;
@@ -27,23 +27,25 @@ namespace Uniwiki.Server.Application.Services
         /// <summary>
         /// Generates, sends and saves the confirmation email for the specified user.
         /// </summary>
-        public async Task SendConfirmationEmail(ProfileModel profile)
+        public async Task SendConfirmationEmail(Guid profileId, string profileEmail)
         {
             // Try to get an existing secret
-            var currentSecret = _emailConfirmationSecretRepository.TryGetValidEmailConfirmationSecret(profile);
+            var currentSecret = _emailConfirmationSecretRepository.TryGetValidEmailConfirmationSecret(profileId);
 
             // if current secret exists and its not expired
             if (currentSecret != null && currentSecret.CreationTime.Add(Constants.ResendRegistrationEmailMinTime) > _timeService.Now)
+            {
                 throw new RequestException(_textService.Error_EmailHasBeenAlreadySent);
+            }
 
             // Invalidate all old secret(s)
-            _emailConfirmationSecretRepository.InvalidateSecrets(profile);
+            _emailConfirmationSecretRepository.InvalidateSecrets(profileId);
 
             // Add it to the DB
-            var emailConfirmationSecret = _emailConfirmationSecretRepository.AddEmailConfirmationSecret(profile, Guid.NewGuid(), _timeService.Now);
+            var emailConfirmationSecret = _emailConfirmationSecretRepository.AddEmailConfirmationSecret(profileId, Guid.NewGuid(), _timeService.Now);
 
             // Send the message to email
-            await _emailService.SendRegisterEmail(profile.Email, emailConfirmationSecret.Secret);
+            await _emailService.SendRegisterEmail(profileEmail, emailConfirmationSecret.Secret);
 
             // Save the email secret to the DB. We have to do it after the email was sent - if it will fail it throws exception and the secret will not be saved.
             _emailConfirmationSecretRepository.SaveEmailConfirmationSecret(emailConfirmationSecret);

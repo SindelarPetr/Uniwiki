@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Uniwiki.Server.Persistence.Repositories.Base
+namespace Uniwiki.Server.Persistence.Models.Base
 {
     public abstract class ModelBase<TId> where TId : struct
     {
-        public TId Id { get; protected set; }
+        public TId Id { get; set; }
 
         public ModelBase(TId id)
         {

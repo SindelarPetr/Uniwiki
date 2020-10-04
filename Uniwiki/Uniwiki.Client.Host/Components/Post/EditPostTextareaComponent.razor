@@ -1,0 +1,21 @@
+﻿@inherits UniwikiComponentBase
+
+
+<textarea class="form-control @(string.IsNullOrWhiteSpace(Text) ? "border-danger" : string.Empty)" placeholder="@TextService.CoursePage_WriteYourMessageHere"
+		  @oninput="HandleOnChange" 
+		  value="@Text"
+		  onkeyup="this.style.height = Math.max(this.scrollHeight, 100) + 'px'" 
+		  style="height: 100px; overflow-y: hidden; border-width:2px"></textarea>
+
+@code {
+
+	[Parameter] public Action<string> OnChange { get; set; } = null!;
+	[Parameter] public string Text { get; set; } = string.Empty;
+
+	private void HandleOnChange(ChangeEventArgs changeEventArgs)
+	{
+		Text = changeEventArgs.Value.ToString();
+
+		OnChange.Invoke(Text);
+	}
+}

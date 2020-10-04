@@ -33,7 +33,9 @@ namespace Uniwiki.Server.Application.Services
 
                     // If the user is admin, then set level to Admin
                     if (token.Profile.AuthenticationLevel == AuthenticationLevel.Admin)
+                    {
                         authenticationLevel = AuthenticationLevel.Admin;
+                    }
 
                     return (token, authenticationLevel);
                 }

@@ -68,7 +68,9 @@ namespace Uniwiki.Server.Host.Mvc
             // Check if authentication needs to be fixed
             var fixes = new List<FixResponseDto>();
             if(userInfo.Item1 == null && inputContext.AccessToken != null)
+            {
                 fixes.Add(new FixResponseDto(_textService.Error_IdentityValidationFailed, ErrorFix.Logout));
+            }
 
             // Check if the client uses the right version
             if(inputContext.AppVersion != ClientConstants.AppVersionString)

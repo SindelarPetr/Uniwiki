@@ -5,7 +5,7 @@
 		<a class="navbar-brand" href="@PageRoutes.HomePage.BuildRoute()">Uniwiki</a>
 		<AuthorizeView>
 			<Authorized>
-				<a class="ml-auto nav-item m-0 p-0 d-flex align-items-center font-weight-bold" href="@PageRoutes.ProfilePage.BuildRoute(LoginService.User.NameIdentifier)"><img class="rounded-circle mr-2" src="@_profilePictureSrc" style="width: 1.9rem; height: 1.9rem; object-fit: cover">@_name</a>
+				<a class="ml-auto nav-item m-0 p-0 d-flex align-items-center font-weight-bold" href="@PageRoutes.ProfilePage.BuildRoute(LoginService.User!.Url)"><img class="rounded-circle mr-2" src="@_profilePictureSrc" style="width: 1.9rem; height: 1.9rem; object-fit: cover">@_name</a>
 			</Authorized>
 			<NotAuthorized>
 				<NavLink class="ml-auto nav-item btn btn-link px-0" href="@PageRoutes.LoginPage.BuildRoute()" Match="NavLinkMatch.All">@TextService.EmailConfirmedPage_LogIn</NavLink>
@@ -20,12 +20,12 @@
 
 @code {
 
-	[Inject] ILoginService LoginService { get; set; }
+	[Inject] ILoginService LoginService { get; set; } = null!;
 
-	[CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; }
+	[CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; } = null!;
 
-	private string _name;
-	private string _profilePictureSrc;
+	private string? _name;
+	private string? _profilePictureSrc;
 
 	protected override async Task OnParametersSetAsync()
 	{
@@ -35,7 +35,7 @@
 
 		if (LoginService.IsAuthenticated)
 		{
-			_name = LoginService.User.FirstName;
+			_name = LoginService.User!.FirstName;
 			_profilePictureSrc = LoginService.User.ProfilePictureSrc;
 		}
 	}

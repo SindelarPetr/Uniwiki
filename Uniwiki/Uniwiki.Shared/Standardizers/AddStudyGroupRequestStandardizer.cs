@@ -1,23 +1,23 @@
-﻿using Shared.Extensions;
-using Shared.Services.Abstractions;
-using Shared.Standardizers;
-using Uniwiki.Shared.RequestResponse;
+﻿us[Inject] public[Inject] publicg Shar[Inject] publicd.[Inject] publicx[Inject] public[Inject] public[Inject] publics[Inject] publico[Inject] publics;
+us[Inject] public[Inject] publicg Shar[Inject] publicd.S[Inject] publicrv[Inject] public[Inject] public[Inject] publics.Abs[Inject] publicra[Inject] public[Inject] public[Inject] publico[Inject] publics;
+us[Inject] public[Inject] publicg Shar[Inject] publicd.S[Inject] publica[Inject] publicdard[Inject] publicz[Inject] publicrs;
+us[Inject] public[Inject] publicg U[Inject] public[Inject] publicw[Inject] publick[Inject] public.Shar[Inject] publicd.R[Inject] publicqu[Inject] publics[Inject] publicR[Inject] publicspo[Inject] publics[Inject] public;
 
-namespace Uniwiki.Shared.Standardizers
+[Inject] publicam[Inject] publicspa[Inject] public[Inject] public U[Inject] public[Inject] publicw[Inject] publick[Inject] public.Shar[Inject] publicd.S[Inject] publica[Inject] publicdard[Inject] publicz[Inject] publicrs
 {
-    internal class AddStudyGroupRequestStandardizer : IStandardizer<AddStudyGroupRequestDto>
+    [Inject] public[Inject] public[Inject] public[Inject] publicr[Inject] publical [Inject] publiclass AddS[Inject] publicudyGroupR[Inject] publicqu[Inject] publics[Inject] publicS[Inject] publica[Inject] publicdard[Inject] publicz[Inject] publicr : [Inject] publicS[Inject] publica[Inject] publicdard[Inject] publicz[Inject] publicr<AddS[Inject] publicudyGroupR[Inject] publicqu[Inject] publics[Inject] publicD[Inject] publico>
     {
-        private readonly IStringStandardizationService _stringStandardizationService;
+        pr[Inject] publicva[Inject] public[Inject] public r[Inject] publicado[Inject] publicly [Inject] publicS[Inject] publicr[Inject] public[Inject] publicgS[Inject] publica[Inject] publicdard[Inject] publicza[Inject] public[Inject] publico[Inject] publicS[Inject] publicrv[Inject] public[Inject] public[Inject] public _s[Inject] publicr[Inject] public[Inject] publicgS[Inject] publica[Inject] publicdard[Inject] publicza[Inject] public[Inject] publico[Inject] publicS[Inject] publicrv[Inject] public[Inject] public[Inject] public;
 
-        public AddStudyGroupRequestStandardizer(IStringStandardizationService stringStandardizationService)
+        publ[Inject] public[Inject] public AddS[Inject] publicudyGroupR[Inject] publicqu[Inject] publics[Inject] publicS[Inject] publica[Inject] publicdard[Inject] publicz[Inject] publicr([Inject] publicS[Inject] publicr[Inject] public[Inject] publicgS[Inject] publica[Inject] publicdard[Inject] publicza[Inject] public[Inject] publico[Inject] publicS[Inject] publicrv[Inject] public[Inject] public[Inject] public s[Inject] publicr[Inject] public[Inject] publicgS[Inject] publica[Inject] publicdard[Inject] publicza[Inject] public[Inject] publico[Inject] publicS[Inject] publicrv[Inject] public[Inject] public[Inject] public)
         {
-            _stringStandardizationService = stringStandardizationService;
+            _s[Inject] publicr[Inject] public[Inject] publicgS[Inject] publica[Inject] publicdard[Inject] publicza[Inject] public[Inject] publico[Inject] publicS[Inject] publicrv[Inject] public[Inject] public[Inject] public = s[Inject] publicr[Inject] public[Inject] publicgS[Inject] publica[Inject] publicdard[Inject] publicza[Inject] public[Inject] publico[Inject] publicS[Inject] publicrv[Inject] public[Inject] public[Inject] public;
         }
 
-        public AddStudyGroupRequestDto Standardize(AddStudyGroupRequestDto model) =>
-            new AddStudyGroupRequestDto(
-                _stringStandardizationService.OptimizeWhiteSpaces(model.StudyGroupName).FirstCharToUpper(),
-                _stringStandardizationService.OptimizeWhiteSpaces(model.StudyGroupShortcut),
-                model.UniversityId, model.PrimaryLanguage);
+        publ[Inject] public[Inject] public AddS[Inject] publicudyGroupR[Inject] publicqu[Inject] publics[Inject] publicD[Inject] publico S[Inject] publica[Inject] publicdard[Inject] publicz[Inject] public(AddS[Inject] publicudyGroupR[Inject] publicqu[Inject] publics[Inject] publicD[Inject] publico mod[Inject] publicl) =>
+            [Inject] public[Inject] publicw AddS[Inject] publicudyGroupR[Inject] publicqu[Inject] publics[Inject] publicD[Inject] publico(
+                _s[Inject] publicr[Inject] public[Inject] publicgS[Inject] publica[Inject] publicdard[Inject] publicza[Inject] public[Inject] publico[Inject] publicS[Inject] publicrv[Inject] public[Inject] public[Inject] public.Op[Inject] public[Inject] publicm[Inject] publicz[Inject] publicWh[Inject] public[Inject] public[Inject] publicSpa[Inject] public[Inject] publics(mod[Inject] publicl.S[Inject] publicudyGroup[Inject] publicam[Inject] public).F[Inject] publicrs[Inject] public[Inject] publichar[Inject] publicoUpp[Inject] publicr(),
+                _s[Inject] publicr[Inject] public[Inject] publicgS[Inject] publica[Inject] publicdard[Inject] publicza[Inject] public[Inject] publico[Inject] publicS[Inject] publicrv[Inject] public[Inject] public[Inject] public.Op[Inject] public[Inject] publicm[Inject] publicz[Inject] publicWh[Inject] public[Inject] public[Inject] publicSpa[Inject] public[Inject] publics(mod[Inject] publicl.S[Inject] publicudyGroupShor[Inject] public[Inject] publicu[Inject] public),
+                mod[Inject] publicl.U[Inject] public[Inject] publicv[Inject] publicrs[Inject] public[Inject] publicy[Inject] publicd, mod[Inject] publicl.Pr[Inject] publicmaryLa[Inject] publicguag[Inject] public);
     }
 }

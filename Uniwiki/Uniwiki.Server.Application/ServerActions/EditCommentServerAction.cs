@@ -17,21 +17,23 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly PostCommentRepository _postCommentRepository;
         private readonly TextService _textService;
         private readonly PostRepository _postRepository;
+        private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public EditCommentServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostCommentRepository postCommentRepository, TextService textService, PostRepository postRepository) : base(serviceProvider)
+        public EditCommentServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostCommentRepository postCommentRepository, TextService textService, PostRepository postRepository, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _profileRepository = profileRepository;
             _postCommentRepository = postCommentRepository;
             _textService = textService;
             _postRepository = postRepository;
+            _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<EditCommentResponseDto> ExecuteAsync(EditCommentRequestDto request, RequestContext context)
         {
             // Get the comment
-            var comment = _postCommentRepository.FindById(request.PostCommentId).Single();
+            var comment = _uniwikiContext.PostComments.Single(c => c.Id == request.PostCommentId);
 
             // Check if the user is editting his own comment
             if(context.UserId != comment.AuthorId)
@@ -48,7 +50,7 @@ namespace Uniwiki.Server.Application.ServerActions
             // var updatedPost = _postRepository.FindById(comment.PostId);
 
             // Make DTO
-            // var postDto = updatedPost.ToDto(context.UserId).Single();
+            // var postDto = updatedPost.ToLoginTokenDto(context.UserId).Single();
 
             // Create result
             // var result = new EditCommentResponseDto();

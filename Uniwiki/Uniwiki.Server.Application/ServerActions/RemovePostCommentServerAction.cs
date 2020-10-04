@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
 using Uniwiki.Server.Application.Extensions;
@@ -13,23 +14,20 @@ namespace Uniwiki.Server.Application.ServerActions
 {
     internal class RemovePostCommentServerAction : ServerActionBase<RemovePostCommentRequestDto, RemovePostCommentResponseDto>
     {
-        private readonly ProfileRepository _profileRepository;
-        private readonly PostCommentRepository _postCommentRepository;
         private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => Persistence.AuthenticationLevel.PrimaryToken;
 
-        public RemovePostCommentServerAction(IServiceProvider serviceProvider, ProfileRepository profileRepository, PostCommentRepository postCommentRepository, UniwikiContext uniwikiContext) : base(serviceProvider)
+        public RemovePostCommentServerAction(IServiceProvider serviceProvider, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
-            _profileRepository = profileRepository;
-            _postCommentRepository = postCommentRepository;
             _uniwikiContext = uniwikiContext;
         }
 
         protected override Task<RemovePostCommentResponseDto> ExecuteAsync(RemovePostCommentRequestDto request, RequestContext context)
         {
             // Get the comment to remove
-            var comment = _postCommentRepository.FindById(request.PostCommentId).Single();
+            var comment = _uniwikiContext.PostComments.Find(request.PostCommentId) 
+                          ?? throw new RequestException(string.Empty);
 
             // Check if user is removing his own comment
             if (comment.AuthorId != context.UserId)
@@ -38,13 +36,18 @@ namespace Uniwiki.Server.Application.ServerActions
             }
 
             // Remove the comment
-            _postCommentRepository.Remove(comment);
+            _uniwikiContext.PostComments.Remove(comment);
+
+            _uniwikiContext.SaveChanges();
+
+            _uniwikiContext.Entry(comment).State = EntityState.Detached;
 
             // Reload the post with the removed comment
             var post = _uniwikiContext
                 .Posts
-                 .ToDto(context.UserId)
-                 .Single(p => p.Id == comment.PostId); // TODO: Check the performance!
+                .Where(p => p.Id == comment.PostId)
+                .ToPostViewModel(context.UserId)
+                 .Single();
 
             // Create the response
             var response = new RemovePostCommentResponseDto(post);

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
+using Shared.Services;
 using Shared.Services.Abstractions;
 using Uniwiki.Server.Application.Extensions;
 using Uniwiki.Server.Application.Services;
@@ -19,13 +20,13 @@ namespace Uniwiki.Server.Application.ServerActions
         private readonly CourseRepository _courseRepository;
         private readonly StudyGroupRepository _studyGroupRepository;
         private readonly ProfileRepository _profileRepository;
-        private readonly IStringStandardizationService _stringStandardizationService;
+        private readonly StringStandardizationService _stringStandardizationService;
         private readonly TextService _textService;
         private readonly UniwikiContext _uniwikiContext;
 
         protected override AuthenticationLevel AuthenticationLevel => AuthenticationLevel.PrimaryToken;
 
-        public AddCourseServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, StudyGroupRepository studyGroupRepository, ProfileRepository profileRepository, IStringStandardizationService stringStandardizationService, TextService textService, UniwikiContext uniwikiContext) : base(serviceProvider)
+        public AddCourseServerAction(IServiceProvider serviceProvider, CourseRepository courseRepository, StudyGroupRepository studyGroupRepository, ProfileRepository profileRepository, StringStandardizationService stringStandardizationService, TextService textService, UniwikiContext uniwikiContext) : base(serviceProvider)
         {
             _courseRepository = courseRepository;
             _studyGroupRepository = studyGroupRepository;

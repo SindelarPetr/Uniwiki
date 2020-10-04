@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Server.Appliaction.ServerActions;
 using Shared.Exceptions;
 using Uniwiki.Server.Application.Services;
+using Uniwiki.Server.Application.Services.Abstractions;
 using Uniwiki.Server.Persistence;
 using Uniwiki.Server.Persistence.Repositories;
 using Uniwiki.Shared.RequestResponse.Authentication;
@@ -37,7 +38,9 @@ namespace Uniwiki.Server.Application.ServerActions.Authentication
 
             // Check if old passwords match
             if (profile.Password != oldPassword)
+            {
                 throw new RequestException(_textService.Error_OldPasswordsDontMatch);
+            }
 
             // Hash the password
             var newPassword = _hashService.HashPassword(request.NewPassword);

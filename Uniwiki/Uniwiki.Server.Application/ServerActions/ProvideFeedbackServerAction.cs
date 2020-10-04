@@ -32,7 +32,7 @@ namespace Uniwiki.Server.Application.ServerActions
             _feedbackRepository.AddFeedback(context.UserId, request.Rating, request.Text, _timeService.Now);
 
             // Find the user
-            var user = context.UserId != null ? _uniwikiContext.Profiles.ToAuthorizedUser().Single(p => p.Id == context.UserId.Value) : null;
+            var user = context.UserId != null ? _uniwikiContext.Profiles.Where(p => p.Id == context.UserId.Value).ToAuthorizedUserDto() : null;
 
             // Create response
             var response = new ProvideFeedbackResponseDto(user);

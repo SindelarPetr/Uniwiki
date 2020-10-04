@@ -9,7 +9,9 @@
         public static Language Parse(string code)
         {
             if (string.IsNullOrWhiteSpace(code))
+            {
                 return DefaultLanguage;
+            }
 
             var cleanCode = code.Split('-')[0];
 

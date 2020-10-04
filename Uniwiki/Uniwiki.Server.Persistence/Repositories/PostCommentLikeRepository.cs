@@ -11,17 +11,28 @@ using Uniwiki.Server.Persistence.Services;
 namespace Uniwiki.Server.Persistence.Repositories
 {
 
-    public class PostCommentLikeRepository : RepositoryBase<PostCommentLikeModel, PostCommentLikeModelId>
+    public class PostCommentLikeRepository //:  RepositoryBase<PostCommentLikeModel, PostCommentLikeModelId>
     {
+        private readonly UniwikiContext _uniwikiContext;
         private readonly TextService _textService;
 
-        public override string NotFoundByIdMessage => _textService.Error_PostCommentLikeNotFound;
+        public string NotFoundByIdMessage => _textService.Error_PostCommentLikeNotFound;
 
         public PostCommentLikeRepository(UniwikiContext uniwikiContext, TextService textService)
-            : base(uniwikiContext, uniwikiContext.PostCommentLikes)
         {
+            _uniwikiContext = uniwikiContext;
             _textService = textService;
         }
+
+        /// <summary>
+        /// Finds the existing like and loads its comment.
+        /// </summary>
+        /// <param name="commentId">The comment identifier.</param>
+        /// <param name="profileId">The profile identifier.</param>
+        private PostCommentLikeModel? TryFindExistingLike(Guid commentId, Guid profileId) => _uniwikiContext
+            .PostCommentLikes
+            .Include(l => l.Comment)
+            .FirstOrDefault(c => c.CommentId == commentId && c.ProfileId == profileId);
 
         /// <summary>
         /// Likes the comment.
@@ -30,10 +41,10 @@ namespace Uniwiki.Server.Persistence.Repositories
         /// <param name="profileId">The profile identifier.</param>
         /// <param name="likeTime">The like time.</param>
         /// <returns>The ID of the liked post</returns>
-        public Guid? LikeComment(Guid commentId, Guid profileId, DateTime likeTime)
+        public Guid LikeComment(Guid commentId, Guid profileId, DateTime likeTime)
         {
             // Try to find an existing like
-            var existingLike = All.Include(l => l.Comment).Single(l => l.CommentId == commentId && l.ProfileId == profileId);
+            var existingLike = TryFindExistingLike(commentId, profileId);
 
             // Check if there already is a like
             if (existingLike == null)
@@ -42,11 +53,10 @@ namespace Uniwiki.Server.Persistence.Repositories
                 var newLike = new PostCommentLikeModel(commentId, profileId, likeTime, true);
 
                 // Add it to the DB
-                All.Add(newLike);
+                _uniwikiContext.PostCommentLikes.Add(newLike);
 
                 // Find the comment post ID
-                var postId = UniwikiContext
-                    .PostComments
+                var postId = _uniwikiContext.PostComments
                     .Where(c => c.Id == commentId)
                     .Select(c => c.PostId)
                     .Single();
@@ -58,7 +68,7 @@ namespace Uniwiki.Server.Persistence.Repositories
             if (existingLike.IsLiked)
             {
                 // Do nothing
-                return null;
+                return _uniwikiContext.PostComments.Where(c => c.Id == commentId).Select(c => c.PostId).First();
             }
 
             // Like it
@@ -74,19 +84,17 @@ namespace Uniwiki.Server.Persistence.Repositories
         /// <param name="commentId">The comment identifier.</param>
         /// <param name="profileId">The profile identifier.</param>
         /// <returns>The post Id to which belongs the liked comment.</returns>
-        public Guid? UnlikeComment(Guid commentId, Guid profileId)
+        public Guid UnlikeComment(Guid commentId, Guid profileId)
         {
-            //// Try to find an existing like
-            //var existingLikeId = new PostCommentLikeModelId(commentId, profileId).GetKeyValues();
-
-            // Try to get the like
-            var existingLike = All.Include(l => l.Comment).Single(l => l.CommentId == commentId && l.ProfileId == profileId);
+            // Try to get an existing like
+            var existingLike = TryFindExistingLike(commentId, profileId);
 
             // Check if there already is a like or its already unliked
             if (existingLike == null || existingLike.IsLiked == false)
             {
                 // Do nothing
-                return null;
+                // Find the postId to return it
+                return _uniwikiContext.PostComments.Where(c => c.Id == commentId).Select(c => c.PostId).Single();
             }
 
             // Unlike it

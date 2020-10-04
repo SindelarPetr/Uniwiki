@@ -48,7 +48,9 @@ namespace Uniwiki.Server.Application.Services
 
             // Validate password, throw exception if not matching
             if (profile.Password != hashedPassword)
+            {
                 throw new RequestException(_textService.Error_WrongLoginCredentials);
+            }
 
             return LoginUserInner(profile);
         }
@@ -65,7 +67,9 @@ namespace Uniwiki.Server.Application.Services
         {
             // Validate profile confirmation
             if (!profile.IsConfirmed)
+            {
                 throw new RequestException(_textService.Error_YourEmailWasNotYetConfirmed(profile.Email));
+            }
 
             // Get the creation time
             var creationTime = _timeService.Now;

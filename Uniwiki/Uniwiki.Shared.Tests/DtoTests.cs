@@ -44,7 +44,9 @@ namespace Uniwiki.Shared.Tests
                 foreach (var property in typeInfo.DeclaredProperties)
                 {
                     if(property.SetMethod == null || !property.SetMethod.IsPublic)
+                    {
                         Assert.Fail($"Found a type ({typeInfo.FullName}) with a property ({ typeInfo.FullName + "." + property.Name}) a non-public setter:\n{typeInfo.AssemblyQualifiedName}");
+                    }
                 }
                 
             }

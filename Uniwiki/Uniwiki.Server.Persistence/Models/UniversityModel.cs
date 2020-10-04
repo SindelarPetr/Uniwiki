@@ -1,31 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Uniwiki.Server.Persistence.Models.Base;
 using Uniwiki.Server.Persistence.Repositories.Base;
+using Uniwiki.Shared;
 
 namespace Uniwiki.Server.Persistence.Models
 {
-    public class UniversityModel : RemovableModelBase<Guid>
+    public class UniversityModel : ModelBase<Guid>
     {
         /// <summary>
         /// e. g. 'IT University of Copenhagen'
         /// </summary>
-        public string LongName { get; protected set; } = null!;
+        [MaxLength(Constants.Validations.UniversityLongName)]
+        public string LongName { get; set; } = null!;
 
         /// <summary>
         /// e. g. 'ITU'
         /// </summary>
-        public string ShortName { get; protected set; } = null!;
+        [MaxLength(Constants.Validations.UniversityShortName)]
+        public string ShortName { get; set; } = null!;
 
-        public string Url { get; protected set; } = null!;
+        [MaxLength(Constants.Validations.UrlMaxLength)]
+        public string Url { get; set; } = null!;
 
-        public ICollection<StudyGroupModel> StudyGroups { get; protected set; }
-        = new List<StudyGroupModel>();
+        public ICollection<StudyGroupModel> StudyGroups { get; set; } = null!;
 
-        internal UniversityModel(Guid id, string fullName, string shortName, string url, bool isRemoved) : base(isRemoved, id)
+        public UniversityModel(Guid id, string fullName, string shortName, string url) : base(id)
         {
             LongName = fullName;
             ShortName = shortName;
             Url = url;
+            StudyGroups = new List<StudyGroupModel>();
         }
 
         protected UniversityModel()
