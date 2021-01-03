@@ -1,7 +1,6 @@
 <p align="center">
-  <a href="https://uniwiki.cz">
+  
     <img src="https://raw.githubusercontent.com/SindelarPetr/Uniwiki/master/Uniwiki/Uniwiki.Client.Host/wwwroot/android-chrome-512x512.png" alt="Uniwiki logo" width="200" height="200">
-  </a>
 </p>
 
 <h1 align="center">Uniwiki</h1>
@@ -10,8 +9,8 @@
   <strong>Uniwki is an application for sharing study materials among students.</strong>
   <br>
   <br>
-  <a href="https://uniwiki.cz">See Uniwiki App</a>
-  ·
+  <!--<a href="https://uniwiki.cz">See Uniwiki App</a>
+  ·-->
   <a href="https://github.com/SindelarPetr/Uniwiki/issues/new?template=bug_report.md">Report bug</a>
   ·
   <a href="https://github.com/SindelarPetr/Uniwiki/issues/new?template=feature_request.md">Request feature</a>
